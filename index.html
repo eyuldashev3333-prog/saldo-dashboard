@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ffffff">
+<title>Saldo — Art House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f6fb; --surface:#fff; --ink:#0b1f44; --ink2:#3b4d72; --muted:#7383a3;
+  --line:rgba(11,31,68,.09); --line2:rgba(11,31,68,.16);
+  --navy:#10285c; --blue:#2f5bea; --blue-soft:#e8eefd;
+  --pos:#0f9d6b; --pos-soft:#e4f6ef; --neg:#d6453d; --neg-soft:#fdebe9; --warn:#a86a0c; --warn-soft:#fdf3dc;
+  --shadow:0 1px 2px rgba(11,31,68,.04),0 8px 24px rgba(11,31,68,.06);
+  --ease-out:cubic-bezier(.23,1,.32,1); --ease-drawer:cubic-bezier(.32,.72,0,1);
+  --font:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--font);font-feature-settings:"tnum" 1,"cv11" 1;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+
+/* top bar: translucent material, content scrolls under it */
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.72);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:-.02em;font-size:17px;color:var(--navy)}
+.brand i{width:26px;height:26px;border-radius:8px;background:var(--navy);display:grid;place-items:center;color:#fff;font-style:normal;font-size:14px;font-weight:700}
+.tabs{position:relative;display:flex;gap:2px;background:rgba(11,31,68,.06);border-radius:11px;padding:3px;overflow-x:auto;max-width:100%;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs .thumb{position:absolute;top:3px;bottom:3px;left:0;width:0;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(11,31,68,.15);transition:transform 260ms var(--ease-out),width 260ms var(--ease-out);z-index:0}
+.tab{position:relative;z-index:1;border:0;background:none;padding:6px 14px;border-radius:8px;color:var(--ink2);font-weight:500;font-size:14px;white-space:nowrap;transition:color 160ms ease-out,transform 160ms ease-out}
+.tab[aria-selected=true]{color:var(--navy);font-weight:600}
+.tab:active{transform:scale(.97)}
+.spacer{flex:1}
+.pill-btn{border:1px solid var(--line2);background:#fff;border-radius:9px;padding:6px 12px;font-size:13px;font-weight:500;color:var(--ink2);transition:transform 160ms ease-out,background 160ms ease-out}
+.pill-btn:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.pill-btn:hover{background:var(--blue-soft)}}
+.stamp{font-size:12px;color:var(--muted)}
+
+.filters{max-width:1180px;margin:0 auto;padding:14px 20px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;background:rgba(11,31,68,.06);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;padding:5px 12px;border-radius:7px;font-size:13px;font-weight:500;color:var(--ink2);transition:background 160ms ease-out,color 160ms ease-out,transform 160ms ease-out}
+.seg button:active{transform:scale(.97)}
+.seg button[aria-pressed=true]{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 3px rgba(11,31,68,.15)}
+.field{border:1px solid var(--line2);background:#fff;border-radius:10px;padding:6px 12px;font-size:13px;min-width:0}
+input.field{width:170px}
+select.field{padding-right:8px}
+
+main{max-width:1180px;margin:0 auto;padding:20px 20px 64px}
+.view{display:none}
+.view.on{display:block}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.gf{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+@media (max-width:860px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3,.g2{grid-template-columns:1fr}}
+@media (max-width:520px){.g4{grid-template-columns:1fr}.top-in,.filters,main{padding-left:16px;padding-right:16px}input.field{width:100%}}
+
+.card{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:20px;min-width:0}
+.card h3{margin:0 0 4px;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.card .sub{margin:0 0 14px;color:var(--muted);font-size:13px}
+.lbl{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.big{font-size:clamp(34px,6vw,54px);font-weight:700;letter-spacing:-.035em;line-height:1.05;margin:6px 0 4px}
+.kpi{font-size:26px;font-weight:650;letter-spacing:-.025em;line-height:1.15;margin-top:4px}
+.kpi small{font-size:13px;font-weight:500;color:var(--muted);margin-left:4px;letter-spacing:0}
+.hero{background:linear-gradient(160deg,#10285c 0%,#1a3a7d 100%);color:#fff;padding:26px 26px 22px}
+.hero .lbl{color:rgba(255,255,255,.7)}
+.hero .cash{margin-top:10px;color:rgba(255,255,255,.82);font-size:14px}
+.hero .cash b{color:#fff;font-weight:600}
+.formula{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{background:rgba(255,255,255,.12);border-radius:10px;padding:7px 12px;font-size:13px;color:rgba(255,255,255,.9)}
+.chip b{display:block;font-size:16px;font-weight:650;color:#fff;letter-spacing:-.01em}
+.op{align-self:center;color:rgba(255,255,255,.55);font-size:18px}
+
+.badge{display:inline-block;border-radius:99px;padding:2px 9px;font-size:12px;font-weight:600}
+.b-pos{background:var(--pos-soft);color:var(--pos)} .b-neg{background:var(--neg-soft);color:var(--neg)}
+.b-warn{background:var(--warn-soft);color:var(--warn)} .b-blue{background:var(--blue-soft);color:var(--blue)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{position:sticky;top:0;text-align:left;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--surface);white-space:nowrap}
+.tbl th.r,.tbl td.r{text-align:right}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr.click{cursor:pointer;transition:background 140ms ease-out}
+@media (hover:hover) and (pointer:fine){.tbl tbody tr.click:hover{background:rgba(47,91,234,.05)}}
+.tbl th.sort{cursor:pointer;user-select:none}
+.tbl th.sort:hover{color:var(--ink)}
+.scroll{overflow:auto;max-width:100%;border-radius:12px}
+.bar{height:6px;border-radius:99px;background:rgba(11,31,68,.07);position:relative;min-width:80px}
+.bar i{position:absolute;top:0;bottom:0;border-radius:99px}
+.name{font-weight:550}
+.mut{color:var(--muted)} .s{font-size:13px}
+
+.fc{cursor:pointer;transition:transform 200ms var(--ease-out),box-shadow 200ms var(--ease-out);text-align:left}
+.fc:active{transform:scale(.985)}
+@media (hover:hover) and (pointer:fine){.fc:hover{box-shadow:0 1px 2px rgba(11,31,68,.05),0 12px 28px rgba(11,31,68,.10)}}
+.fc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fc-name{font-weight:650;font-size:16px;letter-spacing:-.015em}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.oc{background:rgba(11,31,68,.06);border-radius:7px;padding:2px 8px;font-size:12px;color:var(--ink2)}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:12px;color:var(--ink2)}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--c);margin-right:6px;vertical-align:-1px}
+
+/* charts */
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font:400 11px var(--font);fill:var(--muted)}
+.guide{stroke:var(--line2);stroke-width:1;opacity:0;transition:opacity 120ms ease-out}
+#tip{position:fixed;z-index:60;pointer-events:none;background:rgba(11,31,68,.94);color:#fff;border-radius:11px;padding:9px 12px;font-size:12.5px;line-height:1.45;box-shadow:0 8px 24px rgba(11,31,68,.25);opacity:0;transform:scale(.97);transition:opacity 110ms ease-out,transform 110ms ease-out;max-width:260px}
+#tip.on{opacity:1;transform:none}
+#tip b{font-weight:600} #tip .r{display:flex;justify-content:space-between;gap:14px}
+#tip i{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:6px}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(11,31,68,.28);opacity:0;pointer-events:none;transition:opacity 220ms ease-out;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:50;transform:translateX(100%);transition:transform 320ms var(--ease-drawer);overflow:auto;box-shadow:-16px 0 48px rgba(11,31,68,.16);padding:0 0 32px}
+.drawer.on{transform:none}
+.dr-head{position:sticky;top:0;z-index:2;background:rgba(244,246,251,.82);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);padding:18px 20px 12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.dr-head h2{margin:0;font-size:22px;letter-spacing:-.025em}
+.dr-body{padding:4px 20px 0;display:grid;gap:14px}
+.x{border:0;background:rgba(11,31,68,.08);width:32px;height:32px;border-radius:99px;font-size:16px;color:var(--ink2);transition:transform 160ms ease-out}
+.x:active{transform:scale(.94)}
+
+/* checks */
+.ck{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+.ck:last-child{border-bottom:0}
+.ck .ic{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:14px;font-weight:700}
+.ck .ic.w{background:var(--warn-soft);color:var(--warn)} .ck .ic.i{background:var(--blue-soft);color:var(--blue)}
+.ck p{margin:0}
+
+.empty{padding:36px 12px;text-align:center;color:var(--muted)}
+.lock{max-width:440px;margin:14vh auto;text-align:center;padding:0 20px}
+.lock h1{font-size:28px;letter-spacing:-.03em;margin:16px 0 8px}
+.skel{height:120px;border-radius:18px;background:linear-gradient(90deg,#eaeef7 25%,#f5f7fc 50%,#eaeef7 75%);background-size:200% 100%;animation:sk 1.2s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
+
+/* entrance: short stagger, always ends visible */
+.view.on .in{animation:rise 340ms var(--ease-out) both;animation-delay:calc(var(--i,0)*40ms)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:1ms!important;animation-delay:0ms!important;transition-duration:1ms!important}
+  .drawer{transition:opacity 150ms ease}
+  .drawer:not(.on){opacity:0}
+}
+@media (prefers-reduced-transparency:reduce){.top,.dr-head{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div style="max-width:1180px;margin:0 auto;padding:20px"><div class="skel"></div></div>
+</div>
+<div id="tip"></div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true"></aside>
+
+<script>
+"use strict";
+/* ---------------------------------------------------------------- config */
+const API = "https://ygnfdneroanqtedsnchs.supabase.co/functions/v1/saldo-dashboard-api";
+const PALETTE = ["#10285c","#2f5bea","#6fa8ff","#2bb3a3","#f2b04a","#8b7be8","#c9d3e8"];
+const OTHER_NAMES = new Set(["Boshqa","Noma'lum","Elyor aka","HISOBCHI"]);
+const OTHER = "Boshqalar";
+
+/* ---------------------------------------------------------------- i18n */
+const I18N = {
+  uz: {
+    title:"Saldo", tabs:["Xulosa","Prorablar","Obyektlar","Kunlar","Tekshiruv"], refresh:"Yangilash", updated:"Yangilandi",
+    d7:"7 kun", d14:"14 kun", d30:"30 kun", d90:"90 kun", allF:"Barcha prorablar", allC:"Barcha turlar", search:"Obyekt qidirish",
+    cat:{material:"Mahsulot", labor:"Ustalar", food:"Oziq-ovqat"},
+    saldo:"Saldo", cash:"Hisob-kitob uchun qo'lingizda bo'lishi kerak", R:"Haqdorlar (R)", D:"Plyusdagi obyektlar (D)", P:"Prorablar qarzi (P)",
+    kSpent:"Xarajat", kAvg:"Kuniga o'rtacha", kTop:"Eng ko'p xarajat", kIn:"Obyektlarga kirim", days:"kun",
+    chSaldo:"Saldo dinamikasi", chSaldoSub:"Har kuni 23:30 dagi hisobot", chSpend:"Kunlik xarajat", chSpendSub:"Prorablar kesimida", chCat:"Xarajat turlari", chTopObj:"Eng ko'p sarflangan obyektlar",
+    noHist:"Tarix hali yig'ilmoqda: kamida 2 kunlik hisobot kerak.", so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd",
+    kassa:"Kassa", lastRep:"Oxirgi hisobot", auto:"Avto", manual:"Qo'lda", stale:"eskirgan", noRep:"Hisobot yo'q", spentP:"Davrdagi xarajat", objs:"Obyektlar",
+    obj:"Obyekt", foreman:"Prorab", income:"Kirim", expense:"Chiqim", spentPeriod:"Davrda", all:"Hammasi", minus:"Haqdor (−)", plus:"Plyus (+)",
+    kassaHist:"Kassa tarixi", dailySpend:"Kunlik xarajat", byObj:"Obyektlar bo'yicha", byCat:"Turlar bo'yicha", incomes:"Kirimlar", none:"Ma'lumot yo'q",
+    day:"Kun", total:"Jami", detail:"Batafsil", noExp:"Bu kunda xarajat yo'q", others:"Boshqalar",
+    warn:"Diqqat", info:"Ma'lumot", allOk:"Muammo topilmadi.",
+    ck:{
+      arith:(d,f,x)=>`${f}, ${d}: ostatka ${x.ostatka} − xarajat ${x.total} = ${x.expected}, lekin kassa ${x.kassa} yozilgan. Qo'lda kiritishda xato bo'lishi mumkin.`,
+      recon:(d,f,x)=>`${f}, ${d}: qo'lda hisobotda xarajat ${x.manual}, bazada ${x.db} (farq ${x.diff}). Sabab: guruhga yozilmagan yoki boshqa obyektga.`,
+      stale:(d,f,x)=>`${f}: oxirgi hisobot ${d} da (${x.days} kun oldin).`,
+      noreport:(d,f)=>`${f}: hali birorta hisobot kelmagan.`,
+      manual_only:(d,f)=>`${f}: obyektlari yo'q, avto-hisobot tuzilmaydi. Kassa qo'lda yuboriladi.`,
+      no_foreman:(d,f,x)=>`«${x.object}» obyektiga so'nggi 30 kunda birorta prorab xarajat yozmagan.`,
+      other_author:(d,f,x)=>`${x.who} so'nggi 30 kunda ${x.total} so'm xarajat yozgan. Bu prorab hisobotlariga kirmaydi.`,
+      unparsed:(d,f,x)=>`${x.count} ta qo'lda yozilgan hisobot o'qilmadi.`
+    },
+    locked:"Kirish uchun maxsus havola kerak", lockedSub:"Havolani Elyor aka yoki botning egasidan so'rang.", loadErr:"Ma'lumotni yuklab bo'lmadi", retry:"Qayta urinish"
+  },
+  ru: {
+    title:"Сальдо", tabs:["Сводка","Прорабы","Объекты","Дни","Проверка"], refresh:"Обновить", updated:"Обновлено",
+    d7:"7 дн", d14:"14 дн", d30:"30 дн", d90:"90 дн", allF:"Все прорабы", allC:"Все виды", search:"Поиск объекта",
+    cat:{material:"Материалы", labor:"Работы", food:"Питание"},
+    saldo:"Сальдо", cash:"Чтобы всё сошлось, на руках должно быть", R:"Должны вам (R)", D:"Объекты в плюсе (D)", P:"Долг прорабов (P)",
+    kSpent:"Расходы", kAvg:"В среднем в день", kTop:"Больше всего трат", kIn:"Приход на объекты", days:"дн",
+    chSaldo:"Динамика сальдо", chSaldoSub:"Итог ежедневного отчёта в 23:30", chSpend:"Расходы по дням", chSpendSub:"В разрезе прорабов", chCat:"Виды расходов", chTopObj:"Объекты с наибольшими тратами",
+    noHist:"История ещё копится: нужно минимум 2 дня отчётов.", so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд",
+    kassa:"Касса", lastRep:"Последний отчёт", auto:"Авто", manual:"Вручную", stale:"устарел", noRep:"Нет отчёта", spentP:"Расходы за период", objs:"Объекты",
+    obj:"Объект", foreman:"Прораб", income:"Приход", expense:"Расход", spentPeriod:"За период", all:"Все", minus:"Должен (−)", plus:"Плюс (+)",
+    kassaHist:"История кассы", dailySpend:"Расходы по дням", byObj:"По объектам", byCat:"По видам", incomes:"Приходы", none:"Нет данных",
+    day:"День", total:"Итого", detail:"Подробно", noExp:"В этот день расходов нет", others:"Прочие",
+    warn:"Внимание", info:"Информация", allOk:"Проблем не найдено.",
+    ck:{
+      arith:(d,f,x)=>`${f}, ${d}: остаток ${x.ostatka} − расход ${x.total} = ${x.expected}, а касса написана ${x.kassa}. Возможна ошибка при ручном вводе.`,
+      recon:(d,f,x)=>`${f}, ${d}: в ручном отчёте расход ${x.manual}, в базе ${x.db} (разница ${x.diff}). Причина: не записано в группе или на другой объект.`,
+      stale:(d,f,x)=>`${f}: последний отчёт ${d} (${x.days} дн. назад).`,
+      noreport:(d,f)=>`${f}: ни одного отчёта ещё не было.`,
+      manual_only:(d,f)=>`${f}: нет объектов, автоотчёт не формируется. Касса вручную.`,
+      no_foreman:(d,f,x)=>`По объекту «${x.object}» за 30 дней ни один прораб не записал расходов.`,
+      other_author:(d,f,x)=>`${x.who} записал(а) за 30 дней расходов на ${x.total} сум. В отчёты прорабов они не входят.`,
+      unparsed:(d,f,x)=>`${x.count} ручных отчётов не удалось прочитать.`
+    },
+    locked:"Нужна специальная ссылка", lockedSub:"Попросите ссылку у Элёр-аки или владельца бота.", loadErr:"Не удалось загрузить данные", retry:"Повторить"
+  }
+};
+
+/* ---------------------------------------------------------------- state */
+const S = { data:null, tab:0, period:30, foreman:"all", cat:"all", q:"", lang:"uz", sortKey:"kassa", sortDir:1, key:null };
+try { const l = localStorage.getItem("saldo.lang"); if (l === "ru" || l === "uz") S.lang = l; } catch {}
+const T = () => I18N[S.lang];
+
+/* ---------------------------------------------------------------- helpers */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = n => { const r = Math.round(n); return (r<0?"−":"") + Math.abs(r).toString().replace(/\B(?=(\d{3})+(?!\d))/g," "); };
+const fmtS = n => { // short: 12,3 mln
+  const a = Math.abs(n), t = T(), sg = n<0?"−":"";
+  const f = (v,u) => sg + (Math.round(v*10)/10).toString().replace(".",",") + " " + u;
+  if (a>=1e9) return f(a/1e9,t.mlrd); if (a>=1e6) return f(a/1e6,t.mln); if (a>=1e3) return f(a/1e3,t.ming); return sg + Math.round(a);
+};
+const cls = n => n<0 ? "neg" : n>0 ? "pos" : "";
+const addDays = (d,n) => { const x = new Date(d+"T00:00:00Z"); x.setUTCDate(x.getUTCDate()+n); return x.toISOString().slice(0,10); };
+const dl = d => d.slice(8)+"."+d.slice(5,7);
+const grp = f => OTHER_NAMES.has(f) ? OTHER : f;
+const niceMax = v => { if (v<=0) return 1; const p = Math.pow(10,Math.floor(Math.log10(v))), n = v/p; return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p; };
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function range() { const t = S.data.today; return Array.from({length:S.period}, (_,i) => addDays(t, -(S.period-1-i))); }
+function expenses() {
+  const from = addDays(S.data.today, -(S.period-1)), q = S.q.trim().toLowerCase();
+  return S.data.expenses.filter(e => e.d>=from && (S.foreman==="all" || grp(e.f)===S.foreman) && (S.cat==="all" || e.c===S.cat) && (!q || e.p.toLowerCase().includes(q)));
+}
+function foremanNames() { return S.data.foremen.map(f => f.name); }
+function seriesNames() { const n = foremanNames(); return n.concat([OTHER]); }
+function colorOf(name) { const i = seriesNames().indexOf(name); return PALETTE[i<0 ? PALETTE.length-1 : Math.min(i, PALETTE.length-1)]; }
+const sum = (a, f) => a.reduce((s,x) => s + f(x), 0);
+
+/* ---------------------------------------------------------------- charts (hand-made SVG) */
+const tip = $("#tip");
+function showTip(html, x, y) {
+  tip.innerHTML = html; tip.classList.add("on");
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(Math.max(8, x + 14), innerWidth - w - 8) + "px";
+  tip.style.top = Math.min(Math.max(8, y - h - 12), innerHeight - h - 8) + "px";
+}
+const hideTip = () => tip.classList.remove("on");
+const charts = new Set();
+function mountChart(el, build) {
+  const draw = () => {
+    const W = Math.max(240, el.clientWidth), c = build(W);
+    if (!c) { el.innerHTML = `<div class="empty">${T().none}</div>`; return; }
+    el.innerHTML = c.svg;
+    const guide = el.querySelector(".guide");
+    const at = ev => {
+      const r = el.querySelector("svg").getBoundingClientRect(), px = (ev.clientX - r.left) * (W / r.width);
+      let bi = 0, bd = 1e9; c.xs.forEach((x,i) => { const d = Math.abs(x-px); if (d<bd) { bd=d; bi=i; } });
+      if (guide) { guide.setAttribute("x1", c.xs[bi]); guide.setAttribute("x2", c.xs[bi]); guide.style.opacity = 1; }
+      showTip(c.tip(bi), ev.clientX, ev.clientY);
+    };
+    el.onpointermove = at; el.onpointerdown = at;
+    el.onpointerleave = () => { hideTip(); if (guide) guide.style.opacity = 0; };
+  };
+  el._redraw = draw; charts.add(el); draw();
+}
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { charts.forEach(el => el.isConnected ? el._redraw() : charts.delete(el)); place(); }, 120); });
+
+function yAxis(W, H, pad, max, fmtY) {
+  let g = "";
+  for (let i=0;i<=4;i++) { const v = max*i/4, y = H-pad.b-(H-pad.t-pad.b)*i/4;
+    g += `<line x1="${pad.l}" x2="${W-pad.r}" y1="${y}" y2="${y}" stroke="rgba(11,31,68,.07)"/><text x="${pad.l-8}" y="${y+4}" text-anchor="end">${fmtY(v)}</text>`; }
+  return g;
+}
+function barChart(el, days, series, valueOf, opts={}) {
+  mountChart(el, W => {
+    const H = opts.h || 240, pad = {l:52,r:8,t:10,b:24};
+    const totals = days.map(d => sum(series, s => valueOf(d,s)));
+    const max = niceMax(Math.max(...totals, 1));
+    if (Math.max(...totals) <= 0) return null;
+    const iw = W-pad.l-pad.r, bw = Math.max(2, iw/days.length*0.68), xs = days.map((_,i) => pad.l + iw*(i+.5)/days.length);
+    let g = yAxis(W,H,pad,max,fmtS);
+    days.forEach((d,i) => { let y = H-pad.b;
+      series.forEach(s => { const v = valueOf(d,s); if (v<=0) return; const h = (H-pad.t-pad.b)*v/max;
+        g += `<rect x="${xs[i]-bw/2}" y="${y-h}" width="${bw}" height="${h}" rx="${Math.min(3,bw/2)}" fill="${colorOf(s)}"/>`; y -= h; }); });
+    const step = Math.ceil(days.length/Math.max(2,Math.floor(iw/58)));
+    days.forEach((d,i) => { if ((i%step===0 && days.length-1-i >= Math.ceil(step/2)) || i===days.length-1) g += `<text x="${xs[i]}" y="${H-6}" text-anchor="${i===days.length-1?"end":"middle"}">${dl(d)}</text>`; });
+    return { xs, svg:`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label||"")}">${g}<line class="guide" x1="0" x2="0" y1="${pad.t}" y2="${H-pad.b}"/></svg>`,
+      tip:i => `<b>${dl(days[i])}</b><br>` + series.filter(s => valueOf(days[i],s)>0).map(s => `<div class="r"><span><i style="background:${colorOf(s)}"></i>${esc(s)}</span><b>${fmt(valueOf(days[i],s))}</b></div>`).join("") + `<div class="r" style="margin-top:4px"><span>${T().total}</span><b>${fmt(totals[i])}</b></div>` };
+  });
+}
+function lineChart(el, pts, opts={}) { // pts: [{x:label, v:number}]
+  mountChart(el, W => {
+    if (pts.length < 2) return null;
+    const H = opts.h || 220, pad = {l:56,r:12,t:12,b:24};
+    let lo = Math.min(...pts.map(p => p.v), opts.zero ? 0 : Infinity), hi = Math.max(...pts.map(p => p.v), opts.zero ? 0 : -Infinity);
+    if (lo===hi) { lo -= 1; hi += 1; }
+    const padV = (hi-lo)*.08; lo -= padV; if (hi !== 0) hi += padV;
+    const iw = W-pad.l-pad.r, xs = pts.map((_,i) => pad.l + iw*i/(pts.length-1));
+    const Y = v => pad.t + (H-pad.t-pad.b)*(1-(v-lo)/(hi-lo));
+    let g = "";
+    for (let i=0;i<=4;i++) { const v = lo+(hi-lo)*i/4, y = Y(v); g += `<line x1="${pad.l}" x2="${W-pad.r}" y1="${y}" y2="${y}" stroke="rgba(11,31,68,.07)"/><text x="${pad.l-8}" y="${y+4}" text-anchor="end">${fmtS(v)}</text>`; }
+    if (lo<0 && hi>0) g += `<line x1="${pad.l}" x2="${W-pad.r}" y1="${Y(0)}" y2="${Y(0)}" stroke="rgba(11,31,68,.28)" stroke-dasharray="3 3"/>`;
+    const d = pts.map((p,i) => `${i?"L":"M"}${xs[i].toFixed(1)} ${Y(p.v).toFixed(1)}`).join(" ");
+    const id = "g"+Math.random().toString(36).slice(2,7), col = opts.color || "#2f5bea";
+    g += `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".22"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>`;
+    const base = H - pad.b;
+    g += `<path d="${d} L${xs[xs.length-1]} ${base} L${xs[0]} ${base} Z" fill="url(#${id})"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    g += `<circle cx="${xs[xs.length-1]}" cy="${Y(pts[pts.length-1].v)}" r="4.5" fill="#fff" stroke="${col}" stroke-width="2.2"/>`;
+    const step = Math.ceil(pts.length/Math.max(2,Math.floor(iw/58)));
+    pts.forEach((p,i) => { if ((i%step===0 && pts.length-1-i >= Math.ceil(step/2)) || i===pts.length-1) g += `<text x="${xs[i]}" y="${H-6}" text-anchor="${i===0?"start":i===pts.length-1?"end":"middle"}">${dl(p.x)}</text>`; });
+    return { xs, svg:`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label||"")}">${g}<line class="guide" x1="0" x2="0" y1="${pad.t}" y2="${H-pad.b}"/></svg>`,
+      tip:i => `<b>${dl(pts[i].x)}</b><div class="r"><span>${esc(opts.name||"")}</span><b>${fmt(pts[i].v)}</b></div>` };
+  });
+}
+function spark(vals, color) {
+  if (vals.length < 2) return `<svg viewBox="0 0 100 28" width="100%" height="28"></svg>`;
+  const lo = Math.min(...vals), hi = Math.max(...vals), r = hi-lo || 1;
+  const p = vals.map((v,i) => `${(i/(vals.length-1)*100).toFixed(1)} ${(24-(v-lo)/r*20).toFixed(1)}`);
+  return `<svg viewBox="0 0 100 28" width="100%" height="28" preserveAspectRatio="none"><path d="M${p.join(" L")}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function donut(parts) { // [{label,value,color}]
+  const tot = sum(parts, p => p.value); if (tot<=0) return `<div class="empty">${T().none}</div>`;
+  let a0 = -Math.PI/2, g = ""; const R = 62, r = 42, cx = 74, cy = 74;
+  parts.filter(p => p.value>0).forEach(p => { const a1 = a0 + p.value/tot*Math.PI*2, big = a1-a0>Math.PI?1:0;
+    const pt = (R_,a) => `${(cx+R_*Math.cos(a)).toFixed(2)} ${(cy+R_*Math.sin(a)).toFixed(2)}`;
+    const full = p.value/tot > .9999;
+    g += full ? `<circle cx="${cx}" cy="${cy}" r="${(R+r)/2}" fill="none" stroke="${p.color}" stroke-width="${R-r}"/>`
+      : `<path d="M${pt(R,a0)} A${R} ${R} 0 ${big} 1 ${pt(R,a1)} L${pt(r,a1)} A${r} ${r} 0 ${big} 0 ${pt(r,a0)} Z" fill="${p.color}"/>`; a0 = a1; });
+  return `<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 148 148" width="148" height="148" role="img">${g}<text x="74" y="72" text-anchor="middle" style="font:650 13px var(--font);fill:var(--ink)">${fmtS(tot)}</text><text x="74" y="88" text-anchor="middle">${T().so}</text></svg>
+    <div style="display:grid;gap:8px;flex:1;min-width:150px">${parts.map(p => `<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px"><span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${p.color};margin-right:7px"></i>${esc(p.label)}</span><b class="num">${fmtS(p.value)} <span class="mut" style="font-weight:400">${Math.round(p.value/tot*100)}%</span></b></div>`).join("")}</div></div>`;
+}
+function legend(names) { return `<div class="legend">${names.map(n => `<span style="--c:${colorOf(n)}">${esc(n)}</span>`).join("")}</div>`; }
+
+/* ---------------------------------------------------------------- views */
+const stag = (i) => `class="in" style="--i:${i}"`;
+function catParts(rows) { const t = T(); return ["material","labor","food"].map((c,i) => ({ label:t.cat[c], value:sum(rows.filter(r => r.c===c), r => r.t), color:["#10285c","#2f5bea","#f2b04a"][i] })); }
+
+function viewSummary() {
+  const t = T(), d = S.data, tot = d.totals, rows = expenses(), days = range();
+  const spent = sum(rows, r => r.t), avg = spent / S.period;
+  const byObj = {}; rows.forEach(r => byObj[r.p] = (byObj[r.p]||0) + r.t);
+  const top = Object.entries(byObj).sort((a,b) => b[1]-a[1]);
+  const inc = sum(d.income.filter(i => i.d >= days[0]), i => i.t);
+  const names = seriesNames();
+  return `
+  <div class="grid" style="gap:16px">
+    <section class="card hero in" style="--i:0">
+      <div class="lbl">${t.saldo} · R − D − P</div>
+      <div class="big num" id="heroNum" data-v="${tot.saldo}">${fmt(tot.saldo)}</div>
+      <div class="cash">${t.cash}: <b class="num">${fmt(-tot.saldo)} ${t.so}</b></div>
+      <div class="formula">
+        <div class="chip">${t.R}<b class="num">${fmtS(tot.R)}</b></div><span class="op">−</span>
+        <div class="chip">${t.D}<b class="num">${fmtS(tot.D)}</b></div><span class="op">−</span>
+        <div class="chip">${t.P}<b class="num">${fmtS(tot.P)}</b></div>
+      </div>
+    </section>
+    <div class="grid g4">
+      <div class="card in" style="--i:1"><div class="lbl">${t.kSpent}</div><div class="kpi num">${fmtS(spent)}<small>${S.period} ${t.days}</small></div></div>
+      <div class="card in" style="--i:2"><div class="lbl">${t.kAvg}</div><div class="kpi num">${fmtS(avg)}</div></div>
+      <div class="card in" style="--i:3"><div class="lbl">${t.kTop}</div><div class="kpi" style="font-size:19px;padding-top:5px">${top[0] ? esc(top[0][0]) : "—"}</div><div class="mut s num">${top[0] ? fmtS(top[0][1]) : ""}</div></div>
+      <div class="card in" style="--i:4"><div class="lbl">${t.kIn}</div><div class="kpi num">${fmtS(inc)}<small>${S.period} ${t.days}</small></div></div>
+    </div>
+    <section class="card in" style="--i:5"><h3>${t.chSaldo}</h3><p class="sub">${t.chSaldoSub}</p><div class="chart" id="cSaldo"></div></section>
+    <section class="card in" style="--i:6"><h3>${t.chSpend}</h3><p class="sub">${t.chSpendSub}</p><div class="chart" id="cSpend"></div>${legend(names)}</section>
+    <div class="grid g2">
+      <section class="card in" style="--i:7"><h3>${t.chCat}</h3><p class="sub">${S.period} ${t.days}</p>${donut(catParts(rows))}</section>
+      <section class="card in" style="--i:8"><h3>${t.chTopObj}</h3><p class="sub">${S.period} ${t.days}</p>
+        ${top.length ? `<div style="display:grid;gap:11px">${top.slice(0,6).map(([n,v]) => `<div><div style="display:flex;justify-content:space-between;gap:8px;font-size:14px"><span class="name">${esc(n)}</span><b class="num">${fmtS(v)}</b></div><div class="bar" style="margin-top:5px"><i style="left:0;width:${(v/top[0][1]*100).toFixed(1)}%;background:var(--navy)"></i></div></div>`).join("")}</div>` : `<div class="empty">${t.none}</div>`}
+      </section>
+    </div>
+  </div>`;
+}
+function afterSummary() {
+  const d = S.data, days = range(), rows = expenses(), names = seriesNames();
+  const m = {}; rows.forEach(r => { const k = r.d+"|"+grp(r.f); m[k] = (m[k]||0) + r.t; });
+  barChart($("#cSpend"), days, names, (day,s) => m[day+"|"+s] || 0, { label:T().chSpend });
+  lineChart($("#cSaldo"), d.saldoHistory.map(h => ({x:h.d, v:h.saldo})), { name:T().saldo, color:"#10285c", label:T().chSaldo, zero:true });
+  const el = $("#heroNum");
+  if (el && !reduceMotion && !el._done) { el._done = 1; const to = +el.dataset.v, t0 = performance.now();
+    const step = now => { const p = Math.min(1, (now-t0)/520), e = 1-Math.pow(1-p,3); el.textContent = fmt(to*e); if (p<1) requestAnimationFrame(step); else el.textContent = fmt(to); };
+    requestAnimationFrame(step); }
+}
+
+function viewForemen() {
+  const t = T(), d = S.data, days = range(), from = days[0];
+  const list = d.foremen.filter(f => S.foreman==="all" || f.name===S.foreman);
+  if (!list.length) return `<div class="empty">${t.none}</div>`;
+  return `<div class="grid gf">${list.map((f,i) => {
+    const spent = sum(d.expenses.filter(e => e.f===f.name && e.d>=from && (S.cat==="all"||e.c===S.cat)), e => e.t);
+    const stale = f.at && (Date.parse(d.today) - Date.parse(f.at.slice(0,10))) / 86400000 >= 2;
+    return `<div class="card fc in" role="button" tabindex="0" style="--i:${i}" data-foreman="${esc(f.name)}">
+      <div class="fc-top"><div><div class="fc-name">${esc(f.name)}</div><div class="mut s">${f.at ? t.lastRep+": "+dl(f.at.slice(0,10)) : t.noRep}</div></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end">${f.source ? `<span class="badge b-blue">${f.source==="auto"?t.auto:t.manual}</span>` : ""}${stale ? `<span class="badge b-warn">${t.stale}</span>` : ""}</div></div>
+      <div class="lbl" style="margin-top:14px">${t.kassa}</div>
+      <div class="kpi num ${cls(f.kassa||0)}">${f.kassa===null ? "—" : fmt(f.kassa)}<small>${t.so}</small></div>
+      <div style="margin:8px 0 2px">${spark(f.history.map(h => h.kassa), "#2f5bea")}</div>
+      <div class="mut s" style="display:flex;justify-content:space-between"><span>${t.spentP}</span><b class="num" style="color:var(--ink)">${fmtS(spent)}</b></div>
+      <div class="chips">${f.objects.slice(0,5).map(o => `<span class="oc">${esc(o)}</span>`).join("")}${f.objects.length>5 ? `<span class="oc">+${f.objects.length-5}</span>` : ""}</div>
+    </div>`; }).join("")}</div>`;
+}
+
+function objectRows() {
+  const d = S.data, days = range(), q = S.q.trim().toLowerCase();
+  const spentBy = {}; d.expenses.filter(e => e.d>=days[0] && (S.cat==="all"||e.c===S.cat)).forEach(e => spentBy[e.p] = (spentBy[e.p]||0) + e.t);
+  return d.objects
+    .filter(o => (S.foreman==="all" || o.foreman===S.foreman) && (!q || o.name.toLowerCase().includes(q)) && (S.sideFilter==="minus" ? o.kassa<0 : S.sideFilter==="plus" ? o.kassa>0 : true))
+    .map(o => ({...o, spent: spentBy[o.name]||0}));
+}
+function viewObjects() {
+  const t = T(); let rows = objectRows();
+  const k = S.sortKey, dir = S.sortDir;
+  rows.sort((a,b) => (typeof a[k]==="string" ? (a[k]||"").localeCompare(b[k]||"") : (a[k]-b[k])) * dir);
+  const maxAbs = Math.max(...rows.map(r => Math.abs(r.kassa)), 1);
+  const th = (key,label,r) => `<th class="sort ${r?"r":""}" data-sort="${key}">${label}${S.sortKey===key ? (S.sortDir>0?" ↑":" ↓") : ""}</th>`;
+  return `<section class="card in" style="--i:0;padding:8px 8px 4px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 12px 8px"><h3 style="margin:0;flex:1">${t.objs} <span class="mut" style="font-weight:400">· ${rows.length}</span></h3>
+      <div class="seg" id="sideSeg">${["all","minus","plus"].map(k => `<button data-side="${k}" aria-pressed="${(S.sideFilter||"all")===k}">${k==="all"?t.all:k==="minus"?t.minus:t.plus}</button>`).join("")}</div></div>
+    <div class="scroll"><table class="tbl"><thead><tr>${th("name",t.obj)}${th("foreman",t.foreman)}${th("income",t.income,1)}${th("expense",t.expense,1)}${th("kassa",t.kassa,1)}<th style="width:140px"></th>${th("spent",t.spentPeriod,1)}</tr></thead>
+    <tbody>${rows.map(o => `<tr class="click" data-object="${esc(o.name)}"><td class="name">${esc(o.name)}${o.status!=="active" ? ` <span class="badge b-warn">${esc(o.status)}</span>` : ""}</td><td class="mut">${o.foreman ? esc(o.foreman) : "—"}</td>
+      <td class="r num">${fmt(o.income)}</td><td class="r num">${fmt(o.expense)}</td><td class="r num ${cls(o.kassa)}"><b>${fmt(o.kassa)}</b></td>
+      <td><div class="bar"><i style="${o.kassa<0 ? "right:50%" : "left:50%"};width:${(Math.abs(o.kassa)/maxAbs*50).toFixed(1)}%;background:${o.kassa<0 ? "var(--neg)" : "var(--pos)"}"></i><i style="left:50%;width:1px;background:var(--line2)"></i></div></td>
+      <td class="r num">${fmt(o.spent)}</td></tr>`).join("") || `<tr><td colspan="7" class="empty">${t.none}</td></tr>`}</tbody></table></div></section>`;
+}
+
+function viewDays() {
+  const t = T(), rows = expenses(), days = range().slice().reverse(), names = seriesNames();
+  const m = {}; rows.forEach(r => { const k = r.d+"|"+grp(r.f); m[k] = (m[k]||0) + r.t; });
+  const max = Math.max(...Object.values(m), 1);
+  const colTot = n => sum(days, d => m[d+"|"+n]||0);
+  return `<section class="card in" style="--i:0;padding:8px 8px 4px"><div style="padding:12px 12px 8px"><h3 style="margin:0">${t.chSpend}</h3><p class="sub" style="margin:2px 0 0">${t.detail}: ${S.lang==="ru"?"нажмите на ячейку":"katakchani bosing"}</p></div>
+    <div class="scroll" style="max-height:70vh"><table class="tbl"><thead><tr><th>${t.day}</th>${names.map(n => `<th class="r">${esc(n)}</th>`).join("")}<th class="r">${t.total}</th></tr></thead>
+    <tbody>${days.map(day => { const tot = sum(names, n => m[day+"|"+n]||0);
+      return `<tr><td class="name">${dl(day)}</td>${names.map(n => { const v = m[day+"|"+n]||0; return `<td class="r num ${v?"click":""}" ${v?`data-day="${day}" data-who="${esc(n)}" style="cursor:pointer;background:rgba(47,91,234,${(v/max*.16).toFixed(3)})"`:`style="color:var(--line2)"`}>${v ? fmt(v) : "·"}</td>`; }).join("")}<td class="r num"><b>${tot ? fmt(tot) : "·"}</b></td></tr>`; }).join("")}</tbody>
+    <tfoot><tr><td class="name" style="border-top:1px solid var(--line2)">${t.total}</td>${names.map(n => `<td class="r num" style="border-top:1px solid var(--line2)"><b>${fmt(colTot(n))}</b></td>`).join("")}<td class="r num" style="border-top:1px solid var(--line2)"><b>${fmt(sum(names, colTot))}</b></td></tr></tfoot></table></div></section>`;
+}
+
+function viewChecks() {
+  const t = T(), cs = S.data.checks.filter(c => S.foreman==="all" || c.foreman===S.foreman || !c.foreman);
+  const order = { warn:0, info:1 };
+  const list = cs.slice().sort((a,b) => order[a.level]-order[b.level] || (b.date||"").localeCompare(a.date||""));
+  if (!list.length) return `<section class="card in"><div class="empty">✓ ${t.allOk}</div></section>`;
+  const money = o => { const r = {}; for (const [k,v] of Object.entries(o)) r[k] = typeof v==="number" && !["days","count"].includes(k) ? fmt(v) : v; return r; };
+  return `<section class="card in" style="--i:0"><h3>${t.tabs[4]} <span class="mut" style="font-weight:400">· ${list.length}</span></h3><div style="margin-top:6px">${list.map(c => {
+    let x = {}; try { x = money(JSON.parse(c.detail)); } catch {}
+    const txt = (t.ck[c.kind] || (() => c.title))(c.date ? dl(c.date) : "", c.foreman || "", x);
+    return `<div class="ck"><div class="ic ${c.level==="warn"?"w":"i"}">${c.level==="warn"?"!":"i"}</div><p>${esc(txt)}</p></div>`; }).join("")}</div></section>`;
+}
+
+/* ---------------------------------------------------------------- drawer */
+const drawer = $("#drawer"), scrim = $("#scrim");
+let lastFocus = null;
+function openDrawer(html, after) {
+  lastFocus = document.activeElement; drawer.innerHTML = html; drawer.classList.add("on"); scrim.classList.add("on"); drawer.setAttribute("aria-hidden","false");
+  drawer.scrollTop = 0; $(".x", drawer).addEventListener("click", closeDrawer); $(".x", drawer).focus({preventScroll:true}); if (after) after();
+}
+function closeDrawer() { drawer.classList.remove("on"); scrim.classList.remove("on"); drawer.setAttribute("aria-hidden","true"); hideTip(); if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true}); }
+scrim.addEventListener("click", closeDrawer);
+addEventListener("keydown", e => { if (e.key==="Escape" && drawer.classList.contains("on")) closeDrawer();
+  if ((e.key==="Enter" || e.key===" ") && e.target.matches && e.target.matches("[data-foreman]")) { e.preventDefault(); drawerForeman(e.target.dataset.foreman); } });
+const head = (title, sub) => `<div class="dr-head"><div><h2>${esc(title)}</h2>${sub ? `<div class="mut s">${sub}</div>` : ""}</div><button class="x" aria-label="Close">✕</button></div>`;
+
+function drawerForeman(name) {
+  const t = T(), d = S.data, f = d.foremen.find(x => x.name===name); if (!f) return;
+  const days = range(), rows = d.expenses.filter(e => e.f===name && e.d>=days[0] && (S.cat==="all"||e.c===S.cat));
+  const byObj = {}; rows.forEach(r => byObj[r.p] = (byObj[r.p]||0) + r.t);
+  const list = Object.entries(byObj).sort((a,b) => b[1]-a[1]), tot = sum(rows, r => r.t);
+  const cks = d.checks.filter(c => c.foreman===name && c.level==="warn").slice(0,6);
+  openDrawer(head(name, f.at ? `${t.lastRep}: ${dl(f.at.slice(0,10))} · ${f.source==="auto"?t.auto:t.manual}` : t.noRep) + `<div class="dr-body">
+    <div class="grid g2"><div class="card"><div class="lbl">${t.kassa}</div><div class="kpi num ${cls(f.kassa||0)}">${f.kassa===null?"—":fmt(f.kassa)}</div></div>
+    <div class="card"><div class="lbl">${t.spentP}</div><div class="kpi num">${fmtS(tot)}<small>${S.period} ${t.days}</small></div></div></div>
+    <div class="card"><h3>${t.kassaHist}</h3><div class="chart" id="dHist" style="margin-top:8px"></div></div>
+    <div class="card"><h3>${t.dailySpend}</h3><div class="chart" id="dDaily" style="margin-top:8px"></div></div>
+    <div class="card"><h3>${t.byObj}</h3>${list.length ? `<table class="tbl"><tbody>${list.map(([n,v]) => `<tr><td class="name">${esc(n)}</td><td class="r num">${fmt(v)}</td><td class="r mut num">${Math.round(v/tot*100)}%</td></tr>`).join("")}</tbody></table>` : `<div class="empty">${t.none}</div>`}</div>
+    ${cks.length ? `<div class="card"><h3>${t.warn}</h3>${cks.map(c => { let x={}; try{x=JSON.parse(c.detail)}catch{} for (const k in x) if (typeof x[k]==="number" && !["days","count"].includes(k)) x[k]=fmt(x[k]); return `<div class="ck"><div class="ic w">!</div><p>${esc((t.ck[c.kind]||(()=>c.title))(c.date?dl(c.date):"",c.foreman||"",x))}</p></div>`; }).join("")}</div>` : ""}
+  </div>`, () => {
+    lineChart($("#dHist"), f.history.map(h => ({x:h.d, v:h.kassa})), { name:t.kassa, color:"#10285c", h:190 });
+    const m = {}; rows.forEach(r => m[r.d] = (m[r.d]||0) + r.t);
+    barChart($("#dDaily"), days, [name], (day) => m[day]||0, { h:190 });
+  });
+}
+function drawerObject(name) {
+  const t = T(), d = S.data, o = d.objects.find(x => x.name===name); if (!o) return;
+  const days = range(), rows = d.expenses.filter(e => e.p===name && e.d>=days[0]);
+  const byCat = catParts(rows), byF = {}; rows.forEach(r => byF[grp(r.f)] = (byF[grp(r.f)]||0) + r.t);
+  const incs = d.income.filter(i => i.p===name && i.d>=days[0]).sort((a,b) => b.d.localeCompare(a.d));
+  openDrawer(head(name, o.foreman ? `${t.foreman}: ${esc(o.foreman)}` : "") + `<div class="dr-body">
+    <div class="grid g3"><div class="card"><div class="lbl">${t.income}</div><div class="kpi num" style="font-size:20px">${fmtS(o.income)}</div></div>
+    <div class="card"><div class="lbl">${t.expense}</div><div class="kpi num" style="font-size:20px">${fmtS(o.expense)}</div></div>
+    <div class="card"><div class="lbl">${t.kassa}</div><div class="kpi num ${cls(o.kassa)}" style="font-size:20px">${fmtS(o.kassa)}</div></div></div>
+    <div class="card"><h3>${t.dailySpend}</h3><div class="chart" id="dDaily" style="margin-top:8px"></div>${legend(Object.keys(byF))}</div>
+    <div class="card"><h3>${t.byCat}</h3>${donut(byCat)}</div>
+    <div class="card"><h3>${t.incomes}</h3>${incs.length ? `<table class="tbl"><tbody>${incs.map(i => `<tr><td>${dl(i.d)}</td><td class="r num pos">+${fmt(i.t)}</td></tr>`).join("")}</tbody></table>` : `<div class="empty">${t.none}</div>`}</div>
+  </div>`, () => {
+    const m = {}; rows.forEach(r => m[r.d+"|"+grp(r.f)] = (m[r.d+"|"+grp(r.f)]||0) + r.t);
+    barChart($("#dDaily"), days, Object.keys(byF), (day,s) => m[day+"|"+s]||0, { h:190 });
+  });
+}
+function drawerCell(day, who) {
+  const t = T(), rows = S.data.expenses.filter(e => e.d===day && grp(e.f)===who && (S.cat==="all"||e.c===S.cat));
+  const byP = {}; rows.forEach(r => { const o = byP[r.p] || (byP[r.p] = {material:0,labor:0,food:0,total:0}); o[r.c] += r.t; o.total += r.t; });
+  const list = Object.entries(byP).sort((a,b) => b[1].total-a[1].total), tot = sum(rows, r => r.t);
+  openDrawer(head(`${who} · ${dl(day)}`, `${t.total}: ${fmt(tot)} ${t.so}`) + `<div class="dr-body"><div class="card">${list.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>${t.obj}</th><th class="r">${t.cat.material}</th><th class="r">${t.cat.labor}</th><th class="r">${t.cat.food}</th><th class="r">${t.total}</th></tr></thead><tbody>${list.map(([p,o]) => `<tr><td class="name">${esc(p)}</td><td class="r num">${o.material?fmt(o.material):"·"}</td><td class="r num">${o.labor?fmt(o.labor):"·"}</td><td class="r num">${o.food?fmt(o.food):"·"}</td><td class="r num"><b>${fmt(o.total)}</b></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t.noExp}</div>`}</div></div>`);
+}
+
+/* ---------------------------------------------------------------- shell */
+const VIEWS = [viewSummary, viewForemen, viewObjects, viewDays, viewChecks];
+function shell() {
+  const t = T(), d = S.data;
+  $("#app").innerHTML = `
+  <header class="top"><div class="top-in">
+    <div class="brand"><i>S</i>${t.title}</div>
+    <nav class="tabs" role="tablist" id="tabs"><span class="thumb" id="thumb"></span>${t.tabs.map((n,i) => `<button class="tab" role="tab" aria-selected="${i===S.tab}" data-tab="${i}">${n}</button>`).join("")}</nav>
+    <span class="spacer"></span>
+    <span class="stamp" id="stamp"></span>
+    <button class="pill-btn" id="lang">${S.lang==="uz"?"RU":"UZ"}</button>
+    <button class="pill-btn" id="refresh">${t.refresh}</button>
+  </div></header>
+  <div class="filters" id="filters"></div>
+  <main id="main">${VIEWS.map((_,i) => `<div class="view ${i===S.tab?"on":""}" id="v${i}"></div>`).join("")}</main>`;
+  filters(); render(); place();
+  const upd = new Date(d.generatedAt); $("#stamp").textContent = `${t.updated}: ${upd.toLocaleTimeString(S.lang==="ru"?"ru-RU":"uz-UZ",{hour:"2-digit",minute:"2-digit"})}`;
+}
+function filters() {
+  const t = T(), noSearch = S.tab===3 || S.tab===4 || S.tab===1;
+  $("#filters").innerHTML = `
+    <div class="seg" id="perSeg">${[7,14,30,90].map(n => `<button data-per="${n}" aria-pressed="${S.period===n}">${t["d"+n]}</button>`).join("")}</div>
+    <select class="field" id="selF" aria-label="${t.foreman}"><option value="all">${t.allF}</option>${foremanNames().map(n => `<option ${S.foreman===n?"selected":""}>${esc(n)}</option>`).join("")}${S.tab===3 || S.tab===0 ? `<option ${S.foreman===OTHER?"selected":""}>${OTHER}</option>` : ""}</select>
+    <select class="field" id="selC" aria-label="type"><option value="all">${t.allC}</option>${["material","labor","food"].map(c => `<option value="${c}" ${S.cat===c?"selected":""}>${t.cat[c]}</option>`).join("")}</select>
+    ${S.tab===2 || S.tab===0 ? `<input class="field" id="q" type="search" placeholder="${t.search}" value="${esc(S.q)}">` : ""}`;
+}
+function render() {
+  const el = $("#v"+S.tab); el.innerHTML = VIEWS[S.tab]();
+  charts.forEach(c => c.isConnected || charts.delete(c));
+  if (S.tab===0) afterSummary();
+}
+function place() { const b = $(`.tab[data-tab="${S.tab}"]`), th = $("#thumb"); if (b && th) { th.style.width = b.offsetWidth+"px"; th.style.transform = `translateX(${b.offsetLeft}px)`; } }
+function go(i) { S.tab = i; document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", +b.dataset.tab===i)); document.querySelectorAll(".view").forEach((v,k) => v.classList.toggle("on", k===i)); hideTip(); filters(); render(); place(); }
+
+document.addEventListener("click", e => {
+  const tab = e.target.closest("[data-tab]"); if (tab) return go(+tab.dataset.tab);
+  const per = e.target.closest("[data-per]"); if (per) { S.period = +per.dataset.per; filters(); render(); return; }
+  const side = e.target.closest("[data-side]"); if (side) { S.sideFilter = side.dataset.side; render(); return; }
+  const so = e.target.closest("[data-sort]"); if (so) { const k = so.dataset.sort; S.sortDir = S.sortKey===k ? -S.sortDir : 1; S.sortKey = k; render(); return; }
+  const fc = e.target.closest("[data-foreman]"); if (fc) return drawerForeman(fc.dataset.foreman);
+  const ob = e.target.closest("[data-object]"); if (ob) return drawerObject(ob.dataset.object);
+  const cell = e.target.closest("[data-day]"); if (cell) return drawerCell(cell.dataset.day, cell.dataset.who);
+  if (e.target.closest("#lang")) { S.lang = S.lang==="uz" ? "ru" : "uz"; try { localStorage.setItem("saldo.lang", S.lang); } catch {} document.documentElement.lang = S.lang; return shell(); }
+  if (e.target.closest("#refresh")) return load(true);
+});
+document.addEventListener("change", e => {
+  if (e.target.id==="selF") { S.foreman = e.target.value; render(); }
+  if (e.target.id==="selC") { S.cat = e.target.value; render(); }
+});
+document.addEventListener("input", e => { if (e.target.id==="q") { S.q = e.target.value; const pos = e.target.selectionStart; render(); const q = $("#q"); if (q) { q.focus(); q.setSelectionRange(pos,pos); } } });
+
+/* ---------------------------------------------------------------- data */
+function lockScreen(msg, sub, retry) {
+  $("#app").innerHTML = `<div class="lock"><div class="brand" style="justify-content:center"><i>S</i>${T().title}</div><h1>${msg}</h1><p class="mut">${sub}</p>${retry ? `<button class="pill-btn" id="retry" style="margin-top:12px">${T().retry}</button>` : ""}</div>`;
+  const b = $("#retry"); if (b) b.onclick = () => load();
+}
+async function load(keep) {
+  const btn = $("#refresh"); if (btn) btn.disabled = true;
+  try {
+    const res = await fetch(`${API}?k=${encodeURIComponent(S.key)}`, { cache:"no-store" });
+    if (res.status===401) { try { localStorage.removeItem("saldo.k"); } catch {} return lockScreen(T().locked, T().lockedSub); }
+    if (!res.ok) throw new Error(res.status);
+    S.data = await res.json();
+    if (!S.foreman || (S.foreman!=="all" && S.foreman!==OTHER && !foremanNames().includes(S.foreman))) S.foreman = "all";
+    shell();
+    const op = S.openParam;
+    if (op && !S.opened) { S.opened = 1; const [kind, a, b] = decodeURIComponent(op).split(":"); if (kind==="f") drawerForeman(a); else if (kind==="o") drawerObject(a); else if (kind==="c") drawerCell(a, b); }
+  } catch (err) { if (!S.data) lockScreen(T().loadErr, String(err.message||err), true); else if (btn) btn.disabled = false; }
+}
+(function boot() {
+  document.documentElement.lang = S.lang;
+  const m = location.hash.match(/k=([^&]+)/), tb = location.hash.match(/tab=(\d)/);
+  if (tb && +tb[1] < 5) S.tab = +tb[1];
+  S.openParam = (location.hash.match(/open=([^&]+)/) || [])[1];
+  try { if (m) { localStorage.setItem("saldo.k", decodeURIComponent(m[1])); history.replaceState(null, "", location.pathname + location.search); } S.key = localStorage.getItem("saldo.k"); } catch { S.key = m ? decodeURIComponent(m[1]) : null; }
+  if (!S.key) return lockScreen(T().locked, T().lockedSub);
+  load();
+  setInterval(() => { if (!document.hidden && S.data && !drawer.classList.contains("on")) load(); }, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
