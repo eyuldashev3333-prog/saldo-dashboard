@@ -317,6 +317,7 @@ body{background:radial-gradient(1100px 620px at 88% -8%,#d6e6ff 0%,rgba(214,230,
 @media (max-width:420px){.grid4{grid-template-columns:minmax(0,1fr)}.stat .v{font-size:26px}}
 .ni .sh{display:none}
 @media (max-width:900px){.ni .lg{display:none}.ni .sh{display:inline}}
+.diag{margin:14px 0 0;text-align:left;background:var(--soft2);border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.5;white-space:pre-wrap;word-break:break-all;color:var(--ink2);font-family:ui-monospace,Consolas,monospace}
 </style>
 </head>
 <body>
@@ -373,7 +374,7 @@ const I18N = {
     },
     pinTitle:"Tizimga kirish", pinLabel:"Kod", pinBtn:"Kirish", pinWrong:"Kod noto'g'ri. Qolgan urinishlar: ", pinLocked:"Juda ko'p urinish. 15 daqiqadan keyin qayta urinib ko'ring.", pinNet:"Ulanib bo'lmadi, qayta urinib ko'ring.",
     rowsT:"Yozuvlar", expRows:"Xarajat yozuvlari", incRows:"Kirim yozuvlari", howK:"Kassa qanday hosil bo'ldi", howKn:"Har bir qator: hisobot vaqtidagi kassa. Tanlasangiz, asl xabar ochiladi.", orig:"Asl xabar", loading:"Yuklanmoqda…", noRows:"Yozuvlar yo'q", shown:"Ko'rsatilgan", opening:"Oldingi kassa", spentK:"Xarajat", seeRows:"Yozuvlarni ko'rish", forbidden:"Ruxsat yo'q", forbiddenSub:"Sizga kirish ruxsat etilmagan. Telegram ID: ", tgOpen:"Telegram orqali oching", tgOpenSub:"Bu tizim Telegram-bot ichida ishlaydi. Botni oching va «Ochish» tugmasini bosing.", toBot:"Botga o'tish",
-    locked:"Kirish uchun maxsus havola kerak", lockedSub:"Havolani Elyor aka yoki bot egasidan so'rang.", loadErr:"Ma'lumotni yuklab bo'lmadi", retry:"Qayta urinish", d7:"7 kun", d14:"14 kun", d30:"30 kun"
+    diagHint:"Skrinshotni yuboring, sababini topamiz.", locked:"Kirish uchun maxsus havola kerak", lockedSub:"Havolani Elyor aka yoki bot egasidan so'rang.", loadErr:"Ma'lumotni yuklab bo'lmadi", retry:"Qayta urinish", d7:"7 kun", d14:"14 kun", d30:"30 kun"
   },
   ru: {
     brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"], navS:["Панель","Финансы","Прорабы","Объекты","Расходы"],
@@ -400,7 +401,7 @@ const I18N = {
     },
     pinTitle:"Вход в систему", pinLabel:"Код", pinBtn:"Войти", pinWrong:"Неверный код. Осталось попыток: ", pinLocked:"Слишком много попыток. Повторите через 15 минут.", pinNet:"Не удалось подключиться, повторите.",
     rowsT:"Записи", expRows:"Записи расходов", incRows:"Записи прихода", howK:"Как сложилась касса", howKn:"Каждая строка: касса на момент отчёта. Нажмите, чтобы увидеть исходное сообщение.", orig:"Исходное сообщение", loading:"Загрузка…", noRows:"Записей нет", shown:"Показано", opening:"Прошлая касса", spentK:"Расход", seeRows:"Смотреть записи", forbidden:"Нет доступа", forbiddenSub:"Вам не разрешён вход. Ваш Telegram ID: ", tgOpen:"Откройте через Telegram", tgOpenSub:"Эта система работает внутри Telegram-бота. Откройте бота и нажмите «Открыть».", toBot:"Перейти к боту",
-    locked:"Нужна специальная ссылка", lockedSub:"Попросите ссылку у Элёр-аки или владельца бота.", loadErr:"Не удалось загрузить данные", retry:"Повторить", d7:"7 дней", d14:"14 дней", d30:"30 дней"
+    diagHint:"Отправьте скриншот, мы найдём причину.", locked:"Нужна специальная ссылка", lockedSub:"Попросите ссылку у Элёр-аки или владельца бота.", loadErr:"Не удалось загрузить данные", retry:"Повторить", d7:"7 дней", d14:"14 дней", d30:"30 дней"
   }
 };
 const TG = window.Telegram && window.Telegram.WebApp;
@@ -695,6 +696,7 @@ function shell() {
    </aside>
    <main id="main"></main></div>`;
   render();
+  S.shown = true;
 }
 function countUp() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -735,6 +737,7 @@ function apiFetch(query) {
   return fetch(API + (qs ? "?" + qs : ""), { cache:"no-store", headers:h });
 }
 function gate2(msg, sub, extra) {
+  S.gated = true;
   $("#app").innerHTML = `<div class="gate"><div class="box"><div class="bl"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${T().brand}</small></div></div><div class="cardx"><h1>${msg}</h1><p class="mut" style="margin:0">${sub}</p>${extra||""}</div></div></div>`;
 }
 const tz = iso => { const d = new Date(new Date(iso).getTime() + 5*3600e3).toISOString(); return { d:d.slice(0,10), h:d.slice(11,16) }; };
@@ -783,6 +786,15 @@ function openRows(d) {
 }
 const rowsBtn = (label, attrs) => `<button class="link" data-rows="${attrs.rows}" ${Object.entries(attrs).filter(([k]) => k !== "rows").map(([k,v]) => `data-${k}="${esc(v)}"`).join(" ")}>${label} <span aria-hidden="true">›</span></button>`;
 
+function diagBox(extra) {
+  const u = TG && TG.initDataUnsafe && TG.initDataUnsafe.user;
+  const rows = [["telegram", TG ? "yes" : "no"], ["platform", TG && TG.platform], ["version", TG && TG.version], ["initData length", TG_DATA.length], ["user id", u && u.id], ["language", navigator.language], ["page", location.host], ["ua", navigator.userAgent.slice(0, 80)], extra ? ["error", extra] : null].filter(Boolean);
+  return `<pre class="diag">${rows.map(r => r[0] + ": " + esc(String(r[1]))).join("\n")}</pre><button class="btn" data-act="refresh" style="margin-top:12px;width:100%">${T().retry}</button>`;
+}
+function fail(msg) { gate2(T().loadErr, T().diagHint, diagBox(msg)); }
+addEventListener("error", e => { if (!S.shown) fail((e.message || "error") + (e.lineno ? " @" + e.lineno : "")); });
+addEventListener("unhandledrejection", e => { if (!S.shown) fail(String(e.reason && e.reason.message || e.reason)); });
+setTimeout(() => { if (!S.shown && !S.gated) fail("timeout: nothing rendered after 9 s"); }, 9000);
 function notTelegram() { gate2(T().tgOpen, T().tgOpenSub, `<a class="btn" style="display:block;margin-top:16px;text-decoration:none;text-align:center" href="https://t.me/saldoarthouseaibot">${T().toBot}</a>`); }
 
 /* ------------------------------------------------ data */
@@ -792,14 +804,14 @@ async function load() {
   try {
     const res = await apiFetch("");
     if (res.status===403) { const j = await res.json().catch(() => ({})); S.data = null; return gate2(T().forbidden, T().forbiddenSub + (j.id || "")); }
-    if (res.status===401) { try { localStorage.removeItem("saldo.k"); } catch {} S.key = null; S.data = null; return notTelegram(); }
+    if (res.status===401) { try { localStorage.removeItem("saldo.k"); } catch {} S.key = null; S.data = null; return TG_DATA ? fail("401: Telegram signature not accepted") : notTelegram(); }
     if (!res.ok) throw new Error(res.status);
     S.data = await res.json();
     if (!S.perChosen && S.per==="today" && !S.data.expenses.some(e => e.d===S.data.today)) { S.per = "yesterday"; S.autoNote = true; }
     if (S.foreman!=="all" && !S.data.foremen.some(f => f.name===S.foreman)) S.foreman = "all";
     shell();
     const op = S.openParam; if (op && !S.opened) { S.opened = 1; const [kind,a,b] = decodeURIComponent(op).split(":"); if (kind==="f") drawerForeman(a); else if (kind==="o") drawerObject(a); else if (kind==="c") drawerChecks(); else if (kind==="d") drawerCell(a,b); }
-  } catch (err) { if (!S.data) gate(T().loadErr, String(err.message||err), true); else if (btn) btn.disabled = false; }
+  } catch (err) { if (!S.data) fail(String(err && err.message || err)); else if (btn) btn.disabled = false; }
 }
 (function boot() {
   document.documentElement.lang = S.lang;
