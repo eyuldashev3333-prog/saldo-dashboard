@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1e3fa0">
 <title>Saldo — Art House</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
@@ -199,6 +200,8 @@ input.field{width:210px}
 .gate .bl small{color:var(--muted);font-size:12.5px}
 .gate .cardx{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 8px 30px rgba(15,23,42,.06)}
 .gate h1{font-size:19px;margin:0 0 6px}
+.pin{width:100%;text-align:center;font-size:24px;font-weight:700;letter-spacing:.5em;padding:12px 8px 12px 20px;border-radius:12px}
+.perr{color:var(--red);font-size:13px;min-height:20px;margin:8px 0 0}
 .skel{height:100vh;background:linear-gradient(90deg,#eceff6 25%,#f6f8fc 50%,#eceff6 75%);background-size:200% 100%;animation:sk 1.2s linear infinite}
 @keyframes sk{to{background-position:-200% 0}}
 .pg .in{animation:rise 340ms var(--ease-out) both;animation-delay:calc(var(--i,0)*45ms)}
@@ -260,6 +263,60 @@ body{background:radial-gradient(1100px 620px at 88% -8%,#d6e6ff 0%,rgba(214,230,
 .pg{animation:pgin 380ms var(--ease-out) both}
 @keyframes pgin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .gate{background-color:#f3f7ff}
+
+/* ================= Telegram Mini App / phone ================= */
+.link{border:0;background:none;color:var(--primary);font-weight:700;font-size:14px;padding:8px 0;display:inline-flex;gap:4px;align-items:center;transition:transform 160ms ease-out}
+.link:active{transform:scale(.97)}
+.linkrow{display:flex;gap:18px;flex-wrap:wrap;margin-top:-6px}
+.bk{flex:none;border:0;background:var(--soft2);width:34px;height:34px;border-radius:99px;font-size:20px;line-height:1;color:var(--ink2);margin-right:10px;transition:transform 160ms ease-out}
+.bk:active{transform:scale(.94)}
+.dh>div:first-child{display:flex;align-items:flex-start;min-width:0}
+.rws{display:grid}
+.rw{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:11px 4px;border-bottom:1px solid var(--line)}
+.rw:last-child{border-bottom:0}
+.rw.tap{cursor:pointer;transition:background 140ms ease-out}
+.rw.tap:active{background:var(--soft2)}
+.rw-l{min-width:0}
+.rw-l b{display:block;font-weight:650;overflow:hidden;text-overflow:ellipsis}
+.rw-l small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+.rw-a{font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.rw-raw{grid-column:1/-1;background:var(--soft2);border-radius:10px;padding:9px 11px;margin-top:6px;font-size:13px;color:var(--ink2);white-space:pre-wrap;word-break:break-word}
+.rw-raw span{display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em}
+.rw-raw[hidden]{display:none}
+.cd{display:inline-block;width:8px;height:8px;border-radius:99px;margin-right:7px;vertical-align:1px}
+.dayh{display:flex;justify-content:space-between;color:var(--muted);font-size:12.5px;padding:2px 4px 6px;font-weight:600}
+.dayh span{font-variant-numeric:tabular-nums}
+.mtop{display:none;position:sticky;top:0;z-index:30;align-items:center;justify-content:space-between;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));background:rgba(243,247,255,.86);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);border-bottom:1px solid rgba(37,99,235,.10)}
+.mtop .acts{display:flex;gap:2px}
+.drawer{padding-bottom:env(safe-area-inset-bottom)}
+@media (max-width:900px){
+  .app{display:block}
+  .side{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:40;flex-direction:row;padding:6px 6px calc(6px + env(safe-area-inset-bottom));gap:0;border-right:0;border-bottom:0;border-top:1px solid rgba(37,99,235,.14);background:rgba(255,255,255,.88);overflow:visible}
+  .side .sb-brand,.side .sb-info,.side .sb-foot,.nav .sep{display:none}
+  .nav{display:flex;width:100%;justify-content:space-between;overflow:visible;order:0;padding:0}
+  .ni{flex:1;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;padding:6px 2px;font-size:11px;white-space:nowrap;border-radius:12px}
+  .ni span{font-size:11px;font-weight:600}
+  .ni svg.i{width:22px;height:22px}
+  .ni[aria-current=page]{background:var(--soft);box-shadow:none}
+  .ni[aria-current=page]::before{display:none}
+  .mtop{display:flex}
+  main{padding:14px 14px calc(92px + env(safe-area-inset-bottom));max-width:none}
+  .ph h1{font-size:23px}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .grid4{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .stat .v{font-size:22px}
+  .stat.hero{grid-column:1/-1}
+  .stat .cap{font-size:12px}
+  .card{padding:16px;border-radius:18px}
+  .seg button{padding:8px 12px}
+  .fgrid{grid-template-columns:minmax(0,1fr)}
+  .drawer{width:100%}
+  .li{padding:13px 8px}
+  input.field{width:100%}
+}
+@media (max-width:420px){.grid4{grid-template-columns:minmax(0,1fr)}.stat .v{font-size:26px}}
+.ni .sh{display:none}
+@media (max-width:900px){.ni .lg{display:none}.ni .sh{display:inline}}
 </style>
 </head>
 <body>
@@ -292,7 +349,7 @@ const STAR = '<svg viewBox="0 0 56 56" aria-hidden="true"><path d="M28 6l5.5 8.5
 /* ------------------------------------------------ texts */
 const I18N = {
   uz: {
-    brand:"Boshqaruv tizimi", upd:"Yangilandi", nav:["Boshqaruv paneli","Moliya","Prorablar","Obyektlar","Xarajatlar"],
+    brand:"Boshqaruv tizimi", upd:"Yangilandi", nav:["Boshqaruv paneli","Moliya","Prorablar","Obyektlar","Xarajatlar"], navS:["Panel","Moliya","Prorablar","Obyektlar","Xarajat"],
     sub:["{d} holatiga ko'ra","Qarzlar va hisob-kitob bir joyda","Har bir prorabning kassasi va xarajati","Barcha obyektlar kassasi","Kunlar va prorablar bo'yicha xarajat"],
     p:{today:"Bugun", yesterday:"Kecha", w:"7 kun", m:"30 kun"}, allF:"Barcha prorablar", search:"Obyekt qidirish", lang:"RU", refresh:"Yangilash",
     so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd", others:"Elyor aka va boshqalar", todayEmpty:"Bugun hali xarajat yo'q, oxirgi kun ko'rsatilmoqda",
@@ -314,10 +371,12 @@ const I18N = {
       unparsed:(d,f,x)=>`${x.count} ta qo'lda yozilgan hisobot o'qilmadi`, manual_only:(d,f)=>`${f}: obyekti yo'q, kassa qo'lda yuboriladi`,
       no_foreman:(d,f,x)=>`«${x.object}»: 30 kunda prorab xarajat yozmagan`, other_author:(d,f,x)=>`${x.who}: 30 kunda ${x.total} so'm yozgan (prorab hisobotiga kirmaydi)`
     },
+    pinTitle:"Tizimga kirish", pinLabel:"Kod", pinBtn:"Kirish", pinWrong:"Kod noto'g'ri. Qolgan urinishlar: ", pinLocked:"Juda ko'p urinish. 15 daqiqadan keyin qayta urinib ko'ring.", pinNet:"Ulanib bo'lmadi, qayta urinib ko'ring.",
+    rowsT:"Yozuvlar", expRows:"Xarajat yozuvlari", incRows:"Kirim yozuvlari", howK:"Kassa qanday hosil bo'ldi", howKn:"Har bir qator: hisobot vaqtidagi kassa. Tanlasangiz, asl xabar ochiladi.", orig:"Asl xabar", loading:"Yuklanmoqda…", noRows:"Yozuvlar yo'q", shown:"Ko'rsatilgan", opening:"Oldingi kassa", spentK:"Xarajat", seeRows:"Yozuvlarni ko'rish", forbidden:"Ruxsat yo'q", forbiddenSub:"Sizga kirish ruxsat etilmagan. Telegram ID: ", tgOpen:"Telegram orqali oching", tgOpenSub:"Bu tizim Telegram-bot ichida ishlaydi. Botni oching va «Ochish» tugmasini bosing.", toBot:"Botga o'tish",
     locked:"Kirish uchun maxsus havola kerak", lockedSub:"Havolani Elyor aka yoki bot egasidan so'rang.", loadErr:"Ma'lumotni yuklab bo'lmadi", retry:"Qayta urinish", d7:"7 kun", d14:"14 kun", d30:"30 kun"
   },
   ru: {
-    brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"],
+    brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"], navS:["Панель","Финансы","Прорабы","Объекты","Расходы"],
     sub:["По состоянию на {d}","Долги и взаиморасчёты в одном месте","Касса и расходы каждого прораба","Касса всех объектов","Расходы по дням и прорабам"],
     p:{today:"Сегодня", yesterday:"Вчера", w:"7 дней", m:"30 дней"}, allF:"Все прорабы", search:"Поиск объекта", lang:"UZ", refresh:"Обновить",
     so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд", others:"Элёр-ака и прочие", todayEmpty:"Сегодня расходов ещё нет, показан последний день",
@@ -339,9 +398,15 @@ const I18N = {
       unparsed:(d,f,x)=>`${x.count} ручных отчётов не удалось прочитать`, manual_only:(d,f)=>`${f}: нет объектов, касса вручную`,
       no_foreman:(d,f,x)=>`«${x.object}»: за 30 дней прораб не записал расходов`, other_author:(d,f,x)=>`${x.who}: за 30 дней записал ${x.total} сум (в отчёты прорабов не входит)`
     },
+    pinTitle:"Вход в систему", pinLabel:"Код", pinBtn:"Войти", pinWrong:"Неверный код. Осталось попыток: ", pinLocked:"Слишком много попыток. Повторите через 15 минут.", pinNet:"Не удалось подключиться, повторите.",
+    rowsT:"Записи", expRows:"Записи расходов", incRows:"Записи прихода", howK:"Как сложилась касса", howKn:"Каждая строка: касса на момент отчёта. Нажмите, чтобы увидеть исходное сообщение.", orig:"Исходное сообщение", loading:"Загрузка…", noRows:"Записей нет", shown:"Показано", opening:"Прошлая касса", spentK:"Расход", seeRows:"Смотреть записи", forbidden:"Нет доступа", forbiddenSub:"Вам не разрешён вход. Ваш Telegram ID: ", tgOpen:"Откройте через Telegram", tgOpenSub:"Эта система работает внутри Telegram-бота. Откройте бота и нажмите «Открыть».", toBot:"Перейти к боту",
     locked:"Нужна специальная ссылка", lockedSub:"Попросите ссылку у Элёр-аки или владельца бота.", loadErr:"Не удалось загрузить данные", retry:"Повторить", d7:"7 дней", d14:"14 дней", d30:"30 дней"
   }
 };
+const TG = window.Telegram && window.Telegram.WebApp;
+const TG_DATA = TG && TG.initData ? TG.initData : "";
+if (TG_DATA) { try { TG.ready(); TG.expand(); TG.setHeaderColor("#f3f7ff"); TG.setBackgroundColor("#f3f7ff"); if (TG.setBottomBarColor) TG.setBottomBarColor("#ffffff"); if (TG.disableVerticalSwipes) TG.disableVerticalSwipes(); } catch {} }
+const buzz = () => { try { TG.HapticFeedback.selectionChanged(); } catch {} };
 const S = { data:null, tab:0, per:"today", foreman:"all", q:"", lang:"uz", side:"all", sortKey:"kassa", sortDir:1, key:null, dper:14 };
 try { const l = localStorage.getItem("saldo.lang"); if (l==="ru"||l==="uz") S.lang = l; } catch {}
 const T = () => I18N[S.lang];
@@ -479,6 +544,7 @@ function pageDash() {
     <div class="grid2 gr">
       <section class="card in" style="--i:4"><div class="lbl s mut">${t.spent} · ${t.p[S.per]}</div><div class="kpi">${fmt(spent)} <span class="mut" style="font-size:15px;font-weight:600;letter-spacing:0">${t.so}</span></div>
         <div class="delta">${dPct===null ? "" : `<b>${dPct>0?"▲":dPct<0?"▼":"•"} ${Math.abs(dPct)}%</b> ${S.per==="today" ? t.vsY : t.vsP} (${fmtS(prev)})`}</div>
+        ${spent>0 ? rowsBtn(t.seeRows, {rows:"expenses", from:sp.from, to:sp.to, who:S.foreman==="all" ? "" : S.foreman}) : ""}
         ${spent>0 ? `<div class="split">${cats.map(c => `<i style="width:${(c.v/spent*100).toFixed(2)}%;background:${c.col}"></i>`).join("")}</div><div class="legend" style="margin-top:0">${cats.map(c => `<span style="--c:${c.col}">${t.cat[c.c]} <b>${fmtS(c.v)}</b></span>`).join("")}</div>` : `<div class="empty" style="padding:14px 0 0;text-align:left">${t.noSpend}</div>`}
         <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:6px"><div class="lst">${fl.length ? fl.map(([n,v]) => `<button class="li" ${n!==OTHER?`data-foreman="${esc(n)}"`:""}><span class="n"><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${colorOf(n)};margin-right:8px"></i>${esc(lab(n))}</span><span class="a">${fmt(v)}</span><span class="bar"><i style="width:${(v/fmax*100).toFixed(1)}%;background:${colorOf(n)}"></i></span></button>`).join("") : ""}</div></div>
       </section>
@@ -554,14 +620,21 @@ function pageExp() {
 }
 
 /* ------------------------------------------------ drawer */
-const drawer = $("#drawer"), scrim = $("#scrim"); let lastFocus = null;
-function openDrawer(html, after) { lastFocus = document.activeElement; drawer.innerHTML = html; drawer.classList.add("on"); scrim.classList.add("on"); drawer.setAttribute("aria-hidden","false"); drawer.scrollTop = 0;
-  $(".x", drawer).addEventListener("click", closeDrawer); $(".x", drawer).focus({preventScroll:true}); if (after) after(); }
-function closeDrawer() { drawer.classList.remove("on"); scrim.classList.remove("on"); drawer.setAttribute("aria-hidden","true"); hideTip(); if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true}); }
+const drawer = $("#drawer"), scrim = $("#scrim"); let lastFocus = null, dstack = [], dcur = null;
+function tgBack() { if (!TG_DATA) return; try { if (drawer.classList.contains("on")) TG.BackButton.show(); else TG.BackButton.hide(); } catch {} }
+function paint() { drawer.innerHTML = dcur.html; drawer.scrollTop = 0; $(".x", drawer).addEventListener("click", closeDrawer);
+  const bk = $(".bk", drawer); if (bk) bk.addEventListener("click", drawerBack); $(".x", drawer).focus({preventScroll:true}); if (dcur.after) dcur.after(); tgBack(); }
+function openDrawer(html, after) {
+  if (drawer.classList.contains("on") && dcur) dstack.push(dcur); else { dstack = []; lastFocus = document.activeElement; }
+  dcur = { html, after }; drawer.classList.add("on"); scrim.classList.add("on"); drawer.setAttribute("aria-hidden","false"); paint();
+}
+function drawerBack() { if (!dstack.length) return closeDrawer(); dcur = dstack.pop(); paint(); }
+function closeDrawer() { dstack = []; dcur = null; drawer.classList.remove("on"); scrim.classList.remove("on"); drawer.setAttribute("aria-hidden","true"); hideTip(); tgBack(); if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true}); }
+if (TG_DATA) { try { TG.BackButton.onClick(drawerBack); } catch {} }
 scrim.addEventListener("click", closeDrawer);
 addEventListener("keydown", e => { if (e.key==="Escape" && drawer.classList.contains("on")) closeDrawer();
   if ((e.key==="Enter"||e.key===" ") && e.target.matches && e.target.matches("[data-foreman]:not(button)")) { e.preventDefault(); drawerForeman(e.target.dataset.foreman); } });
-const dhead = (title, sub) => `<div class="dh"><div><h2>${esc(title)}</h2>${sub ? `<div class="mut s">${sub}</div>` : ""}</div><button class="x" aria-label="Close">✕</button></div>`;
+const dhead = (title, sub) => `<div class="dh"><div>${drawer.classList.contains("on") ? `<button class="bk" aria-label="Back">‹</button>` : ""}<div style="min-width:0"><h2>${esc(title)}</h2>${sub ? `<div class="mut s">${sub}</div>` : ""}</div></div><button class="x" aria-label="Close">✕</button></div>`;
 const kv = (l,v,c) => `<div><div class="l">${l}</div><div class="v ${c||""}">${v}</div></div>`;
 
 function drawerForeman(name) {
@@ -572,6 +645,7 @@ function drawerForeman(name) {
   const dayTot = {}; d.expenses.filter(e => e.f===name).forEach(e => dayTot[e.d] = (dayTot[e.d]||0) + e.t);
   openDrawer(dhead(name, f.at ? `${t.last}: ${dl(f.at.slice(0,10))} · ${f.source==="auto"?t.auto:t.manual}` : t.noRep) + `<div class="db">
     <div class="kv">${kv(t.kassa, f.kassa===null?"—":fmt(f.kassa), tone(f.kassa||0))}${kv(t.spent+" · "+t.p[S.per], fmtS(tot))}</div>
+    <div class="linkrow">${rowsBtn(t.expRows, {rows:"expenses", who:name, from:sp.from, to:sp.to})}${rowsBtn(t.howK, {rows:"reports", party:name})}</div>
     <div><h4>${t.hist}</h4><div class="chart" id="dHist"></div></div>
     <div><h4>${t.days}</h4><div class="chart" id="dDaily"></div></div>
     <div><h4>${t.byObj} · ${t.p[S.per]}</h4>${list.length ? `<div class="lst">${list.map(([n,v]) => `<button class="li" data-object="${esc(n)}"><span class="n">${esc(n)}</span><span class="a">${fmt(v)}</span><span class="m">${Math.round(v/tot*100)}%</span><span></span></button>`).join("")}</div>` : `<div class="empty">${t.noSpend}</div>`}</div>
@@ -587,6 +661,7 @@ function drawerObject(name) {
   const incs = d.income.filter(i => i.p===name && i.d>=days[0]).sort((a,b) => b.d.localeCompare(a.d));
   openDrawer(dhead(name, o.foreman ? `${t.foreman}: ${esc(o.foreman)}` : "") + `<div class="db">
     <div class="kv">${kv(t.kassa, fmt(o.kassa), tone(o.kassa))}${kv(t.income, fmtS(o.income))}${kv(t.expense, fmtS(o.expense))}</div>
+    <div class="linkrow">${rowsBtn(t.expRows, {rows:"expenses", project:name, from:days[0], to:d.today})}${rowsBtn(t.incRows, {rows:"income", project:name, from:days[0], to:d.today})}</div>
     <div><h4>${t.dyn} · 30</h4><div class="chart" id="dDaily"></div>${legend(Object.keys(byF))}</div>
     <div><h4>${t.incomes}</h4>${incs.length ? `<table class="tbl"><tbody>${incs.map(i => `<tr><td>${dl(i.d)}</td><td class="r green"><b>+${fmt(i.t)}</b></td></tr>`).join("")}</tbody></table>` : `<div class="empty">${t.none}</div>`}</div>
   </div>`, () => barChart($("#dDaily"), days, Object.keys(byF), (day,s) => m[day+"|"+s]||0, { h:180 }));
@@ -595,7 +670,7 @@ function drawerCell(day, who) {
   const t = T(), rows = S.data.expenses.filter(e => e.d===day && grp(e.f)===who);
   const byP = {}; rows.forEach(r => { const o = byP[r.p] || (byP[r.p] = {material:0,labor:0,food:0,total:0}); o[r.c] += r.t; o.total += r.t; });
   const list = Object.entries(byP).sort((a,b) => b[1].total-a[1].total);
-  openDrawer(dhead(`${lab(who)} · ${dl(day)}`, `${t.total}: ${fmt(sum(rows, r => r.t))} ${t.so}`) + `<div class="db">${list.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>${t.obj}</th><th class="r">${t.cat.material}</th><th class="r">${t.cat.labor}</th><th class="r">${t.cat.food}</th><th class="r">${t.total}</th></tr></thead><tbody>${list.map(([p,o]) => `<tr><td class="nm2">${esc(p)}</td><td class="r">${o.material?fmt(o.material):"·"}</td><td class="r">${o.labor?fmt(o.labor):"·"}</td><td class="r">${o.food?fmt(o.food):"·"}</td><td class="r"><b>${fmt(o.total)}</b></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t.noSpend}</div>`}</div>`);
+  openDrawer(dhead(`${lab(who)} · ${dl(day)}`, `${t.total}: ${fmt(sum(rows, r => r.t))} ${t.so}`) + `<div class="db"><div class="linkrow">${rowsBtn(t.expRows, {rows:"expenses", who, from:day, to:day})}</div>${list.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>${t.obj}</th><th class="r">${t.cat.material}</th><th class="r">${t.cat.labor}</th><th class="r">${t.cat.food}</th><th class="r">${t.total}</th></tr></thead><tbody>${list.map(([p,o]) => `<tr><td class="nm2">${esc(p)}</td><td class="r">${o.material?fmt(o.material):"·"}</td><td class="r">${o.labor?fmt(o.labor):"·"}</td><td class="r">${o.food?fmt(o.food):"·"}</td><td class="r"><b>${fmt(o.total)}</b></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t.noSpend}</div>`}</div>`);
 }
 function drawerChecks() {
   const t = T(), cs = S.data.checks, fx = c => { let x = {}; try { x = JSON.parse(c.detail); } catch {} for (const k in x) if (typeof x[k]==="number" && !["days","count"].includes(k)) x[k] = fmt(x[k]); return (t.ck[c.kind]||(()=>c.title))(c.date?dl(c.date):"", c.foreman||"", x); };
@@ -611,11 +686,12 @@ const NAVI = ["dash","fin","fore","obj","exp"];
 function shell() {
   const t = T(), d = S.data;
   $("#app").innerHTML = `<div class="app">
+   <div class="mtop"><div class="sb-brand"><span class="logo">${STAR}</span><div><b>SALDO</b></div></div><div class="acts"><button class="ib" data-act="lang" aria-label="${t.lang}">${ic("globe")}</button><button class="ib" data-act="refresh" aria-label="${t.refresh}">${ic("refresh")}</button></div></div>
    <aside class="side">
     <div class="sb-brand"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${t.brand}</small></div></div>
-    <div class="sb-info"><div><small>${t.upd}</small><b>${new Date(d.generatedAt).toLocaleTimeString(S.lang==="ru"?"ru-RU":"uz-UZ",{hour:"2-digit",minute:"2-digit"})}</b></div><button class="ib" id="refresh" title="${t.refresh}" aria-label="${t.refresh}">${ic("refresh")}</button></div>
-    <nav class="nav" id="nav">${NAVI.map((k,i) => `${i===2?'<div class="sep"></div>':""}<button class="ni" data-tab="${i}" ${i===S.tab?'aria-current="page"':""}>${ic(k)}<span>${t.nav[i]}</span></button>`).join("")}</nav>
-    <div class="sb-foot"><button class="ni" id="lang">${ic("globe")}<span>${t.lang}</span></button></div>
+    <div class="sb-info"><div><small>${t.upd}</small><b>${new Date(d.generatedAt).toLocaleTimeString(S.lang==="ru"?"ru-RU":"uz-UZ",{hour:"2-digit",minute:"2-digit"})}</b></div><button class="ib" id="refresh" data-act="refresh" title="${t.refresh}" aria-label="${t.refresh}">${ic("refresh")}</button></div>
+    <nav class="nav" id="nav">${NAVI.map((k,i) => `${i===2?'<div class="sep"></div>':""}<button class="ni" data-tab="${i}" ${i===S.tab?'aria-current="page"':""}>${ic(k)}<span class="lg">${t.nav[i]}</span><span class="sh">${t.navS[i]}</span></button>`).join("")}</nav>
+    <div class="sb-foot"><button class="ni" id="lang" data-act="lang">${ic("globe")}<span>${t.lang}</span></button></div>
    </aside>
    <main id="main"></main></div>`;
   render();
@@ -635,7 +711,9 @@ function go(i) { S.tab = i; document.querySelectorAll(".ni[data-tab]").forEach(b
 
 document.addEventListener("click", e => {
   const c = sel => e.target.closest(sel);
-  if (c("[data-tab]")) return go(+c("[data-tab]").dataset.tab);
+  if (c("[data-rows]")) { const b = c("[data-rows]"); return openRows({ rows:b.dataset.rows, project:b.dataset.project, who:b.dataset.who, party:b.dataset.party, from:b.dataset.from, to:b.dataset.to }); }
+  if (c(".rw[data-raw]")) { const r = c(".rw[data-raw]").querySelector(".rw-raw"); if (r) r.hidden = !r.hidden; return; }
+  if (c("[data-tab]")) { buzz(); return go(+c("[data-tab]").dataset.tab); }
   if (c("[data-per]")) { S.per = c("[data-per]").dataset.per; S.perChosen = true; S.autoNote = false; return render(); }
   if (c("[data-dper]")) { S.dper = +c("[data-dper]").dataset.dper; return render(); }
   if (c("[data-side]")) { S.side = c("[data-side]").dataset.side; return render(); }
@@ -644,19 +722,77 @@ document.addEventListener("click", e => {
   if (c("[data-foreman]")) return drawerForeman(c("[data-foreman]").dataset.foreman);
   if (c("[data-object]")) return drawerObject(c("[data-object]").dataset.object);
   if (c("#attn")) return drawerChecks();
-  if (c("#lang")) { S.lang = S.lang==="uz" ? "ru" : "uz"; try { localStorage.setItem("saldo.lang", S.lang); } catch {} document.documentElement.lang = S.lang; return shell(); }
-  if (c("#refresh")) return load();
+  if (c("[data-act=lang]")) { S.lang = S.lang==="uz" ? "ru" : "uz"; try { localStorage.setItem("saldo.lang", S.lang); } catch {} document.documentElement.lang = S.lang; return shell(); }
+  if (c("[data-act=refresh]")) return load();
 });
 document.addEventListener("change", e => { if (e.target.id==="selF") { S.foreman = e.target.value; render(); } });
 document.addEventListener("input", e => { if (e.target.id==="q") { S.q = e.target.value; const p = e.target.selectionStart; render(); const q = $("#q"); if (q) { q.focus(); q.setSelectionRange(p,p); } } });
+
+/* ------------------------------------------------ Telegram Mini App + drill-down */
+function apiFetch(query) {
+  const h = {}; if (TG_DATA) h["x-tg-init-data"] = TG_DATA;
+  const qs = [S.key ? `k=${encodeURIComponent(S.key)}` : "", query || ""].filter(Boolean).join("&");
+  return fetch(API + (qs ? "?" + qs : ""), { cache:"no-store", headers:h });
+}
+function gate2(msg, sub, extra) {
+  $("#app").innerHTML = `<div class="gate"><div class="box"><div class="bl"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${T().brand}</small></div></div><div class="cardx"><h1>${msg}</h1><p class="mut" style="margin:0">${sub}</p>${extra||""}</div></div></div>`;
+}
+const tz = iso => { const d = new Date(new Date(iso).getTime() + 5*3600e3).toISOString(); return { d:d.slice(0,10), h:d.slice(11,16) }; };
+const CATCOL = { material:"#2563eb", labor:"#8b5cf6", food:"#f59e0b" };
+
+function rowsHTML(kind, j) {
+  const t = T(), rows = j.rows || [];
+  if (!rows.length) return `<div class="empty">${t.noRows}</div>`;
+  const raw = r => r.raw ? `<div class="rw-raw" hidden><span>${t.orig}</span>${esc(r.raw)}</div>` : "";
+  const cls = r => `rw${r.raw ? " tap" : ""}`;
+  const attr = r => r.raw ? ` data-raw="1" tabindex="0" role="button"` : "";
+  if (kind === "reports") {
+    return `<div class="rws">${rows.map(r => { const x = tz(r.t);
+      return `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b>${dl(x.d)} ${x.h} <span class="badge ${r.src==="auto"?"b-blue":"b-warn"}">${r.src==="auto"?t.auto:t.manual}</span>${r.ok===false ? ` <span class="badge b-warn">?</span>` : ""}${r.arith===false ? ` <span class="badge b-warn">⚠</span>` : ""}</b>
+        <small>${r.opening!==null ? `${t.opening}: ${fmt(r.opening)}` : ""}${r.spent!==null ? ` · ${t.spentK}: ${fmt(r.spent)}` : ""}${r.income ? ` · ${t.income}: +${fmt(r.income)}` : ""}</small></div>
+        <div class="rw-a ${tone(r.kassa||0)}">${r.kassa===null ? "—" : fmt(r.kassa)}</div>${raw(r)}</div>`; }).join("")}</div><p class="mut s">${t.howKn}</p>`;
+  }
+  const byDay = {}; rows.forEach(r => { const d = tz(r.t).d; (byDay[d] = byDay[d] || []).push(r); });
+  const head = `<div class="kv"><div><div class="l">${t.total}</div><div class="v">${kind==="income" ? "+" : ""}${fmt(j.total)}</div></div><div><div class="l">${t.rowsT}</div><div class="v">${j.count}</div></div></div>`;
+  const more = j.count > rows.length ? `<p class="mut s">${t.shown}: ${rows.length} / ${j.count}</p>` : "";
+  return head + Object.entries(byDay).map(([d, list]) => `<div><div class="dayh"><b>${dl(d)}</b><span>${fmt(sum(list, r => r.amt))}</span></div><div class="rws">${list.map(r => {
+    const x = tz(r.t);
+    return kind === "income"
+      ? `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b>${esc(r.p)}</b><small>${x.h} · ${esc(lab(r.a))}${r.method ? " · "+esc(r.method) : ""}${r.note ? " · "+esc(r.note) : ""}</small></div><div class="rw-a green">${r.ret ? "−" : "+"}${fmt(r.amt)}</div>${raw(r)}</div>`
+      : `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b><i class="cd" style="background:${CATCOL[r.c]||"#94a3b8"}"></i>${esc(r.item || "—")}</b><small>${x.h} · ${esc(r.p)} · ${esc(lab(r.a))}</small></div><div class="rw-a">${fmt(r.amt)}</div>${raw(r)}</div>`; }).join("")}</div></div>`).join("") + more;
+}
+async function drawerRows(kind, title, sub, params) {
+  const t = T();
+  openDrawer(dhead(title, sub) + `<div class="db"><div class="empty">${t.loading}</div></div>`);
+  const mine = dcur;
+  try {
+    const res = await apiFetch(`detail=${kind}&${params}`), j = await res.json();
+    if (!res.ok) throw new Error(j.error || res.status);
+    if (dcur !== mine) return;
+    const body = $(".db", drawer); body.innerHTML = rowsHTML(kind, j); mine.html = drawer.innerHTML;
+  } catch (err) { if (dcur === mine) { $(".db", drawer).innerHTML = `<div class="empty">${t.loadErr}</div>`; } }
+}
+function openRows(d) {
+  const t = T(), q = new URLSearchParams();
+  if (d.from) { q.set("from", d.from); q.set("to", d.to); }
+  if (d.project) q.set("project", d.project); if (d.who) q.set("who", d.who); if (d.party) q.set("party", d.party);
+  const label = d.who ? lab(d.who) : d.project || d.party || "";
+  if (d.rows === "reports") return drawerRows("reports", `${t.howK}`, label, q.toString());
+  const rng = d.from === d.to ? dl(d.from) : `${dl(d.from)} – ${dl(d.to)}`;
+  drawerRows(d.rows, `${d.rows==="income" ? t.incRows : t.expRows}`, [label, rng].filter(Boolean).join(" · "), q.toString());
+}
+const rowsBtn = (label, attrs) => `<button class="link" data-rows="${attrs.rows}" ${Object.entries(attrs).filter(([k]) => k !== "rows").map(([k,v]) => `data-${k}="${esc(v)}"`).join(" ")}>${label} <span aria-hidden="true">›</span></button>`;
+
+function notTelegram() { gate2(T().tgOpen, T().tgOpenSub, `<a class="btn" style="display:block;margin-top:16px;text-decoration:none;text-align:center" href="https://t.me/saldoarthouseaibot">${T().toBot}</a>`); }
 
 /* ------------------------------------------------ data */
 function gate(msg, sub, retry) { $("#app").innerHTML = `<div class="gate"><div class="box"><div class="bl"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${T().brand}</small></div></div><div class="cardx"><h1>${msg}</h1><p class="mut" style="margin:0">${sub}</p>${retry ? `<button class="btn" id="retry" style="margin-top:16px;width:100%">${T().retry}</button>` : ""}</div></div></div>`; const b = $("#retry"); if (b) b.onclick = () => load(); }
 async function load() {
   const btn = $("#refresh"); if (btn) btn.disabled = true;
   try {
-    const res = await fetch(`${API}?k=${encodeURIComponent(S.key)}`, { cache:"no-store" });
-    if (res.status===401) { try { localStorage.removeItem("saldo.k"); } catch {} return gate(T().locked, T().lockedSub); }
+    const res = await apiFetch("");
+    if (res.status===403) { const j = await res.json().catch(() => ({})); S.data = null; return gate2(T().forbidden, T().forbiddenSub + (j.id || "")); }
+    if (res.status===401) { try { localStorage.removeItem("saldo.k"); } catch {} S.key = null; S.data = null; return notTelegram(); }
     if (!res.ok) throw new Error(res.status);
     S.data = await res.json();
     if (!S.perChosen && S.per==="today" && !S.data.expenses.some(e => e.d===S.data.today)) { S.per = "yesterday"; S.autoNote = true; }
@@ -670,7 +806,7 @@ async function load() {
   const h = location.hash, m = h.match(/k=([^&]+)/), tb = h.match(/tab=(\d)/), pr = h.match(/per=(today|yesterday|w|m)/);
   if (tb && +tb[1] < 5) S.tab = +tb[1]; if (pr) { S.per = pr[1]; S.perChosen = true; } S.openParam = (h.match(/open=([^&]+)/) || [])[1];
   try { if (m) { localStorage.setItem("saldo.k", decodeURIComponent(m[1])); history.replaceState(null, "", location.pathname + location.search); } S.key = localStorage.getItem("saldo.k"); } catch { S.key = m ? decodeURIComponent(m[1]) : null; }
-  if (!S.key) return gate(T().locked, T().lockedSub);
+  if (!S.key && !TG_DATA) return notTelegram();
   load();
   setInterval(() => { if (!document.hidden && S.data && !drawer.classList.contains("on")) load(); }, 5*60*1000);
 })();
