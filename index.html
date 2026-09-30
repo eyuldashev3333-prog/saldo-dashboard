@@ -348,6 +348,33 @@ button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
 .bar0 i{display:block;height:100%;border-radius:99px}
 .chart.pick{cursor:pointer}
 .stat.tap{cursor:pointer}
+
+/* ================= month picker, tappable cards ================= */
+.acts2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mp{display:inline-flex;align-items:center;background:#fff;border:1px solid rgba(37,99,235,.18);border-radius:12px;box-shadow:0 1px 2px rgba(20,50,140,.05);overflow:hidden}
+.mpb{border:0;background:none;width:40px;height:42px;font-size:24px;line-height:1;color:var(--primary);transition:background 140ms ease-out}
+.mpb:disabled{color:var(--line2);cursor:default}
+.mpb:not(:disabled):active{background:var(--soft)}
+.mpl{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;height:42px;min-width:168px;font-weight:700;cursor:pointer;color:var(--ink)}
+.mpl svg.i{width:17px;height:17px;color:var(--primary)}
+.mpl input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid3{grid-template-columns:minmax(0,1fr)}}
+.tap{cursor:pointer;transition:transform 200ms var(--ease-out),box-shadow 200ms var(--ease-out)}
+.tap:active{transform:scale(.985)}
+button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
+.sumc{position:relative}
+.sumc .kpi{font-size:28px;margin:6px 0 4px}
+.sumc .chev{position:absolute;right:16px;top:14px;color:var(--muted);font-size:22px}
+.brow.tap{width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.tapleg{gap:8px}
+.tapleg .lg{border:0;background:var(--soft2);border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;transition:transform 160ms ease-out}
+.tapleg .lg:active{transform:scale(.97)}
+.tapleg .lg::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--c);margin-right:7px}
+.bar0{height:6px;border-radius:99px;background:#e8efff;margin:10px 0 2px;overflow:hidden}
+.bar0 i{display:block;height:100%;border-radius:99px}
+.chart.pick{cursor:pointer}
+.stat.tap{cursor:pointer}
 </style>
 </head>
 <body>
@@ -391,7 +418,7 @@ const I18N = {
     brand:"Boshqaruv tizimi", upd:"Yangilandi", nav:["Boshqaruv paneli","Moliya","Prorablar","Obyektlar","Xarajatlar"], navS:["Panel","Moliya","Prorablar","Obyektlar","Xarajat"],
     sub:["{d} holatiga ko'ra","Qarzlar va hisob-kitob bir joyda","Har bir prorabning kassasi va xarajati","Barcha obyektlar kassasi","Kim nima yozgan: oy bo'yicha"],
     lang:"RU", refresh:"Yangilash", so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd", others:"Boshqalar", search:"Obyekt qidirish",
-    cur:"Hozirgi holat", curSub:"R − D − P", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
+    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
     statR:"Sizga qarzdorlar", statRc:"kassasi minusdagi obyektlar (R)", statD:"Mijozlar puli sizda", statDc:"kassasi plyusdagi obyektlar (D)",
     statP:"Prorablarning ko'chadagi qarzi", statPc:"prorablar kassasi minusda, bu sizning qarzingiz (P)",
     trend:"Saldo dinamikasi", trendSub:"Har kuni 23:30 dagi hisobot", dyn:"Kunlik xarajat", dynSub:"Kunni bosing: o'sha kundagi yozuvlar ochiladi",
@@ -426,7 +453,7 @@ const I18N = {
     brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"], navS:["Панель","Финансы","Прорабы","Объекты","Расходы"],
     sub:["По состоянию на {d}","Долги и взаиморасчёты в одном месте","Касса и расходы каждого прораба","Касса всех объектов","Кто что записал: по месяцам"],
     lang:"UZ", refresh:"Обновить", so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд", others:"Прочие", search:"Поиск объекта",
-    cur:"Текущее состояние", curSub:"R − D − P", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
+    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
     statR:"Должны вам", statRc:"объекты с кассой в минусе (R)", statD:"Деньги клиентов у вас", statDc:"объекты с кассой в плюсе (D)",
     statP:"Долги прорабов на стороне", statPc:"кассы прорабов в минусе, это ваш долг (P)",
     trend:"Динамика сальдо", trendSub:"Итог ежедневного отчёта в 23:30", dyn:"Расходы по дням", dynSub:"Нажмите на день: откроются записи за этот день",
@@ -616,6 +643,7 @@ function pageDash() {
   return `<div class="pg">${pageHead(0, monthBar())}
     ${wc ? `<div class="banner"><span style="display:flex;color:#a15c07">${ic("alert")}</span><span><b>${wc}</b> ${t.attnB}</span><span class="sp"></span><button class="btn ghost" id="attn">${t.view}</button></div>` : ""}
     <div class="lbl s mut" style="margin:0 0 8px">${t.cur2}</div>
+    <button class="card tap sumc in" style="--i:0;margin-bottom:14px" data-rows="handouts" data-from="${r.from}" data-to="${r.to}"><div class="lbl s mut">${t.myK}</div><div class="kpi">${fmt(-tot.saldo)} ${t.so}</div><div class="cap s mut">${t.myKd}. ${t.handCap}</div><span class="chev" aria-hidden="true">›</span></button>
     <div class="grid4">
       ${stat(t.saldo+" (R − D − P)", fmt(tot.saldo), `${t.saldoCap}: <b>${fmt(-tot.saldo)}</b> ${t.so}`, tone(tot.saldo), "wallet2", 0, 'data-go="1"')}
       ${stat(t.statR, fmtS(tot.R), t.statRc, "amber", "down", 1, 'data-list="R"')}
@@ -746,7 +774,9 @@ function rowsHTML(kind, j) {
   const more = j.count > rows.length ? `<p class="mut s">${t.shown}: ${rows.length} / ${j.count}</p>` : "";
   return head + Object.entries(byDay).map(([d, list]) => `<div><div class="dayh"><b>${dl(d)}</b><span>${fmt(sum(list, r => r.amt))}</span></div><div class="rws">${list.map(r => {
     const x = tz(r.t);
-    return kind === "income"
+    return kind === "handouts"
+      ? `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b>${esc(r.p)}</b><small>${x.h}</small></div><div class="rw-a red">−${fmt(r.amt)}</div>${raw(r)}</div>`
+      : kind === "income"
       ? `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b>${esc(r.p)}</b><small>${x.h} · ${esc(lab(r.a))}${r.method ? " · "+esc(r.method) : ""}${r.note ? " · "+esc(r.note) : ""}</small></div><div class="rw-a green">${r.ret ? "−" : "+"}${fmt(r.amt)}</div>${raw(r)}</div>`
       : `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b><i class="cd" style="background:${CATCOL[r.c]||"#94a3b8"}"></i>${esc(r.item || "—")}</b><small>${x.h} · ${esc(r.p)} · ${esc(lab(r.a))}</small></div><div class="rw-a">${fmt(r.amt)}</div>${raw(r)}</div>`; }).join("")}</div></div>`).join("") + more;
 }
@@ -769,7 +799,7 @@ function openRows(d) {
   if (d.rows === "reports") return drawerRows("reports", t.howK, d.party || "", q.toString());
   const rng = d.from === d.to ? dlf(d.from) : (d.from && d.from.slice(0,7) === (d.to||"").slice(0,7) && d.from.slice(8) === "01" ? monthLabel(d.from.slice(0,7)) : `${dl(d.from)} – ${dl(d.to)}`);
   const what = [who, d.project, d.cat ? t.cat[d.cat] : ""].filter(Boolean).join(" · ");
-  drawerRows(d.rows, d.rows === "income" ? t.incRows : t.expRows, [what, rng].filter(Boolean).join(" · "), q.toString());
+  drawerRows(d.rows, d.rows === "handouts" ? t.handRows : d.rows === "income" ? t.incRows : t.expRows, [what, rng].filter(Boolean).join(" · "), q.toString());
 }
 
 /* ---- person (foreman, Elyor, accountant): everything they wrote in the chosen month, layer by layer */
