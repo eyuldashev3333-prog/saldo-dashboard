@@ -331,6 +331,9 @@ body{background:radial-gradient(1100px 620px at 88% -8%,#d6e6ff 0%,rgba(214,230,
 
 <script>
 "use strict";
+// Everything lives inside this function so that no global name of the host page (or of Telegram's own
+// injected scripts, e.g. `head`) can ever replace one of our functions.
+(function () {
 const API = "https://ygnfdneroanqtedsnchs.supabase.co/functions/v1/saldo-dashboard-api";
 const PALETTE = ["#2563eb","#60a5fa","#93c5fd","#14b8a6","#f59e0b","#8b5cf6","#c7d2fe"];
 const OTHER_NAMES = new Set(["Boshqa","Noma'lum","Elyor aka","HISOBCHI"]);
@@ -829,6 +832,9 @@ async function load() {
   if (!S.key && !TG_DATA) return notTelegram();
   load();
   setInterval(() => { if (!document.hidden && S.data && !drawer.classList.contains("on")) load(); }, 5*60*1000);
+})();
+// small debug/test handle (read-only use): lets support and the automated tests drive the page
+window.__d = { get S() { return S; }, PAGES, go, load, openRows, drawerForeman, drawerObject, drawerBack, closeDrawer, addDays };
 })();
 </script>
 </body>
