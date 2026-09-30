@@ -321,6 +321,33 @@ body{background:radial-gradient(1100px 620px at 88% -8%,#d6e6ff 0%,rgba(214,230,
 .diag{margin:14px 0 0;text-align:left;background:var(--soft2);border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.5;white-space:pre-wrap;word-break:break-all;color:var(--ink2);font-family:ui-monospace,Consolas,monospace}
 #errbar{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:90;background:#b91c1c;color:#fff;border-radius:12px;padding:10px 14px;font-size:12.5px;line-height:1.4;box-shadow:0 10px 28px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity 200ms ease-out;word-break:break-word}
 #errbar.on{opacity:1}
+
+/* ================= month picker, tappable cards ================= */
+.acts2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mp{display:inline-flex;align-items:center;background:#fff;border:1px solid rgba(37,99,235,.18);border-radius:12px;box-shadow:0 1px 2px rgba(20,50,140,.05);overflow:hidden}
+.mpb{border:0;background:none;width:40px;height:42px;font-size:24px;line-height:1;color:var(--primary);transition:background 140ms ease-out}
+.mpb:disabled{color:var(--line2);cursor:default}
+.mpb:not(:disabled):active{background:var(--soft)}
+.mpl{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;height:42px;min-width:168px;font-weight:700;cursor:pointer;color:var(--ink)}
+.mpl svg.i{width:17px;height:17px;color:var(--primary)}
+.mpl input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid3{grid-template-columns:minmax(0,1fr)}}
+.tap{cursor:pointer;transition:transform 200ms var(--ease-out),box-shadow 200ms var(--ease-out)}
+.tap:active{transform:scale(.985)}
+button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
+.sumc{position:relative}
+.sumc .kpi{font-size:28px;margin:6px 0 4px}
+.sumc .chev{position:absolute;right:16px;top:14px;color:var(--muted);font-size:22px}
+.brow.tap{width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.tapleg{gap:8px}
+.tapleg .lg{border:0;background:var(--soft2);border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;transition:transform 160ms ease-out}
+.tapleg .lg:active{transform:scale(.97)}
+.tapleg .lg::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--c);margin-right:7px}
+.bar0{height:6px;border-radius:99px;background:#e8efff;margin:10px 0 2px;overflow:hidden}
+.bar0 i{display:block;height:100%;border-radius:99px}
+.chart.pick{cursor:pointer}
+.stat.tap{cursor:pointer}
 </style>
 </head>
 <body>
@@ -335,9 +362,9 @@ body{background:radial-gradient(1100px 620px at 88% -8%,#d6e6ff 0%,rgba(214,230,
 // injected scripts, e.g. `head`) can ever replace one of our functions.
 (function () {
 const API = "https://ygnfdneroanqtedsnchs.supabase.co/functions/v1/saldo-dashboard-api";
-const PALETTE = ["#2563eb","#60a5fa","#93c5fd","#14b8a6","#f59e0b","#8b5cf6","#c7d2fe"];
-const OTHER_NAMES = new Set(["Boshqa","Noma'lum","Elyor aka","HISOBCHI"]);
-const OTHER = "Boshqalar";
+const PALETTE = ["#2563eb","#60a5fa","#14b8a6","#f59e0b","#8b5cf6","#06b6d4","#0f2a5f","#ec4899","#c7d2fe"];
+const MINOR = new Set(["Boshqa","Noma'lum"]);
+const OTHER = "Boshqalar", ELYOR = "Elyor aka", HISOB = "HISOBCHI";
 const ICON = {
   dash:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
   fin:'<path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>',
@@ -348,28 +375,40 @@ const ICON = {
   alert:'<path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/>',
   globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/>',
   wallet2:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
-  down:'<path d="M12 5v14M5 12l7 7 7-7"/>', up:'<path d="M12 19V5M5 12l7-7 7 7"/>', bag:'<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>'
+  down:'<path d="M12 5v14M5 12l7 7 7-7"/>', up:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 const STAR = '<svg viewBox="0 0 56 56" aria-hidden="true"><path d="M28 6l5.5 8.5 10-1.5-1.5 10 8.5 5.5-8.5 5.5 1.5 10-10-1.5L28 50l-5.5-8.5-10 1.5 1.5-10L5 27.5l8.5-5.5-1.5-10 10 1.5z"/></svg>';
 
 /* ------------------------------------------------ texts */
+const MONTHS = {
+  uz:["Yanvar","Fevral","Mart","Aprel","May","Iyun","Iyul","Avgust","Sentabr","Oktabr","Noyabr","Dekabr"],
+  ru:["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"]
+};
 const I18N = {
   uz: {
     brand:"Boshqaruv tizimi", upd:"Yangilandi", nav:["Boshqaruv paneli","Moliya","Prorablar","Obyektlar","Xarajatlar"], navS:["Panel","Moliya","Prorablar","Obyektlar","Xarajat"],
-    sub:["{d} holatiga ko'ra","Qarzlar va hisob-kitob bir joyda","Har bir prorabning kassasi va xarajati","Barcha obyektlar kassasi","Kunlar va prorablar bo'yicha xarajat"],
-    p:{today:"Bugun", yesterday:"Kecha", w:"7 kun", m:"30 kun"}, allF:"Barcha prorablar", search:"Obyekt qidirish", lang:"RU", refresh:"Yangilash",
-    so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd", others:"Elyor aka va boshqalar", todayEmpty:"Bugun hali xarajat yo'q, oxirgi kun ko'rsatilmoqda",
-    saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak", statR:"Sizga qarzdorlar", statRc:"kassasi minusdagi obyektlar (R)",
-    statD:"Mijozlar puli sizda", statDc:"kassasi plyusdagi obyektlar (D)", statP:"Prorablarning ko'chadagi qarzi", statPc:"prorablar kassasi minusda, bu sizning qarzingiz (P)",
-    trend:"Saldo dinamikasi", trendSub:"Har kuni 23:30 dagi hisobot", dyn:"Kunlik xarajat", spent:"Xarajat", vsY:"kechagiga nisbatan", vsP:"oldingi davrga nisbatan",
-    byF:"Prorablar bo'yicha", noSpend:"Bu davrda xarajat yo'q", none:"Ma'lumot yo'q", cat:{material:"Mahsulot", labor:"Ustalar", food:"Oziq-ovqat"},
-    attnB:"ta narsa tekshirishni talab qiladi", view:"Ko'rish", attnT:"Tekshirish kerak", attnOk:"Hammasi joyida.",
-    cur:"Hozirgi holat", curSub:"R − D − P", rowR:"Sizga qarzdorlar", rowRd:"Kassasi minusdagi obyektlar: mijoz sizga qarzdor", rowD:"Mijozlar puli sizda", rowDd:"Kassasi plyusdagi obyektlar: bu pul mijozniki",
-    rowP:"Prorablarning ko'chadagi qarzi", rowPd:"Prorablar kassasi minusda: ular sizning obyektlaringizga qarzga/o'z hisobidan xarajat qilgan", note:"Prorab kassasi minusda bo'lsa, u obyektlar uchun o'z yoki qarzga olingan (masalan, do'kondan nasiya) mablag'ini sarflagan. Elyor aka aytganidek, bu sizning qarzingiz.",
+    sub:["{d} holatiga ko'ra","Qarzlar va hisob-kitob bir joyda","Har bir prorabning kassasi va xarajati","Barcha obyektlar kassasi","Kim nima yozgan: oy bo'yicha"],
+    lang:"RU", refresh:"Yangilash", so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd", others:"Boshqalar", search:"Obyekt qidirish",
+    cur:"Hozirgi holat", curSub:"R − D − P", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
+    statR:"Sizga qarzdorlar", statRc:"kassasi minusdagi obyektlar (R)", statD:"Mijozlar puli sizda", statDc:"kassasi plyusdagi obyektlar (D)",
+    statP:"Prorablarning ko'chadagi qarzi", statPc:"prorablar kassasi minusda, bu sizning qarzingiz (P)",
+    trend:"Saldo dinamikasi", trendSub:"Har kuni 23:30 dagi hisobot", dyn:"Kunlik xarajat", dynSub:"Kunni bosing: o'sha kundagi yozuvlar ochiladi",
+    monthSum:"Oy xulosasi", paid:"Mijozlar to'lovlari", paidD:"obyektlarga tushgan kirim", spentO:"Obyekt xarajatlari", spentOD:"prorablar, hisobchi va Elyor aka yozganlari",
+    flow:"Pul harakati", flowD:"kirim − chiqim. Bu foyda emas: kirimga hali sarflanmagan avanslar ham kiradi.", vsPrev:"o'tgan oyga nisbatan",
+    byPerson:"Kim qancha sarfladi", byPersonSub:"Bosing: kim nimaga yozgan", byObjM:"Obyektlar bo'yicha", types:"Xarajat turlari", pickMonth:"Oyni tanlang",
+    cat:{material:"Mahsulot", labor:"Ustalar", food:"Oziq-ovqat"}, noSpend:"Bu oyda xarajat yo'q", none:"Ma'lumot yo'q",
+    allRecords:"Barcha yozuvlar", recs:"yozuv", objsN:"obyekt", paidRows:"To'lov yozuvlari", paidAll:"Barcha to'lovlar",
+    roleF:"Prorab", roleE:"Elyor aka: o'zi obyekt guruhlariga yozgan xarajatlar", roleH:"Hisobchi: yozgan xarajatlari", roleO:"Boshqa yozuvchilar",
+    listR:"Sizga qarzdor obyektlar", listD:"Mijoz puli sizda bo'lgan obyektlar", listP:"Kassasi minusdagi prorablar",
+    cur2:"Hozirgi holat (oyga bog'liq emas)", attnB:"ta narsa tekshirishni talab qiladi", view:"Ko'rish", attnT:"Tekshirish kerak", attnOk:"Hammasi joyida.",
+    rowR:"Sizga qarzdorlar", rowRd:"Kassasi minusdagi obyektlar: mijoz sizga qarzdor", rowD:"Mijozlar puli sizda", rowDd:"Kassasi plyusdagi obyektlar: bu pul mijozniki",
+    rowP:"Prorablarning ko'chadagi qarzi", rowPd:"Prorablar kassasi minusda: ular sizning obyektlaringizga qarzga/o'z hisobidan xarajat qilgan",
+    note:"Prorab kassasi minusda bo'lsa, u obyektlar uchun o'z yoki qarzga olingan (masalan, do'kondan nasiya) mablag'ini sarflagan. Elyor aka aytganidek, bu sizning qarzingiz.",
     weOwe:"Siz qarzdorsiz", theyOwe:"Sizdan qarzdorlar", client:"Mijoz puli", foreman:"Prorab",
     kassa:"Kassa", last:"Oxirgi hisobot", auto:"Avto", manual:"Qo'lda", stale:"eskirgan", noRep:"Hisobot yo'q", obj:"Obyekt", income:"Kirim", expense:"Chiqim",
-    all:"Hammasi", minus:"Qarzdor", plus:"Plyus", hist:"Kassa tarixi", byObj:"Obyektlar bo'yicha", days:"Kunlar bo'yicha", day:"Kun", total:"Jami", incomes:"Kirimlar",
+    all:"Hammasi", minus:"Qarzdor", plus:"Plyus", hist:"Kassa tarixi", byObj:"Obyektlar bo'yicha", total:"Jami", incomes:"Kirimlar",
     g1:"Hisobot bazaga mos emas", g2:"Kassa hisobi noto'g'ri", g3:"Hisobot kelmagan yoki eskirgan", g4:"Ma'lumot uchun",
     ck:{
       recon:(d,f,x)=>`${f}, ${d}: qo'lda ${x.manual}, bazada ${x.db} (farq ${x.diff})`,
@@ -378,25 +417,33 @@ const I18N = {
       unparsed:(d,f,x)=>`${x.count} ta qo'lda yozilgan hisobot o'qilmadi`, manual_only:(d,f)=>`${f}: obyekti yo'q, kassa qo'lda yuboriladi`,
       no_foreman:(d,f,x)=>`«${x.object}»: 30 kunda prorab xarajat yozmagan`, other_author:(d,f,x)=>`${x.who}: 30 kunda ${x.total} so'm yozgan (prorab hisobotiga kirmaydi)`
     },
-    pinTitle:"Tizimga kirish", pinLabel:"Kod", pinBtn:"Kirish", pinWrong:"Kod noto'g'ri. Qolgan urinishlar: ", pinLocked:"Juda ko'p urinish. 15 daqiqadan keyin qayta urinib ko'ring.", pinNet:"Ulanib bo'lmadi, qayta urinib ko'ring.",
-    rowsT:"Yozuvlar", expRows:"Xarajat yozuvlari", incRows:"Kirim yozuvlari", howK:"Kassa qanday hosil bo'ldi", howKn:"Har bir qator: hisobot vaqtidagi kassa. Tanlasangiz, asl xabar ochiladi.", orig:"Asl xabar", loading:"Yuklanmoqda…", noRows:"Yozuvlar yo'q", shown:"Ko'rsatilgan", opening:"Oldingi kassa", spentK:"Xarajat", seeRows:"Yozuvlarni ko'rish", forbidden:"Ruxsat yo'q", forbiddenSub:"Sizga kirish ruxsat etilmagan. Telegram ID: ", tgOpen:"Telegram orqali oching", tgOpenSub:"Bu tizim Telegram-bot ichida ishlaydi. Botni oching va «Ochish» tugmasini bosing.", toBot:"Botga o'tish",
-    diagHint:"Skrinshotni yuboring, sababini topamiz.", locked:"Kirish uchun maxsus havola kerak", lockedSub:"Havolani Elyor aka yoki bot egasidan so'rang.", loadErr:"Ma'lumotni yuklab bo'lmadi", retry:"Qayta urinish", d7:"7 kun", d14:"14 kun", d30:"30 kun"
+    rowsT:"Yozuvlar", expRows:"Xarajat yozuvlari", incRows:"Kirim yozuvlari", howK:"Kassa qanday hosil bo'ldi", howKn:"Har bir qator: hisobot vaqtidagi kassa. Tanlasangiz, asl xabar ochiladi.",
+    orig:"Asl xabar", loading:"Yuklanmoqda…", noRows:"Yozuvlar yo'q", shown:"Ko'rsatilgan", opening:"Oldingi kassa", spentK:"Xarajat",
+    forbidden:"Ruxsat yo'q", forbiddenSub:"Sizga kirish ruxsat etilmagan. Telegram ID: ", tgOpen:"Telegram orqali oching", tgOpenSub:"Bu tizim Telegram-bot ichida ishlaydi. Botni oching va «Ochish» tugmasini bosing.", toBot:"Botga o'tish",
+    diagHint:"Skrinshotni yuboring, sababini topamiz.", loadErr:"Ma'lumotni yuklab bo'lmadi", retry:"Qayta urinish"
   },
   ru: {
     brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"], navS:["Панель","Финансы","Прорабы","Объекты","Расходы"],
-    sub:["По состоянию на {d}","Долги и взаиморасчёты в одном месте","Касса и расходы каждого прораба","Касса всех объектов","Расходы по дням и прорабам"],
-    p:{today:"Сегодня", yesterday:"Вчера", w:"7 дней", m:"30 дней"}, allF:"Все прорабы", search:"Поиск объекта", lang:"UZ", refresh:"Обновить",
-    so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд", others:"Элёр-ака и прочие", todayEmpty:"Сегодня расходов ещё нет, показан последний день",
-    saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть", statR:"Должны вам", statRc:"объекты с кассой в минусе (R)",
-    statD:"Деньги клиентов у вас", statDc:"объекты с кассой в плюсе (D)", statP:"Долги прорабов на стороне", statPc:"кассы прорабов в минусе, это ваш долг (P)",
-    trend:"Динамика сальдо", trendSub:"Итог ежедневного отчёта в 23:30", dyn:"Расходы по дням", spent:"Расходы", vsY:"к вчера", vsP:"к прошлому периоду",
-    byF:"По прорабам", noSpend:"За этот период расходов нет", none:"Нет данных", cat:{material:"Материалы", labor:"Работы", food:"Питание"},
-    attnB:"пунктов требуют проверки", view:"Смотреть", attnT:"Нужно проверить", attnOk:"Всё в порядке.",
-    cur:"Текущее состояние", curSub:"R − D − P", rowR:"Должны вам", rowRd:"Объекты с кассой в минусе: клиент должен вам", rowD:"Деньги клиентов у вас", rowDd:"Объекты с кассой в плюсе: это деньги клиента",
-    rowP:"Долги прорабов на стороне", rowPd:"Кассы прорабов в минусе: они потратили на ваши объекты свои или взятые в долг деньги", note:"Если касса прораба в минусе, он потратил на объекты свои или взятые в долг деньги (например, в магазине). По словам Элёр-аки, это ваш долг.",
+    sub:["По состоянию на {d}","Долги и взаиморасчёты в одном месте","Касса и расходы каждого прораба","Касса всех объектов","Кто что записал: по месяцам"],
+    lang:"UZ", refresh:"Обновить", so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд", others:"Прочие", search:"Поиск объекта",
+    cur:"Текущее состояние", curSub:"R − D − P", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
+    statR:"Должны вам", statRc:"объекты с кассой в минусе (R)", statD:"Деньги клиентов у вас", statDc:"объекты с кассой в плюсе (D)",
+    statP:"Долги прорабов на стороне", statPc:"кассы прорабов в минусе, это ваш долг (P)",
+    trend:"Динамика сальдо", trendSub:"Итог ежедневного отчёта в 23:30", dyn:"Расходы по дням", dynSub:"Нажмите на день: откроются записи за этот день",
+    monthSum:"Итоги месяца", paid:"Платежи клиентов", paidD:"поступления на объекты", spentO:"Расходы на объекты", spentOD:"записали прорабы, бухгалтер и Элёр-ака",
+    flow:"Движение денег", flowD:"приход − расход. Это не прибыль: в приходе есть авансы, которые ещё не потрачены.", vsPrev:"к прошлому месяцу",
+    byPerson:"Кто сколько потратил", byPersonSub:"Нажмите: что именно записал", byObjM:"По объектам", types:"Виды расходов", pickMonth:"Выберите месяц",
+    cat:{material:"Материалы", labor:"Работы", food:"Питание"}, noSpend:"В этом месяце расходов нет", none:"Нет данных",
+    allRecords:"Все записи", recs:"записей", objsN:"объектов", paidRows:"Записи платежей", paidAll:"Все платежи",
+    roleF:"Прораб", roleE:"Элёр-ака: расходы, которые он сам записал в группах объектов", roleH:"Бухгалтер: расходы, которые он записал", roleO:"Прочие авторы",
+    listR:"Объекты, которые должны вам", listD:"Объекты, где деньги клиента у вас", listP:"Прорабы с кассой в минусе",
+    cur2:"Текущее состояние (не зависит от месяца)", attnB:"пунктов требуют проверки", view:"Смотреть", attnT:"Нужно проверить", attnOk:"Всё в порядке.",
+    rowR:"Должны вам", rowRd:"Объекты с кассой в минусе: клиент должен вам", rowD:"Деньги клиентов у вас", rowDd:"Объекты с кассой в плюсе: это деньги клиента",
+    rowP:"Долги прорабов на стороне", rowPd:"Кассы прорабов в минусе: они потратили на ваши объекты свои или взятые в долг деньги",
+    note:"Если касса прораба в минусе, он потратил на объекты свои или взятые в долг деньги (например, в магазине). По словам Элёр-аки, это ваш долг.",
     weOwe:"Вы должны", theyOwe:"Должны вам", client:"Деньги клиента", foreman:"Прораб",
     kassa:"Касса", last:"Последний отчёт", auto:"Авто", manual:"Вручную", stale:"устарел", noRep:"Нет отчёта", obj:"Объект", income:"Приход", expense:"Расход",
-    all:"Все", minus:"Должен", plus:"Плюс", hist:"История кассы", byObj:"По объектам", days:"По дням", day:"День", total:"Итого", incomes:"Приходы",
+    all:"Все", minus:"Должен", plus:"Плюс", hist:"История кассы", byObj:"По объектам", total:"Итого", incomes:"Приходы",
     g1:"Отчёт не совпадает с базой", g2:"Касса посчитана неверно", g3:"Отчёта нет или он устарел", g4:"Для информации",
     ck:{
       recon:(d,f,x)=>`${f}, ${d}: вручную ${x.manual}, в базе ${x.db} (разница ${x.diff})`,
@@ -405,19 +452,20 @@ const I18N = {
       unparsed:(d,f,x)=>`${x.count} ручных отчётов не удалось прочитать`, manual_only:(d,f)=>`${f}: нет объектов, касса вручную`,
       no_foreman:(d,f,x)=>`«${x.object}»: за 30 дней прораб не записал расходов`, other_author:(d,f,x)=>`${x.who}: за 30 дней записал ${x.total} сум (в отчёты прорабов не входит)`
     },
-    pinTitle:"Вход в систему", pinLabel:"Код", pinBtn:"Войти", pinWrong:"Неверный код. Осталось попыток: ", pinLocked:"Слишком много попыток. Повторите через 15 минут.", pinNet:"Не удалось подключиться, повторите.",
-    rowsT:"Записи", expRows:"Записи расходов", incRows:"Записи прихода", howK:"Как сложилась касса", howKn:"Каждая строка: касса на момент отчёта. Нажмите, чтобы увидеть исходное сообщение.", orig:"Исходное сообщение", loading:"Загрузка…", noRows:"Записей нет", shown:"Показано", opening:"Прошлая касса", spentK:"Расход", seeRows:"Смотреть записи", forbidden:"Нет доступа", forbiddenSub:"Вам не разрешён вход. Ваш Telegram ID: ", tgOpen:"Откройте через Telegram", tgOpenSub:"Эта система работает внутри Telegram-бота. Откройте бота и нажмите «Открыть».", toBot:"Перейти к боту",
-    diagHint:"Отправьте скриншот, мы найдём причину.", locked:"Нужна специальная ссылка", lockedSub:"Попросите ссылку у Элёр-аки или владельца бота.", loadErr:"Не удалось загрузить данные", retry:"Повторить", d7:"7 дней", d14:"14 дней", d30:"30 дней"
+    rowsT:"Записи", expRows:"Записи расходов", incRows:"Записи прихода", howK:"Как сложилась касса", howKn:"Каждая строка: касса на момент отчёта. Нажмите, чтобы увидеть исходное сообщение.",
+    orig:"Исходное сообщение", loading:"Загрузка…", noRows:"Записей нет", shown:"Показано", opening:"Прошлая касса", spentK:"Расход",
+    forbidden:"Нет доступа", forbiddenSub:"Вам не разрешён вход. Ваш Telegram ID: ", tgOpen:"Откройте через Telegram", tgOpenSub:"Эта система работает внутри Telegram-бота. Откройте бота и нажмите «Открыть».", toBot:"Перейти к боту",
+    diagHint:"Отправьте скриншот, мы найдём причину.", loadErr:"Не удалось загрузить данные", retry:"Повторить"
   }
 };
 const TG = window.Telegram && window.Telegram.WebApp;
 const TG_DATA = TG && TG.initData ? TG.initData : "";
 if (TG_DATA) { try { TG.ready(); TG.expand(); TG.setHeaderColor("#f3f7ff"); TG.setBackgroundColor("#f3f7ff"); if (TG.setBottomBarColor) TG.setBottomBarColor("#ffffff"); if (TG.disableVerticalSwipes) TG.disableVerticalSwipes(); } catch {} }
 const buzz = () => { try { TG.HapticFeedback.selectionChanged(); } catch {} };
-const S = { data:null, tab:0, per:"today", foreman:"all", q:"", lang:"uz", side:"all", sortKey:"kassa", sortDir:1, key:null, dper:14 };
+const S = { data:null, tab:0, month:null, q:"", lang:"uz", side:"all", sortKey:"kassa", sortDir:1, key:null, shown:false, gated:false };
 try { const l = localStorage.getItem("saldo.lang"); if (l==="ru"||l==="uz") S.lang = l; } catch {}
 const T = () => I18N[S.lang];
-const lab = n => n===OTHER ? T().others : n;
+const lab = n => n===OTHER ? T().others : n===HISOB ? "Hisobchi" : n;
 
 /* ------------------------------------------------ helpers */
 const $ = (s, r=document) => r.querySelector(s);
@@ -429,22 +477,34 @@ const tone = n => n<0 ? "red" : n>0 ? "green" : "";
 const addDays = (d,n) => { const x = new Date(d+"T00:00:00Z"); x.setUTCDate(x.getUTCDate()+n); return x.toISOString().slice(0,10); };
 const dl = d => d.slice(8)+"."+d.slice(5,7);
 const dlf = d => d.slice(8)+"."+d.slice(5,7)+"."+d.slice(0,4);
-const grp = f => OTHER_NAMES.has(f) ? OTHER : f;
+const grp = f => MINOR.has(f) ? OTHER : f;
 const sum = (a, f) => a.reduce((s,x) => s + f(x), 0);
 const niceMax = v => { if (v<=0) return 1; const p = Math.pow(10,Math.floor(Math.log10(v))), n = v/p; return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p; };
-const seriesNames = () => S.data.foremen.map(f => f.name).concat([OTHER]);
+const seriesNames = () => S.data.foremen.map(f => f.name).concat([ELYOR, HISOB, OTHER]);
 const colorOf = n => { const i = seriesNames().indexOf(n); return PALETTE[i<0 ? PALETTE.length-1 : Math.min(i, PALETTE.length-1)]; };
-function span() {
-  const t = S.data.today; let from = t, to = t;
-  if (S.per==="yesterday") from = to = addDays(t,-1); else if (S.per==="w") from = addDays(t,-6); else if (S.per==="m") from = addDays(t,-29);
-  const len = Math.round((Date.parse(to)-Date.parse(from))/86400000)+1;
-  return { from, to, len, prevFrom:addDays(from,-len), prevTo:addDays(from,-1) };
-}
 const inR = (d,a,b) => d>=a && d<=b;
-const fOK = e => S.foreman==="all" || grp(e.f)===S.foreman;
-const expIn = (a,b) => S.data.expenses.filter(e => inR(e.d,a,b) && fOK(e));
 function dayList(a,b) { const o=[]; for (let d=a; d<=b; d=addDays(d,1)) o.push(d); return o; }
 const warnCount = () => S.data.checks.filter(c => c.level==="warn").length;
+
+// ---- months: the period of the whole app is one calendar month (chosen in a picker), balances are "now"
+const monthLabel = m => `${MONTHS[S.lang][+m.slice(5)-1]} ${m.slice(0,4)}`;
+const monthShift = (m,k) => new Date(Date.UTC(+m.slice(0,4), +m.slice(5)-1+k, 1)).toISOString().slice(0,7);
+const lastDay = m => new Date(Date.UTC(+m.slice(0,4), +m.slice(5), 0)).toISOString().slice(0,10);
+function mrange(m) { m = m || S.month; const today = S.data.today, end = lastDay(m); return { m, from:m+"-01", to:end>today ? today : end }; }
+function bounds() {
+  let first = S.data.today;
+  for (const e of S.data.expenses) if (e.d < first) first = e.d;
+  for (const i of S.data.income) if (i.d < first) first = i.d;
+  return { min:first.slice(0,7), max:S.data.today.slice(0,7) };
+}
+const monthExp = (m, pred) => { const r = mrange(m); return S.data.expenses.filter(e => inR(e.d,r.from,r.to) && (!pred || pred(e))); };
+const monthInc = m => { const r = mrange(m); return S.data.income.filter(i => inR(i.d,r.from,r.to)); };
+function monthBar() {
+  const b = bounds(), t = T();
+  return `<div class="mp"><button class="mpb" data-mm="-1" aria-label="‹" ${S.month<=b.min?"disabled":""}>‹</button>
+    <label class="mpl">${ic("cal")}<span>${monthLabel(S.month)}</span><input type="month" id="mpick" value="${S.month}" min="${b.min}" max="${b.max}" aria-label="${t.pickMonth}"></label>
+    <button class="mpb" data-mm="1" aria-label="›" ${S.month>=b.max?"disabled":""}>›</button></div>`;
+}
 
 /* ------------------------------------------------ charts */
 const tip = $("#tip");
@@ -456,16 +516,18 @@ const charts = new Set();
 function mountChart(el, build) {
   const draw = () => {
     const W = Math.max(220, el.clientWidth), c = build(W);
-    if (!c) { el.innerHTML = `<div class="empty">${T().none}</div>`; el.onpointermove = el.onpointerleave = null; return; }
+    if (!c) { el.innerHTML = `<div class="empty">${T().none}</div>`; el.onpointermove = el.onpointerleave = el.onclick = null; return; }
     el.innerHTML = c.svg;
     const svg = el.querySelector("svg"), guide = el.querySelector(".guide"), dot = el.querySelector(".dot"), cols = [...el.querySelectorAll(".col")];
-    const at = ev => { const r = svg.getBoundingClientRect(), px = (ev.clientX-r.left)*(W/r.width);
-      let bi = 0, bd = 1e9; c.xs.forEach((x,i) => { const d = Math.abs(x-px); if (d<bd) { bd=d; bi=i; } });
+    const idx = ev => { const r = svg.getBoundingClientRect(), px = (ev.clientX-r.left)*(W/r.width); let bi = 0, bd = 1e9; c.xs.forEach((x,i) => { const d = Math.abs(x-px); if (d<bd) { bd=d; bi=i; } }); return bi; };
+    const at = ev => { const bi = idx(ev);
       if (guide) { guide.setAttribute("x1", c.xs[bi]); guide.setAttribute("x2", c.xs[bi]); guide.style.opacity = 1; }
       if (dot && c.ys) { dot.setAttribute("cx", c.xs[bi]); dot.setAttribute("cy", c.ys[bi]); dot.style.opacity = 1; }
       if (cols.length) { svg.classList.add("hv"); cols.forEach(g => g.classList.toggle("on", +g.dataset.i===bi)); }
       showTip(c.tip(bi), ev.clientX, ev.clientY); };
     el.onpointermove = at; el.onpointerdown = at;
+    el.onclick = c.pick ? (ev => c.pick(idx(ev))) : null;
+    if (c.pick) el.classList.add("pick"); else el.classList.remove("pick");
     el.onpointerleave = () => { hideTip(); if (guide) guide.style.opacity = 0; if (dot) dot.style.opacity = 0; svg.classList.remove("hv"); };
   };
   el._redraw = draw; charts.add(el); draw();
@@ -494,7 +556,8 @@ function barChart(el, days, series, valueOf, opts={}) {
       g += `</g>`; });
     const step = Math.ceil(days.length/Math.max(2,Math.floor(iw/54)));
     days.forEach((d,i) => { if ((i%step===0 && days.length-1-i >= step) || i===days.length-1) g += `<text x="${xs[i]}" y="${H-7}" text-anchor="${i===days.length-1?"end":"middle"}">${dl(d)}</text>`; });
-    return { xs, svg:`<svg class="c" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label||"")}">${g}<line class="guide" x1="0" x2="0" y1="${pad.t}" y2="${H-pad.b}"/></svg>`,
+    return { xs, pick: opts.pick ? (i => { if (totals[i] > 0) opts.pick(days[i]); }) : null,
+      svg:`<svg class="c" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label||"")}">${g}<line class="guide" x1="0" x2="0" y1="${pad.t}" y2="${H-pad.b}"/></svg>`,
       tip:i => `<b>${dl(days[i])}</b><br>` + series.filter(s => valueOf(days[i],s)>0).map(s => `<div class="r"><span><i style="background:${colorOf(s)}"></i>${esc(lab(s))}</span><b>${fmt(valueOf(days[i],s))}</b></div>`).join("") + `<div class="r" style="margin-top:4px"><span>${T().total}</span><b>${fmt(totals[i])}</b></div>` };
   });
 }
@@ -526,44 +589,62 @@ function spark(vals, color) {
 }
 const legend = names => `<div class="legend">${names.map(n => `<span style="--c:${colorOf(n)}">${esc(lab(n))}</span>`).join("")}</div>`;
 
-/* ------------------------------------------------ pages */
-const stat = (label, value, cap, color, icon, i) => `<div class="card stat in ${i===0?"hero":""}" style="--i:${i}"><div class="top"><span>${label}</span><span class="ic">${ic(icon)}</span></div><div class="v ${color}" ${i===0 ? `data-count="${value.replace(/[\s\u2212]/g,"")}" data-neg="${value.startsWith("\u2212")?1:0}"` : ""}>${value}</div><div class="cap">${cap}</div></div>`;
-function perSeg() { const t = T(); return `<div class="seg">${["today","yesterday","w","m"].map(k => `<button data-per="${k}" aria-pressed="${S.per===k}">${t.p[k]}</button>`).join("")}</div>`; }
-const foremanSel = () => `<select class="field" id="selF" aria-label="${T().foreman}"><option value="all">${T().allF}</option>${S.data.foremen.map(f => `<option ${S.foreman===f.name?"selected":""}>${esc(f.name)}</option>`).join("")}</select>`;
-function head(i, actions) { const t = T(); return `<div class="ph"><div><h1>${t.nav[i]}</h1><p>${t.sub[i].replace("{d}", dlf(S.data.today))}</p></div><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">${actions||""}</div></div>`; }
+/* ------------------------------------------------ shared pieces */
+const tapAttr = a => Object.entries(a).filter(([,v]) => v !== undefined && v !== null && v !== "").map(([k,v]) => `data-${k}="${esc(v)}"`).join(" ");
+const rowsBtn = (label, a) => `<button class="link" data-rows="${esc(a.rows)}" ${tapAttr({...a, rows:undefined})}>${label} <span aria-hidden="true">›</span></button>`;
+const stat = (label, value, cap, color, icon, i, go) => `<div class="card stat tap in ${i===0?"hero":""}" style="--i:${i}" role="button" tabindex="0" ${go}><div class="top"><span>${label}</span><span class="ic">${ic(icon)}</span></div><div class="v ${color}" ${i===0 ? `data-count="${value.replace(/[\s−]/g,"")}" data-neg="${value.startsWith("−")?1:0}"` : ""}>${value}</div><div class="cap">${cap}</div></div>`;
+function pageHead(i, actions) { const t = T(); return `<div class="ph"><div><h1>${t.nav[i]}</h1><p>${t.sub[i].replace("{d}", dlf(S.data.today))}</p></div><div class="acts2">${actions||""}</div></div>`; }
+const personRole = n => n===ELYOR ? T().roleE : n===HISOB ? T().roleH : n===OTHER ? T().roleO : T().roleF;
+function personStats(m) { // per person for a month: {name, total, n, objs:Set}
+  const map = new Map();
+  for (const e of monthExp(m)) { const k = grp(e.f); const p = map.get(k) || { name:k, total:0, n:0, objs:new Set() }; p.total += e.t; p.n += e.n; p.objs.add(e.p); map.set(k, p); }
+  return [...map.values()].sort((a,b) => b.total-a.total);
+}
+const barRow = (attrs, dot, name, amount, sub, pct, color) => `<button class="li" ${attrs}><span class="n">${dot ? `<i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${dot};margin-right:8px"></i>` : ""}${esc(name)}</span><span class="a">${amount}</span>${sub ? `<span class="m">${sub}</span><span></span>` : ""}<span class="bar"><i style="width:${pct.toFixed(1)}%;background:${color}"></i></span></button>`;
 
+/* ------------------------------------------------ pages */
 function pageDash() {
-  const t = T(), d = S.data, tot = d.totals, sp = span(), wc = warnCount();
-  const rows = expIn(sp.from, sp.to), spent = sum(rows, r => r.t), prev = sum(expIn(sp.prevFrom, sp.prevTo), r => r.t);
-  const dPct = prev>0 ? Math.round((spent-prev)/prev*100) : null;
-  const byF = {}; rows.forEach(r => byF[grp(r.f)] = (byF[grp(r.f)]||0) + r.t);
-  const fl = Object.entries(byF).sort((a,b) => b[1]-a[1]), fmax = fl[0] ? fl[0][1] : 1;
-  const cats = ["material","labor","food"].map((c,i) => ({c, v:sum(rows.filter(r => r.c===c), r => r.t), col:["#2563eb","#60a5fa","#f59e0b"][i]}));
-  return `<div class="pg">${head(0, `${perSeg()}${foremanSel()}`)}
-    ${S.autoNote ? `<div class="mut s" style="margin:-8px 0 12px">${t.todayEmpty}</div>` : ""}
+  const t = T(), d = S.data, tot = d.totals, r = mrange(), wc = warnCount();
+  const rows = monthExp(S.month), spent = sum(rows, x => x.t), paid = sum(monthInc(S.month), x => x.t);
+  const prevSpent = sum(monthExp(monthShift(S.month,-1)), x => x.t);
+  const dPct = prevSpent>0 ? Math.round((spent-prevSpent)/prevSpent*100) : null;
+  const people = personStats(S.month), pmax = people[0] ? people[0].total : 1;
+  const byObj = {}; rows.forEach(x => { const o = byObj[x.p] || (byObj[x.p] = { t:0, n:0 }); o.t += x.t; o.n += x.n; });
+  const ol = Object.entries(byObj).sort((a,b) => b[1].t-a[1].t), omax = ol[0] ? ol[0][1].t : 1;
+  const cats = ["material","labor","food"].map((c,i) => ({c, v:sum(rows.filter(x => x.c===c), x => x.t), col:["#2563eb","#60a5fa","#f59e0b"][i]}));
+  const fl = paid - spent;
+  return `<div class="pg">${pageHead(0, monthBar())}
     ${wc ? `<div class="banner"><span style="display:flex;color:#a15c07">${ic("alert")}</span><span><b>${wc}</b> ${t.attnB}</span><span class="sp"></span><button class="btn ghost" id="attn">${t.view}</button></div>` : ""}
+    <div class="lbl s mut" style="margin:0 0 8px">${t.cur2}</div>
     <div class="grid4">
-      ${stat(t.saldo+" (R − D − P)", fmt(tot.saldo), `${t.saldoCap}: <b>${fmt(-tot.saldo)}</b> ${t.so}`, tone(tot.saldo), "wallet2", 0)}
-      ${stat(t.statR, fmtS(tot.R), t.statRc, "amber", "down", 1)}
-      ${stat(t.statD, fmtS(tot.D), t.statDc, "red", "up", 2)}
-      ${stat(t.statP, fmtS(tot.P), t.statPc, "red", "fore", 3)}
+      ${stat(t.saldo+" (R − D − P)", fmt(tot.saldo), `${t.saldoCap}: <b>${fmt(-tot.saldo)}</b> ${t.so}`, tone(tot.saldo), "wallet2", 0, 'data-go="1"')}
+      ${stat(t.statR, fmtS(tot.R), t.statRc, "amber", "down", 1, 'data-list="R"')}
+      ${stat(t.statD, fmtS(tot.D), t.statDc, "red", "up", 2, 'data-list="D"')}
+      ${stat(t.statP, fmtS(tot.P), t.statPc, "red", "fore", 3, 'data-list="P"')}
+    </div>
+    <div class="lbl s mut" style="margin:22px 0 8px">${t.monthSum} · ${monthLabel(S.month)}</div>
+    <div class="grid3">
+      <button class="card tap sumc in" style="--i:4" data-rows="income" data-from="${r.from}" data-to="${r.to}"><div class="lbl s mut">${t.paid}</div><div class="kpi">${fmtS(paid)}</div><div class="cap s mut">${t.paidD}</div><span class="chev" aria-hidden="true">›</span></button>
+      <button class="card tap sumc in" style="--i:5" data-rows="expenses" data-from="${r.from}" data-to="${r.to}"><div class="lbl s mut">${t.spentO}</div><div class="kpi">${fmtS(spent)}</div><div class="cap s mut">${dPct===null ? t.spentOD : `<b>${dPct>0?"▲":dPct<0?"▼":"•"} ${Math.abs(dPct)}%</b> ${t.vsPrev}`}</div><span class="chev" aria-hidden="true">›</span></button>
+      <div class="card sumc in" style="--i:6"><div class="lbl s mut">${t.flow}</div><div class="kpi ${tone(fl)}">${fl>0?"+":""}${fmtS(fl)}</div><div class="cap s mut">${t.flowD}</div></div>
     </div>
     <div class="grid2 gr">
-      <section class="card in" style="--i:4"><div class="lbl s mut">${t.spent} · ${t.p[S.per]}</div><div class="kpi">${fmt(spent)} <span class="mut" style="font-size:15px;font-weight:600;letter-spacing:0">${t.so}</span></div>
-        <div class="delta">${dPct===null ? "" : `<b>${dPct>0?"▲":dPct<0?"▼":"•"} ${Math.abs(dPct)}%</b> ${S.per==="today" ? t.vsY : t.vsP} (${fmtS(prev)})`}</div>
-        ${spent>0 ? rowsBtn(t.seeRows, {rows:"expenses", from:sp.from, to:sp.to, who:S.foreman==="all" ? "" : S.foreman}) : ""}
-        ${spent>0 ? `<div class="split">${cats.map(c => `<i style="width:${(c.v/spent*100).toFixed(2)}%;background:${c.col}"></i>`).join("")}</div><div class="legend" style="margin-top:0">${cats.map(c => `<span style="--c:${c.col}">${t.cat[c.c]} <b>${fmtS(c.v)}</b></span>`).join("")}</div>` : `<div class="empty" style="padding:14px 0 0;text-align:left">${t.noSpend}</div>`}
-        <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:6px"><div class="lst">${fl.length ? fl.map(([n,v]) => `<button class="li" ${n!==OTHER?`data-foreman="${esc(n)}"`:""}><span class="n"><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${colorOf(n)};margin-right:8px"></i>${esc(lab(n))}</span><span class="a">${fmt(v)}</span><span class="bar"><i style="width:${(v/fmax*100).toFixed(1)}%;background:${colorOf(n)}"></i></span></button>`).join("") : ""}</div></div>
-      </section>
-      <section class="card in" style="--i:5"><div class="ch"><div><h3>${t.trend}</h3><p class="sub">${t.trendSub}</p></div></div><div class="chart" id="cTrend"></div></section>
+      <section class="card in" style="--i:7"><div class="ch"><div><h3>${t.byPerson}</h3><p class="sub">${t.byPersonSub}</p></div></div>
+        <div class="lst">${people.length ? people.map(p => barRow(`data-person="${esc(p.name)}"`, colorOf(p.name), lab(p.name), fmt(p.total), `${p.n} ${t.recs} · ${p.objs.size} ${t.objsN}`, p.total/pmax*100, colorOf(p.name))).join("") : `<div class="empty">${t.noSpend}</div>`}</div></section>
+      <section class="card in" style="--i:8"><div class="ch"><div><h3>${t.byObjM}</h3><p class="sub">${monthLabel(S.month)}</p></div></div>
+        <div class="lst">${ol.length ? ol.slice(0,8).map(([n,v]) => barRow(`data-object="${esc(n)}"`, "", n, fmt(v.t), `${v.n} ${t.recs}`, v.t/omax*100, "var(--navy)")).join("") : `<div class="empty">${t.noSpend}</div>`}</div></section>
     </div>
-    <section class="card in gr" style="--i:6"><div class="ch"><div><h3>${t.dyn}</h3><p class="sub">${sp.len>14 ? 30 : 14} ${S.lang==="ru"?"дней":"kun"}</p></div></div><div class="chart" id="cDyn"></div>${legend(seriesNames())}</section>
+    <section class="card in gr" style="--i:9"><div class="ch"><div><h3>${t.types}</h3><p class="sub">${monthLabel(S.month)}</p></div></div>
+      ${spent>0 ? `<div class="split">${cats.map(c => `<i style="width:${(c.v/spent*100).toFixed(2)}%;background:${c.col}"></i>`).join("")}</div>
+      <div class="legend tapleg" style="margin-top:0">${cats.map(c => `<button class="lg" data-rows="expenses" data-cat="${c.c}" data-from="${r.from}" data-to="${r.to}" style="--c:${c.col}">${t.cat[c.c]} <b>${fmtS(c.v)}</b> ›</button>`).join("")}</div>` : `<div class="empty">${t.noSpend}</div>`}</section>
+    <section class="card in gr" style="--i:10"><div class="ch"><div><h3>${t.dyn}</h3><p class="sub">${t.dynSub}</p></div></div><div class="chart" id="cDyn"></div>${legend(seriesNames())}</section>
+    <section class="card in gr" style="--i:11"><div class="ch"><div><h3>${t.trend}</h3><p class="sub">${t.trendSub}</p></div></div><div class="chart" id="cTrend"></div></section>
   </div>`;
 }
 function afterDash() {
-  const d = S.data, sp = span(), n = sp.len > 14 ? 30 : 14, days = dayList(addDays(d.today, -(n-1)), d.today), names = seriesNames();
-  const m = {}; d.expenses.filter(fOK).forEach(r => { const k = r.d+"|"+grp(r.f); m[k] = (m[k]||0) + r.t; });
-  barChart($("#cDyn"), days, names, (day,s) => m[day+"|"+s] || 0, { label:T().dyn });
+  const d = S.data, r = mrange(), days = dayList(r.from, r.to), names = seriesNames();
+  const m = {}; monthExp(S.month).forEach(x => { const k = x.d+"|"+grp(x.f); m[k] = (m[k]||0) + x.t; });
+  barChart($("#cDyn"), days, names, (day,s) => m[day+"|"+s] || 0, { label:T().dyn, pick:day => openRows({ rows:"expenses", from:day, to:day }) });
   lineChart($("#cTrend"), d.saldoHistory.slice(-30).map(h => ({x:h.d, v:h.saldo})), { name:T().saldo, zero:true, h:250, label:T().trend });
 }
 
@@ -572,14 +653,14 @@ function pageFin() {
   const li = (x, color) => `<button class="li" data-${x.kind}="${esc(x.name)}"><span class="n">${esc(x.name)}</span><span class="a ${color}">${fmt(x.v)}</span><span class="m">${esc(x.sub)}</span><span></span></button>`;
   const owed = d.objects.filter(o => o.kassa<0).sort((a,b) => a.kassa-b.kassa).map(o => ({kind:"object", name:o.name, v:-o.kassa, sub:o.foreman||"—"}));
   const we = d.objects.filter(o => o.kassa>0).map(o => ({kind:"object", name:o.name, v:o.kassa, sub:`${t.client}${o.foreman ? " · "+o.foreman : ""}`}))
-    .concat(d.foremen.filter(f => f.kassa!==null && f.kassa<0).map(f => ({kind:"foreman", name:f.name, v:-f.kassa, sub:t.foreman}))).sort((a,b) => b.v-a.v);
-  return `<div class="pg">${head(1)}
+    .concat(d.foremen.filter(f => f.kassa!==null && f.kassa<0).map(f => ({kind:"person", name:f.name, v:-f.kassa, sub:t.foreman}))).sort((a,b) => b.v-a.v);
+  return `<div class="pg">${pageHead(1)}
     <section class="card state in"><div class="lbl s mut">${t.cur} · ${t.curSub}</div><div class="big ${tone(tot.saldo)}" data-count="${Math.abs(Math.round(tot.saldo))}" data-neg="${tot.saldo<0?1:0}">${fmt(tot.saldo)}</div>
       <div class="mut">${t.saldoCap}: <b style="color:var(--ink)">${fmt(-tot.saldo)} ${t.so}</b></div>
       <div style="margin-top:16px">
-        <div class="brow"><div><div class="t">＋ ${t.rowR}</div><div class="d">${t.rowRd}</div></div><div class="v amber">${fmt(tot.R)}</div></div>
-        <div class="brow"><div><div class="t">－ ${t.rowD}</div><div class="d">${t.rowDd}</div></div><div class="v red">${fmt(tot.D)}</div></div>
-        <div class="brow"><div><div class="t">－ ${t.rowP}</div><div class="d">${t.rowPd}</div></div><div class="v red">${fmt(tot.P)}</div></div>
+        <button class="brow tap" data-list="R"><div><div class="t">＋ ${t.rowR}</div><div class="d">${t.rowRd}</div></div><div class="v amber">${fmt(tot.R)} ›</div></button>
+        <button class="brow tap" data-list="D"><div><div class="t">－ ${t.rowD}</div><div class="d">${t.rowDd}</div></div><div class="v red">${fmt(tot.D)} ›</div></button>
+        <button class="brow tap" data-list="P"><div><div class="t">－ ${t.rowP}</div><div class="d">${t.rowPd}</div></div><div class="v red">${fmt(tot.P)} ›</div></button>
       </div><div class="note">${t.note}</div></section>
     <div class="grid2 gr">
       <section class="card in" style="--i:1"><div class="ch"><h3 class="red">${t.weOwe} · ${fmt(sum(we, x => x.v))}</h3></div><div class="lst">${we.map(x => li(x,"red")).join("") || `<div class="empty">${t.none}</div>`}</div></section>
@@ -588,45 +669,46 @@ function pageFin() {
 }
 
 function pageFore() {
-  const t = T(), d = S.data, sp = span();
-  return `<div class="pg">${head(2, perSeg())}<div class="fgrid">${d.foremen.map((f,i) => {
-    const spent = sum(d.expenses.filter(e => e.f===f.name && inR(e.d,sp.from,sp.to)), e => e.t);
+  const t = T(), d = S.data;
+  return `<div class="pg">${pageHead(2, monthBar())}<div class="fgrid">${d.foremen.map((f,i) => {
+    const rows = monthExp(S.month, e => grp(e.f)===f.name), spent = sum(rows, e => e.t), n = sum(rows, e => e.n);
     const stale = f.at && (Date.parse(d.today)-Date.parse(f.at.slice(0,10)))/86400000 >= 2;
-    return `<div class="card fc in" style="--i:${i}" role="button" tabindex="0" data-foreman="${esc(f.name)}">
+    return `<div class="card fc in" style="--i:${i}" role="button" tabindex="0" data-person="${esc(f.name)}">
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><div class="nm">${esc(f.name)}</div><div class="mut s">${f.at ? t.last+": "+dl(f.at.slice(0,10)) : t.noRep}</div></div>
         <div style="display:flex;gap:5px">${f.source ? `<span class="badge b-blue">${f.source==="auto"?t.auto:t.manual}</span>` : ""}${stale ? `<span class="badge b-warn">${t.stale}</span>` : ""}</div></div>
+      <div class="lbl s mut" style="margin-top:12px">${t.kassa} · ${dl(d.today)}</div>
       <div class="val ${tone(f.kassa||0)}">${f.kassa===null ? "—" : fmt(f.kassa)}<small>${t.so}</small></div>
       <div>${spark(f.history.map(h => h.kassa), "#4c7bf0")}</div>
-      <div class="foot"><span>${t.spent} · ${t.p[S.per]}</span><b>${fmtS(spent)}</b></div></div>`; }).join("")}</div></div>`;
+      <div class="foot"><span>${monthLabel(S.month)}</span><b>${fmtS(spent)} · ${n} ${t.recs}</b></div></div>`; }).join("")}</div></div>`;
 }
 
 function pageObj() {
-  const t = T(), d = S.data, sp = span(), q = S.q.trim().toLowerCase();
-  const spentBy = {}; d.expenses.filter(e => inR(e.d,sp.from,sp.to)).forEach(e => spentBy[e.p] = (spentBy[e.p]||0) + e.t);
+  const t = T(), d = S.data, q = S.q.trim().toLowerCase();
+  const spentBy = {}; monthExp(S.month).forEach(e => spentBy[e.p] = (spentBy[e.p]||0) + e.t);
   let rows = d.objects.filter(o => (!q || o.name.toLowerCase().includes(q)) && (S.side==="minus" ? o.kassa<0 : S.side==="plus" ? o.kassa>0 : true)).map(o => ({...o, spent:spentBy[o.name]||0}));
   const k = S.sortKey; rows.sort((a,b) => (typeof a[k]==="string" ? (a[k]||"").localeCompare(b[k]||"") : a[k]-b[k]) * S.sortDir);
   const maxAbs = Math.max(...rows.map(r => Math.abs(r.kassa)), 1);
   const th = (key,label,r) => `<th class="sort ${r?"r":""}" data-sort="${key}">${label}${S.sortKey===key ? (S.sortDir>0?" ↑":" ↓") : ""}</th>`;
-  const acts = `${perSeg()}<div class="seg">${["all","minus","plus"].map(x => `<button data-side="${x}" aria-pressed="${S.side===x}">${x==="all"?t.all:x==="minus"?t.minus:t.plus}</button>`).join("")}</div><input class="field" id="q" type="search" placeholder="${t.search}" value="${esc(S.q)}">`;
-  return `<div class="pg">${head(3, acts)}<section class="card in" style="padding:6px 10px"><div class="scroll"><table class="tbl"><thead><tr>${th("name",t.obj)}${th("foreman",t.foreman)}${th("kassa",t.kassa,1)}<th style="width:150px"></th>${th("income",t.income,1)}${th("expense",t.expense,1)}${th("spent",t.p[S.per],1)}</tr></thead>
+  const acts = `${monthBar()}<div class="seg">${["all","minus","plus"].map(x => `<button data-side="${x}" aria-pressed="${S.side===x}">${x==="all"?t.all:x==="minus"?t.minus:t.plus}</button>`).join("")}</div><input class="field" id="q" type="search" placeholder="${t.search}" value="${esc(S.q)}">`;
+  return `<div class="pg">${pageHead(3, acts)}<section class="card in" style="padding:6px 10px"><div class="scroll"><table class="tbl"><thead><tr>${th("name",t.obj)}${th("foreman",t.foreman)}${th("kassa",t.kassa,1)}<th style="width:150px"></th>${th("income",t.income,1)}${th("expense",t.expense,1)}${th("spent",monthLabel(S.month),1)}</tr></thead>
    <tbody>${rows.map(o => `<tr class="click" data-object="${esc(o.name)}"><td class="nm2">${esc(o.name)}${o.status!=="active" ? ` <span class="badge b-warn">${esc(o.status)}</span>` : ""}</td><td class="mut">${o.foreman ? esc(o.foreman) : "—"}</td><td class="r ${tone(o.kassa)}"><b>${fmt(o.kassa)}</b></td>
      <td><div class="mbar"><i style="${o.kassa<0?"right":"left"}:50%;width:${(Math.abs(o.kassa)/maxAbs*50).toFixed(1)}%;background:${o.kassa<0?"var(--red)":"var(--green)"}"></i><i style="left:50%;width:1px;background:var(--line2)"></i></div></td>
      <td class="r">${fmt(o.income)}</td><td class="r">${fmt(o.expense)}</td><td class="r"><b>${o.spent ? fmt(o.spent) : "·"}</b></td></tr>`).join("") || `<tr><td colspan="7" class="empty">${t.none}</td></tr>`}</tbody></table></div></section></div>`;
 }
 
-function pageExp() {
-  const t = T(), d = S.data, names = seriesNames(), days = dayList(addDays(d.today, -(S.dper-1)), d.today).reverse();
-  const m = {}; d.expenses.forEach(r => { const k = r.d+"|"+grp(r.f); m[k] = (m[k]||0) + r.t; });
-  const mx = Math.max(...Object.entries(m).filter(([k]) => days.includes(k.split("|")[0])).map(e => e[1]), 1);
-  const colTot = n => sum(days, x => m[x+"|"+n]||0);
-  const acts = `<div class="seg">${[7,14,30].map(n => `<button data-dper="${n}" aria-pressed="${S.dper===n}">${t["d"+n]}</button>`).join("")}</div>`;
-  return `<div class="pg">${head(4, acts)}<section class="card in" style="padding:6px 10px"><div class="scroll" style="max-height:74vh"><table class="tbl"><thead><tr><th>${t.day}</th>${names.map(n => `<th class="r">${esc(lab(n))}</th>`).join("")}<th class="r">${t.total}</th></tr></thead>
-   <tbody>${days.map(day => { const tt = sum(names, n => m[day+"|"+n]||0);
-     return `<tr><td class="nm2">${dl(day)}</td>${names.map(n => { const v = m[day+"|"+n]||0; return v ? `<td class="r click" data-day="${day}" data-who="${esc(n)}" style="cursor:pointer;background:rgba(30,63,160,${(v/mx*.14).toFixed(3)})">${fmt(v)}</td>` : `<td class="r" style="color:var(--line2)">·</td>`; }).join("")}<td class="r"><b>${tt ? fmt(tt) : "·"}</b></td></tr>`; }).join("")}</tbody>
-   <tfoot><tr><td class="nm2" style="border-top:1px solid var(--line2)">${t.total}</td>${names.map(n => `<td class="r" style="border-top:1px solid var(--line2)"><b>${fmt(colTot(n))}</b></td>`).join("")}<td class="r" style="border-top:1px solid var(--line2)"><b>${fmt(sum(names, colTot))}</b></td></tr></tfoot></table></div></section></div>`;
+function pagePeople() {
+  const t = T(), r = mrange(), people = personStats(S.month), total = sum(people, p => p.total), cnt = sum(people, p => p.n), pmax = people[0] ? people[0].total : 1;
+  return `<div class="pg">${pageHead(4, monthBar())}
+    <div class="card in" style="margin-bottom:16px"><div class="lbl s mut">${monthLabel(S.month)}</div><div class="kpi">${fmt(total)} <span class="mut" style="font-size:15px;font-weight:600;letter-spacing:0">${t.so}</span></div>
+      <div class="cap s mut">${cnt} ${t.recs}</div>${total>0 ? rowsBtn(t.allRecords, {rows:"expenses", from:r.from, to:r.to}) : ""}</div>
+    <div class="fgrid">${people.length ? people.map((p,i) => `<div class="card fc in" style="--i:${i}" role="button" tabindex="0" data-person="${esc(p.name)}">
+      <div class="nm">${esc(lab(p.name))}</div><div class="mut s" style="min-height:36px">${personRole(p.name)}</div>
+      <div class="val">${fmt(p.total)}<small>${t.so}</small></div>
+      <div class="bar0"><i style="width:${(p.total/pmax*100).toFixed(1)}%;background:${colorOf(p.name)}"></i></div>
+      <div class="foot"><span>${p.n} ${t.recs}</span><b>${p.objs.size} ${t.objsN}</b></div></div>`).join("") : `<div class="empty">${t.noSpend}</div>`}</div></div>`;
 }
 
-/* ------------------------------------------------ drawer */
+/* ------------------------------------------------ drawer (with a back stack) */
 const drawer = $("#drawer"), scrim = $("#scrim"); let lastFocus = null, dstack = [], dcur = null;
 function tgBack() { if (!TG_DATA) return; try { if (drawer.classList.contains("on")) TG.BackButton.show(); else TG.BackButton.hide(); } catch {} }
 function paint() { drawer.innerHTML = dcur.html; drawer.scrollTop = 0; $(".x", drawer).addEventListener("click", closeDrawer);
@@ -640,115 +722,13 @@ function closeDrawer() { dstack = []; dcur = null; drawer.classList.remove("on")
 if (TG_DATA) { try { TG.BackButton.onClick(drawerBack); } catch {} }
 scrim.addEventListener("click", closeDrawer);
 addEventListener("keydown", e => { if (e.key==="Escape" && drawer.classList.contains("on")) closeDrawer();
-  if ((e.key==="Enter"||e.key===" ") && e.target.matches && e.target.matches("[data-foreman]:not(button)")) { e.preventDefault(); drawerForeman(e.target.dataset.foreman); } });
+  if ((e.key==="Enter"||e.key===" ") && e.target.matches && e.target.matches("[data-person]:not(button),[data-list]:not(button),[data-go]:not(button)")) { e.preventDefault(); e.target.click(); } });
 const dhead = (title, sub) => `<div class="dh"><div>${drawer.classList.contains("on") ? `<button class="bk" aria-label="Back">‹</button>` : ""}<div style="min-width:0"><h2>${esc(title)}</h2>${sub ? `<div class="mut s">${sub}</div>` : ""}</div></div><button class="x" aria-label="Close">✕</button></div>`;
 const kv = (l,v,c) => `<div><div class="l">${l}</div><div class="v ${c||""}">${v}</div></div>`;
 
-function drawerForeman(name) {
-  const t = T(), d = S.data, f = d.foremen.find(x => x.name===name); if (!f) return;
-  const sp = span(), days14 = dayList(addDays(d.today,-13), d.today);
-  const rows = d.expenses.filter(e => e.f===name && inR(e.d,sp.from,sp.to)), tot = sum(rows, r => r.t);
-  const byObj = {}; rows.forEach(r => byObj[r.p] = (byObj[r.p]||0) + r.t); const list = Object.entries(byObj).sort((a,b) => b[1]-a[1]);
-  const dayTot = {}; d.expenses.filter(e => e.f===name).forEach(e => dayTot[e.d] = (dayTot[e.d]||0) + e.t);
-  openDrawer(dhead(name, f.at ? `${t.last}: ${dl(f.at.slice(0,10))} · ${f.source==="auto"?t.auto:t.manual}` : t.noRep) + `<div class="db">
-    <div class="kv">${kv(t.kassa, f.kassa===null?"—":fmt(f.kassa), tone(f.kassa||0))}${kv(t.spent+" · "+t.p[S.per], fmtS(tot))}</div>
-    <div class="linkrow">${rowsBtn(t.expRows, {rows:"expenses", who:name, from:sp.from, to:sp.to})}${rowsBtn(t.howK, {rows:"reports", party:name})}</div>
-    <div><h4>${t.hist}</h4><div class="chart" id="dHist"></div></div>
-    <div><h4>${t.days}</h4><div class="chart" id="dDaily"></div></div>
-    <div><h4>${t.byObj} · ${t.p[S.per]}</h4>${list.length ? `<div class="lst">${list.map(([n,v]) => `<button class="li" data-object="${esc(n)}"><span class="n">${esc(n)}</span><span class="a">${fmt(v)}</span><span class="m">${Math.round(v/tot*100)}%</span><span></span></button>`).join("")}</div>` : `<div class="empty">${t.noSpend}</div>`}</div>
-  </div>`, () => {
-    lineChart($("#dHist"), f.history.map(h => ({x:h.d, v:h.kassa})), { name:t.kassa, h:190 });
-    barChart($("#dDaily"), days14, [name], day => dayTot[day]||0, { h:180 });
-  });
-}
-function drawerObject(name) {
-  const t = T(), d = S.data, o = d.objects.find(x => x.name===name); if (!o) return;
-  const days = dayList(addDays(d.today,-29), d.today), rows = d.expenses.filter(e => e.p===name && e.d>=days[0]);
-  const byF = {}; rows.forEach(r => byF[grp(r.f)] = (byF[grp(r.f)]||0) + r.t); const m = {}; rows.forEach(r => m[r.d+"|"+grp(r.f)] = (m[r.d+"|"+grp(r.f)]||0) + r.t);
-  const incs = d.income.filter(i => i.p===name && i.d>=days[0]).sort((a,b) => b.d.localeCompare(a.d));
-  openDrawer(dhead(name, o.foreman ? `${t.foreman}: ${esc(o.foreman)}` : "") + `<div class="db">
-    <div class="kv">${kv(t.kassa, fmt(o.kassa), tone(o.kassa))}${kv(t.income, fmtS(o.income))}${kv(t.expense, fmtS(o.expense))}</div>
-    <div class="linkrow">${rowsBtn(t.expRows, {rows:"expenses", project:name, from:days[0], to:d.today})}${rowsBtn(t.incRows, {rows:"income", project:name, from:days[0], to:d.today})}</div>
-    <div><h4>${t.dyn} · 30</h4><div class="chart" id="dDaily"></div>${legend(Object.keys(byF))}</div>
-    <div><h4>${t.incomes}</h4>${incs.length ? `<table class="tbl"><tbody>${incs.map(i => `<tr><td>${dl(i.d)}</td><td class="r green"><b>+${fmt(i.t)}</b></td></tr>`).join("")}</tbody></table>` : `<div class="empty">${t.none}</div>`}</div>
-  </div>`, () => barChart($("#dDaily"), days, Object.keys(byF), (day,s) => m[day+"|"+s]||0, { h:180 }));
-}
-function drawerCell(day, who) {
-  const t = T(), rows = S.data.expenses.filter(e => e.d===day && grp(e.f)===who);
-  const byP = {}; rows.forEach(r => { const o = byP[r.p] || (byP[r.p] = {material:0,labor:0,food:0,total:0}); o[r.c] += r.t; o.total += r.t; });
-  const list = Object.entries(byP).sort((a,b) => b[1].total-a[1].total);
-  openDrawer(dhead(`${lab(who)} · ${dl(day)}`, `${t.total}: ${fmt(sum(rows, r => r.t))} ${t.so}`) + `<div class="db"><div class="linkrow">${rowsBtn(t.expRows, {rows:"expenses", who, from:day, to:day})}</div>${list.length ? `<div class="scroll"><table class="tbl"><thead><tr><th>${t.obj}</th><th class="r">${t.cat.material}</th><th class="r">${t.cat.labor}</th><th class="r">${t.cat.food}</th><th class="r">${t.total}</th></tr></thead><tbody>${list.map(([p,o]) => `<tr><td class="nm2">${esc(p)}</td><td class="r">${o.material?fmt(o.material):"·"}</td><td class="r">${o.labor?fmt(o.labor):"·"}</td><td class="r">${o.food?fmt(o.food):"·"}</td><td class="r"><b>${fmt(o.total)}</b></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t.noSpend}</div>`}</div>`);
-}
-function drawerChecks() {
-  const t = T(), cs = S.data.checks, fx = c => { let x = {}; try { x = JSON.parse(c.detail); } catch {} for (const k in x) if (typeof x[k]==="number" && !["days","count"].includes(k)) x[k] = fmt(x[k]); return (t.ck[c.kind]||(()=>c.title))(c.date?dl(c.date):"", c.foreman||"", x); };
-  const G = [[t.g1, c => c.kind==="recon" && c.level==="warn", "w"], [t.g2, c => c.kind==="arith" && c.level==="warn", "w"], [t.g3, c => ["stale","noreport","unparsed"].includes(c.kind), "w"], [t.g4, () => true, "i"]];
-  const used = new Set(); const body = G.map(([title,test,lv]) => { const l = cs.filter(c => !used.has(c) && test(c)).sort((a,b) => (b.date||"").localeCompare(a.date||"")); l.forEach(c => used.add(c));
-    return l.length ? `<div><h4>${title} <span class="mut" style="font-weight:500">· ${l.length}</span></h4>${l.map(c => `<div class="ck ${lv==="i"?"i":""}"><i></i><p>${esc(fx(c))}</p></div>`).join("")}</div>` : ""; }).join("");
-  openDrawer(dhead(t.attnT, "") + `<div class="db">${body || `<div class="empty">✓ ${t.attnOk}</div>`}</div>`);
-}
-
-/* ------------------------------------------------ shell */
-const PAGES = [pageDash, pageFin, pageFore, pageObj, pageExp];
-const NAVI = ["dash","fin","fore","obj","exp"];
-function shell() {
-  const t = T(), d = S.data;
-  $("#app").innerHTML = `<div class="app">
-   <div class="mtop"><div class="sb-brand"><span class="logo">${STAR}</span><div><b>SALDO</b></div></div><div class="acts"><button class="ib" data-act="lang" aria-label="${t.lang}">${ic("globe")}</button><button class="ib" data-act="refresh" aria-label="${t.refresh}">${ic("refresh")}</button></div></div>
-   <aside class="side">
-    <div class="sb-brand"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${t.brand}</small></div></div>
-    <div class="sb-info"><div><small>${t.upd}</small><b>${new Date(d.generatedAt).toLocaleTimeString(S.lang==="ru"?"ru-RU":"uz-UZ",{hour:"2-digit",minute:"2-digit"})}</b></div><button class="ib" id="refresh" data-act="refresh" title="${t.refresh}" aria-label="${t.refresh}">${ic("refresh")}</button></div>
-    <nav class="nav" id="nav">${NAVI.map((k,i) => `${i===2?'<div class="sep"></div>':""}<button class="ni" data-tab="${i}" ${i===S.tab?'aria-current="page"':""}>${ic(k)}<span class="lg">${t.nav[i]}</span><span class="sh">${t.navS[i]}</span></button>`).join("")}</nav>
-    <div class="sb-foot"><button class="ni" id="lang" data-act="lang">${ic("globe")}<span>${t.lang}</span></button></div>
-   </aside>
-   <main id="main"></main></div>`;
-  render();
-  S.shown = true;
-}
-function countUp() {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  document.querySelectorAll("[data-count]").forEach(el => { const to = +el.dataset.count * (el.dataset.neg==="1" ? -1 : 1), t0 = performance.now();
-    const step = now => { const p = Math.min(1,(now-t0)/650), e = 1-Math.pow(1-p,4); el.textContent = fmt(to*e); if (p<1) requestAnimationFrame(step); else el.textContent = fmt(to); }; requestAnimationFrame(step); });
-}
-function render() {
-  $("#main").innerHTML = PAGES[S.tab]();
-  charts.forEach(c => c.isConnected || charts.delete(c));
-  if (S.tab===0) afterDash();
-  countUp();
-}
-function go(i) { S.tab = i; document.querySelectorAll(".ni[data-tab]").forEach(b => b.toggleAttribute("aria-current", +b.dataset.tab===i)); document.querySelectorAll(".ni[data-tab]").forEach(b => { if (+b.dataset.tab===i) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); }); hideTip(); render(); scrollTo({top:0}); }
-
-document.addEventListener("click", e => {
-  const c = sel => e.target.closest(sel);
-  if (c("[data-rows]")) { const b = c("[data-rows]"); return openRows({ rows:b.dataset.rows, project:b.dataset.project, who:b.dataset.who, party:b.dataset.party, from:b.dataset.from, to:b.dataset.to }); }
-  if (c(".rw[data-raw]")) { const r = c(".rw[data-raw]").querySelector(".rw-raw"); if (r) r.hidden = !r.hidden; return; }
-  if (c("[data-tab]")) { buzz(); return go(+c("[data-tab]").dataset.tab); }
-  if (c("[data-per]")) { S.per = c("[data-per]").dataset.per; S.perChosen = true; S.autoNote = false; return render(); }
-  if (c("[data-dper]")) { S.dper = +c("[data-dper]").dataset.dper; return render(); }
-  if (c("[data-side]")) { S.side = c("[data-side]").dataset.side; return render(); }
-  if (c("[data-sort]")) { const k = c("[data-sort]").dataset.sort; S.sortDir = S.sortKey===k ? -S.sortDir : 1; S.sortKey = k; return render(); }
-  if (c("[data-day]")) return drawerCell(c("[data-day]").dataset.day, c("[data-day]").dataset.who);
-  if (c("[data-foreman]")) return drawerForeman(c("[data-foreman]").dataset.foreman);
-  if (c("[data-object]")) return drawerObject(c("[data-object]").dataset.object);
-  if (c("#attn")) return drawerChecks();
-  if (c("[data-act=lang]")) { S.lang = S.lang==="uz" ? "ru" : "uz"; try { localStorage.setItem("saldo.lang", S.lang); } catch {} document.documentElement.lang = S.lang; return shell(); }
-  if (c("[data-act=refresh]")) return load();
-});
-document.addEventListener("change", e => { if (e.target.id==="selF") { S.foreman = e.target.value; render(); } });
-document.addEventListener("input", e => { if (e.target.id==="q") { S.q = e.target.value; const p = e.target.selectionStart; render(); const q = $("#q"); if (q) { q.focus(); q.setSelectionRange(p,p); } } });
-
-/* ------------------------------------------------ Telegram Mini App + drill-down */
-function apiFetch(query) {
-  const h = {}; if (TG_DATA) h["x-tg-init-data"] = TG_DATA;
-  const qs = [S.key ? `k=${encodeURIComponent(S.key)}` : "", query || ""].filter(Boolean).join("&");
-  return fetch(API + (qs ? "?" + qs : ""), { cache:"no-store", headers:h });
-}
-function gate2(msg, sub, extra) {
-  S.gated = true;
-  $("#app").innerHTML = `<div class="gate"><div class="box"><div class="bl"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${T().brand}</small></div></div><div class="cardx"><h1>${msg}</h1><p class="mut" style="margin:0">${sub}</p>${extra||""}</div></div></div>`;
-}
+/* ---- records ("how was this number formed") */
 const tz = iso => { const d = new Date(new Date(iso).getTime() + 5*3600e3).toISOString(); return { d:d.slice(0,10), h:d.slice(11,16) }; };
 const CATCOL = { material:"#2563eb", labor:"#8b5cf6", food:"#f59e0b" };
-
 function rowsHTML(kind, j) {
   const t = T(), rows = j.rows || [];
   if (!rows.length) return `<div class="empty">${t.noRows}</div>`;
@@ -784,14 +764,127 @@ async function drawerRows(kind, title, sub, params) {
 function openRows(d) {
   const t = T(), q = new URLSearchParams();
   if (d.from) { q.set("from", d.from); q.set("to", d.to); }
-  if (d.project) q.set("project", d.project); if (d.who) q.set("who", d.who); if (d.party) q.set("party", d.party);
-  const label = d.who ? lab(d.who) : d.project || d.party || "";
-  if (d.rows === "reports") return drawerRows("reports", `${t.howK}`, label, q.toString());
-  const rng = d.from === d.to ? dl(d.from) : `${dl(d.from)} – ${dl(d.to)}`;
-  drawerRows(d.rows, `${d.rows==="income" ? t.incRows : t.expRows}`, [label, rng].filter(Boolean).join(" · "), q.toString());
+  for (const k of ["project","who","party","cat"]) if (d[k]) q.set(k, d[k]);
+  const who = d.who ? lab(d.who) : "";
+  if (d.rows === "reports") return drawerRows("reports", t.howK, d.party || "", q.toString());
+  const rng = d.from === d.to ? dlf(d.from) : (d.from && d.from.slice(0,7) === (d.to||"").slice(0,7) && d.from.slice(8) === "01" ? monthLabel(d.from.slice(0,7)) : `${dl(d.from)} – ${dl(d.to)}`);
+  const what = [who, d.project, d.cat ? t.cat[d.cat] : ""].filter(Boolean).join(" · ");
+  drawerRows(d.rows, d.rows === "income" ? t.incRows : t.expRows, [what, rng].filter(Boolean).join(" · "), q.toString());
 }
-const rowsBtn = (label, attrs) => `<button class="link" data-rows="${attrs.rows}" ${Object.entries(attrs).filter(([k]) => k !== "rows").map(([k,v]) => `data-${k}="${esc(v)}"`).join(" ")}>${label} <span aria-hidden="true">›</span></button>`;
 
+/* ---- person (foreman, Elyor, accountant): everything they wrote in the chosen month, layer by layer */
+function drawerPerson(name) {
+  const t = T(), d = S.data, r = mrange(), f = d.foremen.find(x => x.name===name);
+  const rows = monthExp(S.month, e => grp(e.f)===name), tot = sum(rows, e => e.t), cnt = sum(rows, e => e.n);
+  const byObj = {}, byCat = { material:0, labor:0, food:0 }, dayTot = {};
+  rows.forEach(e => { const o = byObj[e.p] || (byObj[e.p] = { t:0, n:0 }); o.t += e.t; o.n += e.n; byCat[e.c] += e.t; dayTot[e.d] = (dayTot[e.d]||0) + e.t; });
+  const ol = Object.entries(byObj).sort((a,b) => b[1].t-a[1].t), omax = ol[0] ? ol[0][1].t : 1;
+  const days = dayList(r.from, r.to);
+  const sub = f ? (f.at ? `${t.last}: ${dl(f.at.slice(0,10))} · ${f.source==="auto"?t.auto:t.manual}` : t.noRep) : personRole(name);
+  openDrawer(dhead(lab(name), sub) + `<div class="db">
+    <div class="kv">${f ? kv(t.kassa, f.kassa===null?"—":fmt(f.kassa), tone(f.kassa||0)) : ""}${kv(monthLabel(S.month), fmtS(tot))}${kv(t.rowsT, cnt)}</div>
+    <div class="linkrow">${tot>0 ? rowsBtn(t.allRecords, {rows:"expenses", who:name, from:r.from, to:r.to}) : ""}${f ? rowsBtn(t.howK, {rows:"reports", party:name}) : ""}</div>
+    ${f && f.history.length>1 ? `<div><h4>${t.hist}</h4><div class="chart" id="dHist"></div></div>` : ""}
+    <div><h4>${t.dyn} · ${monthLabel(S.month)}</h4><div class="chart" id="dDaily"></div></div>
+    <div><h4>${t.byObj}</h4><div class="lst">${ol.length ? ol.map(([n,v]) => barRow(`data-rows="expenses" data-who="${esc(name)}" data-project="${esc(n)}" data-from="${r.from}" data-to="${r.to}"`, "", n, fmt(v.t), `${v.n} ${t.recs}`, v.t/omax*100, colorOf(name))).join("") : `<div class="empty">${t.noSpend}</div>`}</div></div>
+    <div><h4>${t.types}</h4><div class="lst">${["material","labor","food"].filter(c => byCat[c]>0).map(c => barRow(`data-rows="expenses" data-who="${esc(name)}" data-cat="${c}" data-from="${r.from}" data-to="${r.to}"`, CATCOL[c], t.cat[c], fmt(byCat[c]), "", byCat[c]/tot*100, CATCOL[c])).join("")}</div></div>
+  </div>`, () => {
+    if (f && f.history.length>1) lineChart($("#dHist"), f.history.map(h => ({x:h.d, v:h.kassa})), { name:t.kassa, h:190 });
+    barChart($("#dDaily"), days, [name], day => dayTot[day]||0, { h:180, pick:day => openRows({ rows:"expenses", who:name, from:day, to:day }) });
+  });
+}
+/* ---- object */
+function drawerObject(name) {
+  const t = T(), d = S.data, o = d.objects.find(x => x.name===name); if (!o) return;
+  const r = mrange(), rows = monthExp(S.month, e => e.p===name), tot = sum(rows, e => e.t), cnt = sum(rows, e => e.n);
+  const byP = {}, dayF = {}; rows.forEach(e => { const k = grp(e.f); const p = byP[k] || (byP[k] = { t:0, n:0 }); p.t += e.t; p.n += e.n; dayF[e.d+"|"+k] = (dayF[e.d+"|"+k]||0) + e.t; });
+  const pl = Object.entries(byP).sort((a,b) => b[1].t-a[1].t), pmax = pl[0] ? pl[0][1].t : 1;
+  const incM = sum(monthInc(S.month).filter(i => i.p===name), i => i.t);
+  const days = dayList(r.from, r.to);
+  openDrawer(dhead(name, o.foreman ? `${t.foreman}: ${esc(o.foreman)}` : "") + `<div class="db">
+    <div class="kv">${kv(t.kassa, fmt(o.kassa), tone(o.kassa))}${kv(t.income+" · "+t.total, fmtS(o.income))}${kv(t.expense+" · "+t.total, fmtS(o.expense))}</div>
+    <div class="kv">${kv(monthLabel(S.month)+" · "+t.expense, fmtS(tot))}${kv(monthLabel(S.month)+" · "+t.income, fmtS(incM))}${kv(t.rowsT, cnt)}</div>
+    <div class="linkrow">${tot>0 ? rowsBtn(t.expRows, {rows:"expenses", project:name, from:r.from, to:r.to}) : ""}${rowsBtn(t.incRows, {rows:"income", project:name, from:r.from, to:r.to})}${rowsBtn(t.paidAll, {rows:"income", project:name, from:"2020-01-01", to:d.today})}</div>
+    <div><h4>${t.dyn} · ${monthLabel(S.month)}</h4><div class="chart" id="dDaily"></div>${pl.length ? legend(pl.map(x => x[0])) : ""}</div>
+    <div><h4>${t.byPerson}</h4><div class="lst">${pl.length ? pl.map(([n,v]) => barRow(`data-rows="expenses" data-project="${esc(name)}" data-who="${esc(n)}" data-from="${r.from}" data-to="${r.to}"`, colorOf(n), lab(n), fmt(v.t), `${v.n} ${t.recs}`, v.t/pmax*100, colorOf(n))).join("") : `<div class="empty">${t.noSpend}</div>`}</div></div>
+  </div>`, () => barChart($("#dDaily"), days, pl.map(x => x[0]), (day,s) => dayF[day+"|"+s]||0, { h:180, pick:day => openRows({ rows:"expenses", project:name, from:day, to:day }) }));
+}
+/* ---- the three numbers R / D / P */
+function drawerList(kind) {
+  const t = T(), d = S.data;
+  const items = kind==="P" ? d.foremen.filter(f => f.kassa!==null && f.kassa<0).sort((a,b) => a.kassa-b.kassa).map(f => ({ attr:`data-person="${esc(f.name)}"`, name:f.name, v:-f.kassa, sub:t.last+": "+(f.at ? dl(f.at.slice(0,10)) : "—") }))
+    : d.objects.filter(o => kind==="R" ? o.kassa<0 : o.kassa>0).sort((a,b) => kind==="R" ? a.kassa-b.kassa : b.kassa-a.kassa).map(o => ({ attr:`data-object="${esc(o.name)}"`, name:o.name, v:Math.abs(o.kassa), sub:o.foreman||"—" }));
+  const title = kind==="R" ? t.listR : kind==="D" ? t.listD : t.listP, max = items[0] ? items[0].v : 1, col = kind==="R" ? "var(--amber)" : "var(--red)";
+  openDrawer(dhead(title, `${t.total}: ${fmt(sum(items, x => x.v))} ${t.so}`) + `<div class="db"><div class="lst">${items.length ? items.map(x => barRow(x.attr, "", x.name, fmt(x.v), esc(x.sub), x.v/max*100, col)).join("") : `<div class="empty">${t.none}</div>`}</div></div>`);
+}
+function drawerChecks() {
+  const t = T(), cs = S.data.checks, fx = c => { let x = {}; try { x = JSON.parse(c.detail); } catch {} for (const k in x) if (typeof x[k]==="number" && !["days","count"].includes(k)) x[k] = fmt(x[k]); return (t.ck[c.kind]||(()=>c.title))(c.date?dl(c.date):"", c.foreman||"", x); };
+  const G = [[t.g1, c => c.kind==="recon" && c.level==="warn", "w"], [t.g2, c => c.kind==="arith" && c.level==="warn", "w"], [t.g3, c => ["stale","noreport","unparsed"].includes(c.kind), "w"], [t.g4, () => true, "i"]];
+  const used = new Set(); const body = G.map(([title,test,lv]) => { const l = cs.filter(c => !used.has(c) && test(c)).sort((a,b) => (b.date||"").localeCompare(a.date||"")); l.forEach(c => used.add(c));
+    return l.length ? `<div><h4>${title} <span class="mut" style="font-weight:500">· ${l.length}</span></h4>${l.map(c => `<div class="ck ${lv==="i"?"i":""}"><i></i><p>${esc(fx(c))}</p></div>`).join("")}</div>` : ""; }).join("");
+  openDrawer(dhead(t.attnT, "") + `<div class="db">${body || `<div class="empty">✓ ${t.attnOk}</div>`}</div>`);
+}
+
+/* ------------------------------------------------ shell */
+const PAGES = [pageDash, pageFin, pageFore, pageObj, pagePeople];
+const NAVI = ["dash","fin","fore","obj","exp"];
+function shell() {
+  const t = T(), d = S.data;
+  $("#app").innerHTML = `<div class="app">
+   <div class="mtop"><div class="sb-brand"><span class="logo">${STAR}</span><div><b>SALDO</b></div></div><div class="acts"><button class="ib" data-act="lang" aria-label="${t.lang}">${ic("globe")}</button><button class="ib" data-act="refresh" aria-label="${t.refresh}">${ic("refresh")}</button></div></div>
+   <aside class="side">
+    <div class="sb-brand"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${t.brand}</small></div></div>
+    <div class="sb-info"><div><small>${t.upd}</small><b>${new Date(d.generatedAt).toLocaleTimeString(S.lang==="ru"?"ru-RU":"uz-UZ",{hour:"2-digit",minute:"2-digit"})}</b></div><button class="ib" id="refresh" data-act="refresh" title="${t.refresh}" aria-label="${t.refresh}">${ic("refresh")}</button></div>
+    <nav class="nav" id="nav">${NAVI.map((k,i) => `${i===2?'<div class="sep"></div>':""}<button class="ni" data-tab="${i}" ${i===S.tab?'aria-current="page"':""}>${ic(k)}<span class="lg">${t.nav[i]}</span><span class="sh">${t.navS[i]}</span></button>`).join("")}</nav>
+    <div class="sb-foot"><button class="ni" id="lang" data-act="lang">${ic("globe")}<span>${t.lang}</span></button></div>
+   </aside>
+   <main id="main"></main></div>`;
+  render();
+  S.shown = true;
+}
+function countUp() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  document.querySelectorAll("[data-count]").forEach(el => { const to = +el.dataset.count * (el.dataset.neg==="1" ? -1 : 1), t0 = performance.now();
+    const step = now => { const p = Math.min(1,(now-t0)/650), e = 1-Math.pow(1-p,4); el.textContent = fmt(to*e); if (p<1) requestAnimationFrame(step); else el.textContent = fmt(to); }; requestAnimationFrame(step); });
+}
+function render() {
+  $("#main").innerHTML = PAGES[S.tab]();
+  charts.forEach(c => c.isConnected || charts.delete(c));
+  if (S.tab===0) afterDash();
+  countUp();
+}
+function go(i) { S.tab = i; document.querySelectorAll(".ni[data-tab]").forEach(b => { if (+b.dataset.tab===i) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); }); hideTip(); render(); scrollTo({top:0}); }
+
+document.addEventListener("click", e => {
+  const c = sel => e.target.closest(sel);
+  if (c("[data-rows]")) { const b = c("[data-rows]"), g = k => b.dataset[k]; return openRows({ rows:g("rows"), project:g("project"), who:g("who"), party:g("party"), cat:g("cat"), from:g("from"), to:g("to") }); }
+  if (c(".rw[data-raw]")) { const r = c(".rw[data-raw]").querySelector(".rw-raw"); if (r) r.hidden = !r.hidden; return; }
+  if (c("[data-mm]")) { const b = bounds(), m = monthShift(S.month, +c("[data-mm]").dataset.mm); if (m>=b.min && m<=b.max) { S.month = m; render(); } return; }
+  if (c(".mpl")) { const i = $("#mpick"); try { if (i && i.showPicker && e.target !== i) i.showPicker(); } catch {} return; }
+  if (c("[data-tab]")) { buzz(); return go(+c("[data-tab]").dataset.tab); }
+  if (c("[data-go]")) return go(+c("[data-go]").dataset.go);
+  if (c("[data-list]")) return drawerList(c("[data-list]").dataset.list);
+  if (c("[data-side]")) { S.side = c("[data-side]").dataset.side; return render(); }
+  if (c("[data-sort]")) { const k = c("[data-sort]").dataset.sort; S.sortDir = S.sortKey===k ? -S.sortDir : 1; S.sortKey = k; return render(); }
+  if (c("[data-person]")) return drawerPerson(c("[data-person]").dataset.person);
+  if (c("[data-object]")) return drawerObject(c("[data-object]").dataset.object);
+  if (c("#attn")) return drawerChecks();
+  if (c("[data-act=lang]")) { S.lang = S.lang==="uz" ? "ru" : "uz"; try { localStorage.setItem("saldo.lang", S.lang); } catch {} document.documentElement.lang = S.lang; return shell(); }
+  if (c("[data-act=refresh]")) return load();
+});
+document.addEventListener("change", e => { if (e.target.id==="mpick" && /^\d{4}-\d{2}$/.test(e.target.value)) { const b = bounds(); S.month = e.target.value < b.min ? b.min : e.target.value > b.max ? b.max : e.target.value; render(); } });
+document.addEventListener("input", e => { if (e.target.id==="q") { S.q = e.target.value; const p = e.target.selectionStart; render(); const q = $("#q"); if (q) { q.focus(); q.setSelectionRange(p,p); } } });
+
+/* ------------------------------------------------ data, sign-in, diagnostics */
+function apiFetch(query) {
+  const h = {}; if (TG_DATA) h["x-tg-init-data"] = TG_DATA;
+  const qs = [S.key ? `k=${encodeURIComponent(S.key)}` : "", query || ""].filter(Boolean).join("&");
+  return fetch(API + (qs ? "?" + qs : ""), { cache:"no-store", headers:h });
+}
+function gate2(msg, sub, extra) {
+  S.gated = true;
+  $("#app").innerHTML = `<div class="gate"><div class="box"><div class="bl"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${T().brand}</small></div></div><div class="cardx"><h1>${msg}</h1><p class="mut" style="margin:0">${sub}</p>${extra||""}</div></div></div>`;
+}
 function diagBox(extra) {
   const u = TG && TG.initDataUnsafe && TG.initDataUnsafe.user;
   const rows = [["telegram", TG ? "yes" : "no"], ["platform", TG && TG.platform], ["version", TG && TG.version], ["initData length", TG_DATA.length], ["user id", u && u.id], ["language", navigator.language], ["page", location.host], ["ua", navigator.userAgent.slice(0, 80)], extra ? ["error", extra] : null].filter(Boolean);
@@ -808,8 +901,6 @@ addEventListener("unhandledrejection", e => { if (!S.shown) fail(String(e.reason
 setTimeout(() => { if (!S.shown && !S.gated) fail("timeout: nothing rendered after 9 s"); }, 9000);
 function notTelegram() { gate2(T().tgOpen, T().tgOpenSub, `<a class="btn" style="display:block;margin-top:16px;text-decoration:none;text-align:center" href="https://t.me/saldoarthouseaibot">${T().toBot}</a>`); }
 
-/* ------------------------------------------------ data */
-function gate(msg, sub, retry) { $("#app").innerHTML = `<div class="gate"><div class="box"><div class="bl"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${T().brand}</small></div></div><div class="cardx"><h1>${msg}</h1><p class="mut" style="margin:0">${sub}</p>${retry ? `<button class="btn" id="retry" style="margin-top:16px;width:100%">${T().retry}</button>` : ""}</div></div></div>`; const b = $("#retry"); if (b) b.onclick = () => load(); }
 async function load() {
   const btn = $("#refresh"); if (btn) btn.disabled = true;
   try {
@@ -818,24 +909,24 @@ async function load() {
     if (res.status===401) { try { localStorage.removeItem("saldo.k"); } catch {} S.key = null; S.data = null; return TG_DATA ? fail("401: Telegram signature not accepted") : notTelegram(); }
     if (!res.ok) throw new Error(res.status);
     S.data = await res.json();
-    if (!S.perChosen && S.per==="today" && !S.data.expenses.some(e => e.d===S.data.today)) { S.per = "yesterday"; S.autoNote = true; }
-    if (S.foreman!=="all" && !S.data.foremen.some(f => f.name===S.foreman)) S.foreman = "all";
+    const b = bounds(); if (!S.month || S.month > b.max || S.month < b.min) S.month = b.max;
     shell();
-    const op = S.openParam; if (op && !S.opened) { S.opened = 1; const [kind,a,b] = decodeURIComponent(op).split(":"); if (kind==="f") drawerForeman(a); else if (kind==="o") drawerObject(a); else if (kind==="c") drawerChecks(); else if (kind==="d") drawerCell(a,b); }
+    const op = S.openParam; if (op && !S.opened) { S.opened = 1; const [kind,a] = decodeURIComponent(op).split(":"); if (kind==="p") drawerPerson(a); else if (kind==="o") drawerObject(a); else if (kind==="c") drawerChecks(); else if (kind==="l") drawerList(a); }
   } catch (err) { if (!S.shown) fail(String(err && err.message || err)); else { if (btn) btn.disabled = false; showErr(String(err && err.message || err)); } }
 }
 (function boot() {
   document.documentElement.lang = S.lang;
-  const h = location.hash, m = h.match(/k=([^&]+)/), tb = h.match(/tab=(\d)/), pr = h.match(/per=(today|yesterday|w|m)/);
-  if (tb && +tb[1] < 5) S.tab = +tb[1]; if (pr) { S.per = pr[1]; S.perChosen = true; } S.openParam = (h.match(/open=([^&]+)/) || [])[1];
+  const h = location.hash, m = h.match(/k=([^&]+)/), tb = h.match(/tab=(\d)/), mo = h.match(/month=(\d{4}-\d{2})/);
+  if (tb && +tb[1] < 5) S.tab = +tb[1]; if (mo) S.month = mo[1]; S.openParam = (h.match(/open=([^&]+)/) || [])[1];
   try { if (m) { localStorage.setItem("saldo.k", decodeURIComponent(m[1])); history.replaceState(null, "", location.pathname + location.search); } S.key = localStorage.getItem("saldo.k"); } catch { S.key = m ? decodeURIComponent(m[1]) : null; }
   if (!S.key && !TG_DATA) return notTelegram();
   load();
   setInterval(() => { if (!document.hidden && S.data && !drawer.classList.contains("on")) load(); }, 5*60*1000);
 })();
-// small debug/test handle (read-only use): lets support and the automated tests drive the page
-window.__d = { get S() { return S; }, PAGES, go, load, openRows, drawerForeman, drawerObject, drawerBack, closeDrawer, addDays };
+// small debug/test handle: lets support and the automated tests drive the page
+window.__d = { get S() { return S; }, PAGES, go, load, openRows, drawerPerson, drawerObject, drawerList, drawerBack, closeDrawer, addDays };
 })();
+
 </script>
 </body>
 </html>
