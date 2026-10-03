@@ -429,6 +429,33 @@ button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
 .bar0 i{display:block;height:100%;border-radius:99px}
 .chart.pick{cursor:pointer}
 .stat.tap{cursor:pointer}
+
+/* ================= month picker, tappable cards ================= */
+.acts2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mp{display:inline-flex;align-items:center;background:#fff;border:1px solid rgba(37,99,235,.18);border-radius:12px;box-shadow:0 1px 2px rgba(20,50,140,.05);overflow:hidden}
+.mpb{border:0;background:none;width:40px;height:42px;font-size:24px;line-height:1;color:var(--primary);transition:background 140ms ease-out}
+.mpb:disabled{color:var(--line2);cursor:default}
+.mpb:not(:disabled):active{background:var(--soft)}
+.mpl{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;height:42px;min-width:168px;font-weight:700;cursor:pointer;color:var(--ink)}
+.mpl svg.i{width:17px;height:17px;color:var(--primary)}
+.mpl input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid3{grid-template-columns:minmax(0,1fr)}}
+.tap{cursor:pointer;transition:transform 200ms var(--ease-out),box-shadow 200ms var(--ease-out)}
+.tap:active{transform:scale(.985)}
+button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
+.sumc{position:relative}
+.sumc .kpi{font-size:28px;margin:6px 0 4px}
+.sumc .chev{position:absolute;right:16px;top:14px;color:var(--muted);font-size:22px}
+.brow.tap{width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.tapleg{gap:8px}
+.tapleg .lg{border:0;background:var(--soft2);border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;transition:transform 160ms ease-out}
+.tapleg .lg:active{transform:scale(.97)}
+.tapleg .lg::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--c);margin-right:7px}
+.bar0{height:6px;border-radius:99px;background:#e8efff;margin:10px 0 2px;overflow:hidden}
+.bar0 i{display:block;height:100%;border-radius:99px}
+.chart.pick{cursor:pointer}
+.stat.tap{cursor:pointer}
 </style>
 </head>
 <body>
@@ -693,14 +720,14 @@ const barRow = (attrs, dot, name, amount, sub, pct, color) => `<button class="li
 function corpHTML() {
   const t = T(), r = mrange(), pe = monthPers(S.month), kinds = ["salary","lunch","fuel","car","unexpected","other"];
   const corp = sum(pe.filter(x => x.k!=="elyor"), x => x.t), feeM = sum(monthFee(S.month), x => x.t), net = feeM - corp;
-  const byK = GROUPS.map(([k,ks]) => ({ k, ks:ks.join(","), v:sum(pe.filter(x => ks.includes(x.k)), x => x.t) })).filter(x => x.v>0);
+  const byK = GROUPS.map(([k,ks]) => ({ k, ks:ks.join(","), v:sum(pe.filter(x => ks.includes(x.k)), x => x.t) }));
   const byF = {}; pe.filter(x => x.k!=="elyor").forEach(x => { byF[x.f] = (byF[x.f]||0) + x.t; });
   const fl = Object.entries(byF).sort((a,b) => b[1]-a[1]), fmax = fl[0] ? fl[0][1] : 1;
   const el = sum(pe.filter(x => x.k==="elyor"), x => x.t);
   return `<section class="card in gr" style="--i:7"><div class="ch"><div><h3>${t.corp}</h3><p class="sub">${t.corpSub} · ${monthLabel(S.month)}</p></div></div>
     <div class="kv">${kv(t.fee, fmtS(feeM))}${kv(t.corpT, fmtS(corp), corp>0?"red":"")}${kv(t.net, (net>0?"+":"")+fmtS(net), tone(net))}</div>
     <p class="mut s">${t.netD}</p>
-    ${corp>0 ? `<div class="split">${byK.map(c => `<i style="width:${(c.v/corp*100).toFixed(2)}%;background:${KINDCOL[c.k]}"></i>`).join("")}</div>
+    ${corp>0 ? `<div class="split">${byK.filter(c => c.v>0).map(c => `<i style="width:${(c.v/corp*100).toFixed(2)}%;background:${KINDCOL[c.k]}"></i>`).join("")}</div>
     <div class="legend tapleg" style="margin-top:0">${byK.map(c => `<button class="lg" data-rows="personal" data-cat="${c.ks}" data-from="${r.from}" data-to="${r.to}" style="--c:${KINDCOL[c.k]}">${t.kindT[c.k]} <b>${fmtS(c.v)}</b> ›</button>`).join("")}${el>0 ? `<button class="lg" data-rows="personal" data-cat="elyor" data-from="${r.from}" data-to="${r.to}" style="--c:${KINDCOL.elyor}">${t.kindT.elyor} <b>${fmtS(el)}</b> ›</button>` : ""}</div>
     <div class="lst">${fl.map(([n,v]) => barRow(`data-rows="personal" data-who="${esc(n)}" data-from="${r.from}" data-to="${r.to}"`, "", lab(n), fmt(v), "", v/fmax*100, colorOf(n))).join("")}</div>` : `<div class="empty">${t.noCorp}</div>`}</section>`;
 }
