@@ -375,6 +375,33 @@ button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
 .bar0 i{display:block;height:100%;border-radius:99px}
 .chart.pick{cursor:pointer}
 .stat.tap{cursor:pointer}
+
+/* ================= month picker, tappable cards ================= */
+.acts2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mp{display:inline-flex;align-items:center;background:#fff;border:1px solid rgba(37,99,235,.18);border-radius:12px;box-shadow:0 1px 2px rgba(20,50,140,.05);overflow:hidden}
+.mpb{border:0;background:none;width:40px;height:42px;font-size:24px;line-height:1;color:var(--primary);transition:background 140ms ease-out}
+.mpb:disabled{color:var(--line2);cursor:default}
+.mpb:not(:disabled):active{background:var(--soft)}
+.mpl{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;height:42px;min-width:168px;font-weight:700;cursor:pointer;color:var(--ink)}
+.mpl svg.i{width:17px;height:17px;color:var(--primary)}
+.mpl input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid3{grid-template-columns:minmax(0,1fr)}}
+.tap{cursor:pointer;transition:transform 200ms var(--ease-out),box-shadow 200ms var(--ease-out)}
+.tap:active{transform:scale(.985)}
+button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
+.sumc{position:relative}
+.sumc .kpi{font-size:28px;margin:6px 0 4px}
+.sumc .chev{position:absolute;right:16px;top:14px;color:var(--muted);font-size:22px}
+.brow.tap{width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.tapleg{gap:8px}
+.tapleg .lg{border:0;background:var(--soft2);border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;transition:transform 160ms ease-out}
+.tapleg .lg:active{transform:scale(.97)}
+.tapleg .lg::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--c);margin-right:7px}
+.bar0{height:6px;border-radius:99px;background:#e8efff;margin:10px 0 2px;overflow:hidden}
+.bar0 i{display:block;height:100%;border-radius:99px}
+.chart.pick{cursor:pointer}
+.stat.tap{cursor:pointer}
 </style>
 </head>
 <body>
@@ -418,7 +445,7 @@ const I18N = {
     brand:"Boshqaruv tizimi", upd:"Yangilandi", nav:["Boshqaruv paneli","Moliya","Prorablar","Obyektlar","Xarajatlar"], navS:["Panel","Moliya","Prorablar","Obyektlar","Xarajat"],
     sub:["{d} holatiga ko'ra","Qarzlar va hisob-kitob bir joyda","Har bir prorabning kassasi va xarajati","Barcha obyektlar kassasi","Kim nima yozgan: oy bo'yicha"],
     lang:"RU", refresh:"Yangilash", so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd", others:"Boshqalar", search:"Obyekt qidirish",
-    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
+    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", corp:"Korxona xarajatlari", corpSub:"prorablarning gaz, obed, oylik va boshqa xarajatlari", fee:"Prorab xizmati", corpT:"Korxona xarajati", net:"Sof daromad", netD:"prorab xizmati − korxona xarajatlari (oy bo'yicha)", corpRows:"Korxona xarajatlari yozuvlari", liveNote:"Jonli kassa: oxirgi tasdiqdan keyingi hamma yozuvlar hisobga olingan", noCorp:"Bu oyda korxona xarajati yo'q", aiTag:"AI o'qidi", kindT:{salary:"Oylik",lunch:"Obed / pitaniye",fuel:"Yo'lkira / yoqilg'i",car:"Mashina",unexpected:"Kutilmagan",elyor:"Elyor aka (qaytarilgan)",other:"Boshqa"}, handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
     statR:"Sizga qarzdorlar", statRc:"kassasi minusdagi obyektlar (R)", statD:"Mijozlar puli sizda", statDc:"kassasi plyusdagi obyektlar (D)",
     statP:"Prorablarning ko'chadagi qarzi", statPc:"prorablar kassasi minusda, bu sizning qarzingiz (P)",
     trend:"Saldo dinamikasi", trendSub:"Har kuni 23:30 dagi hisobot", dyn:"Kunlik xarajat", dynSub:"Kunni bosing: o'sha kundagi yozuvlar ochiladi",
@@ -453,7 +480,7 @@ const I18N = {
     brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"], navS:["Панель","Финансы","Прорабы","Объекты","Расходы"],
     sub:["По состоянию на {d}","Долги и взаиморасчёты в одном месте","Касса и расходы каждого прораба","Касса всех объектов","Кто что записал: по месяцам"],
     lang:"UZ", refresh:"Обновить", so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд", others:"Прочие", search:"Поиск объекта",
-    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
+    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", corp:"Расходы компании", corpSub:"газ, обед, зарплата и другие расходы прорабов", fee:"Услуга прораба", corpT:"Расходы компании", net:"Чистая прибыль", netD:"услуга прораба − расходы компании (по месяцу)", corpRows:"Записи расходов компании", liveNote:"Живая касса: учтено всё, записанное после последнего подтверждения", noCorp:"В этом месяце расходов компании нет", aiTag:"прочитал ИИ", kindT:{salary:"Зарплата",lunch:"Обед / питание",fuel:"Дорога / топливо",car:"Машина",unexpected:"Непредвиденное",elyor:"Элёр ака (возвращено)",other:"Прочее"}, handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
     statR:"Должны вам", statRc:"объекты с кассой в минусе (R)", statD:"Деньги клиентов у вас", statDc:"объекты с кассой в плюсе (D)",
     statP:"Долги прорабов на стороне", statPc:"кассы прорабов в минусе, это ваш долг (P)",
     trend:"Динамика сальдо", trendSub:"Итог ежедневного отчёта в 23:30", dyn:"Расходы по дням", dynSub:"Нажмите на день: откроются записи за этот день",
@@ -524,6 +551,9 @@ function bounds() {
   for (const i of S.data.income) if (i.d < first) first = i.d;
   return { min:first.slice(0,7), max:S.data.today.slice(0,7) };
 }
+const monthPers = (m, pred) => { const r = mrange(m); return (S.data.personal||[]).filter(e => inR(e.d,r.from,r.to) && (!pred || pred(e))); };
+const monthFee = m => { const r = mrange(m); return (S.data.fee||[]).filter(e => inR(e.d,r.from,r.to)); };
+const KINDCOL = { salary:"#8b5cf6", lunch:"#f59e0b", fuel:"#2563eb", car:"#0ea5e9", unexpected:"#ef4444", other:"#94a3b8", elyor:"#cbd5e1" };
 const monthExp = (m, pred) => { const r = mrange(m); return S.data.expenses.filter(e => inR(e.d,r.from,r.to) && (!pred || pred(e))); };
 const monthInc = m => { const r = mrange(m); return S.data.income.filter(i => inR(i.d,r.from,r.to)); };
 function monthBar() {
@@ -630,6 +660,20 @@ function personStats(m) { // per person for a month: {name, total, n, objs:Set}
 const barRow = (attrs, dot, name, amount, sub, pct, color) => `<button class="li" ${attrs}><span class="n">${dot ? `<i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${dot};margin-right:8px"></i>` : ""}${esc(name)}</span><span class="a">${amount}</span>${sub ? `<span class="m">${sub}</span><span></span>` : ""}<span class="bar"><i style="width:${pct.toFixed(1)}%;background:${color}"></i></span></button>`;
 
 /* ------------------------------------------------ pages */
+function corpHTML() {
+  const t = T(), r = mrange(), pe = monthPers(S.month), kinds = ["salary","lunch","fuel","car","unexpected","other"];
+  const corp = sum(pe.filter(x => x.k!=="elyor"), x => x.t), feeM = sum(monthFee(S.month), x => x.t), net = feeM - corp;
+  const byK = kinds.map(k => ({ k, v:sum(pe.filter(x => x.k===k), x => x.t) })).filter(x => x.v>0);
+  const byF = {}; pe.filter(x => x.k!=="elyor").forEach(x => { byF[x.f] = (byF[x.f]||0) + x.t; });
+  const fl = Object.entries(byF).sort((a,b) => b[1]-a[1]), fmax = fl[0] ? fl[0][1] : 1;
+  const el = sum(pe.filter(x => x.k==="elyor"), x => x.t);
+  return `<section class="card in gr" style="--i:7"><div class="ch"><div><h3>${t.corp}</h3><p class="sub">${t.corpSub} · ${monthLabel(S.month)}</p></div></div>
+    <div class="kv">${kv(t.fee, fmtS(feeM))}${kv(t.corpT, fmtS(corp), corp>0?"red":"")}${kv(t.net, (net>0?"+":"")+fmtS(net), tone(net))}</div>
+    <p class="mut s">${t.netD}</p>
+    ${corp>0 ? `<div class="split">${byK.map(c => `<i style="width:${(c.v/corp*100).toFixed(2)}%;background:${KINDCOL[c.k]}"></i>`).join("")}</div>
+    <div class="legend tapleg" style="margin-top:0">${byK.map(c => `<button class="lg" data-rows="personal" data-cat="${c.k}" data-from="${r.from}" data-to="${r.to}" style="--c:${KINDCOL[c.k]}">${t.kindT[c.k]} <b>${fmtS(c.v)}</b> ›</button>`).join("")}${el>0 ? `<button class="lg" data-rows="personal" data-cat="elyor" data-from="${r.from}" data-to="${r.to}" style="--c:${KINDCOL.elyor}">${t.kindT.elyor} <b>${fmtS(el)}</b> ›</button>` : ""}</div>
+    <div class="lst">${fl.map(([n,v]) => barRow(`data-rows="personal" data-who="${esc(n)}" data-from="${r.from}" data-to="${r.to}"`, "", lab(n), fmt(v), "", v/fmax*100, colorOf(n))).join("")}</div>` : `<div class="empty">${t.noCorp}</div>`}</section>`;
+}
 function pageDash() {
   const t = T(), d = S.data, tot = d.totals, r = mrange(), wc = warnCount();
   const rows = monthExp(S.month), spent = sum(rows, x => x.t), paid = sum(monthInc(S.month), x => x.t);
@@ -656,6 +700,7 @@ function pageDash() {
       <button class="card tap sumc in" style="--i:5" data-rows="expenses" data-from="${r.from}" data-to="${r.to}"><div class="lbl s mut">${t.spentO}</div><div class="kpi">${fmtS(spent)}</div><div class="cap s mut">${dPct===null ? t.spentOD : `<b>${dPct>0?"▲":dPct<0?"▼":"•"} ${Math.abs(dPct)}%</b> ${t.vsPrev}`}</div><span class="chev" aria-hidden="true">›</span></button>
       <div class="card sumc in" style="--i:6"><div class="lbl s mut">${t.flow}</div><div class="kpi ${tone(fl)}">${fl>0?"+":""}${fmtS(fl)}</div><div class="cap s mut">${t.flowD}</div></div>
     </div>
+    ${corpHTML()}
     <div class="grid2 gr">
       <section class="card in" style="--i:7"><div class="ch"><div><h3>${t.byPerson}</h3><p class="sub">${t.byPersonSub}</p></div></div>
         <div class="lst">${people.length ? people.map(p => barRow(`data-person="${esc(p.name)}"`, colorOf(p.name), lab(p.name), fmt(p.total), `${p.n} ${t.recs} · ${p.objs.size} ${t.objsN}`, p.total/pmax*100, colorOf(p.name))).join("") : `<div class="empty">${t.noSpend}</div>`}</div></section>
@@ -774,7 +819,9 @@ function rowsHTML(kind, j) {
   const more = j.count > rows.length ? `<p class="mut s">${t.shown}: ${rows.length} / ${j.count}</p>` : "";
   return head + Object.entries(byDay).map(([d, list]) => `<div><div class="dayh"><b>${dl(d)}</b><span>${fmt(sum(list, r => r.amt))}</span></div><div class="rws">${list.map(r => {
     const x = tz(r.t);
-    return kind === "handouts"
+    return kind === "personal"
+      ? `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b><i class="cd" style="background:${KINDCOL[r.c]||"#94a3b8"}"></i>${esc(r.item || "—")}${r.ai ? ` <span class="badge b-blue">${t.aiTag}</span>` : ""}</b><small>${x.h} · ${esc(lab(r.a))} · ${esc(t.kindT[r.c] || r.c)}</small></div><div class="rw-a">${fmt(r.amt)}</div>${raw(r)}</div>`
+      : kind === "handouts"
       ? `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b>${esc(r.p)}</b><small>${x.h}</small></div><div class="rw-a red">−${fmt(r.amt)}</div>${raw(r)}</div>`
       : kind === "income"
       ? `<div class="${cls(r)}"${attr(r)}><div class="rw-l"><b>${esc(r.p)}</b><small>${x.h} · ${esc(lab(r.a))}${r.method ? " · "+esc(r.method) : ""}${r.note ? " · "+esc(r.note) : ""}</small></div><div class="rw-a green">${r.ret ? "−" : "+"}${fmt(r.amt)}</div>${raw(r)}</div>`
@@ -798,8 +845,8 @@ function openRows(d) {
   const who = d.who ? lab(d.who) : "";
   if (d.rows === "reports") return drawerRows("reports", t.howK, d.party || "", q.toString());
   const rng = d.from === d.to ? dlf(d.from) : (d.from && d.from.slice(0,7) === (d.to||"").slice(0,7) && d.from.slice(8) === "01" ? monthLabel(d.from.slice(0,7)) : `${dl(d.from)} – ${dl(d.to)}`);
-  const what = [who, d.project, d.cat ? t.cat[d.cat] : ""].filter(Boolean).join(" · ");
-  drawerRows(d.rows, d.rows === "handouts" ? t.handRows : d.rows === "income" ? t.incRows : t.expRows, [what, rng].filter(Boolean).join(" · "), q.toString());
+  const what = [who, d.project, d.cat ? (d.rows === "personal" ? t.kindT[d.cat] : t.cat[d.cat]) : ""].filter(Boolean).join(" · ");
+  drawerRows(d.rows, d.rows === "personal" ? t.corpRows : d.rows === "handouts" ? t.handRows : d.rows === "income" ? t.incRows : t.expRows, [what, rng].filter(Boolean).join(" · "), q.toString());
 }
 
 /* ---- person (foreman, Elyor, accountant): everything they wrote in the chosen month, layer by layer */
@@ -811,9 +858,12 @@ function drawerPerson(name) {
   const ol = Object.entries(byObj).sort((a,b) => b[1].t-a[1].t), omax = ol[0] ? ol[0][1].t : 1;
   const days = dayList(r.from, r.to);
   const sub = f ? (f.at ? `${t.last}: ${dl(f.at.slice(0,10))} · ${f.source==="auto"?t.auto:t.manual}` : t.noRep) : personRole(name);
+  const pe = monthPers(S.month, e => e.f===name && e.k!=="elyor"), peT = sum(pe, e => e.t), peK = {}; pe.forEach(e => { peK[e.k] = (peK[e.k]||0) + e.t; });
   openDrawer(dhead(lab(name), sub) + `<div class="db">
     <div class="kv">${f ? kv(t.kassa, f.kassa===null?"—":fmt(f.kassa), tone(f.kassa||0)) : ""}${kv(monthLabel(S.month), fmtS(tot))}${kv(t.rowsT, cnt)}</div>
+    ${f ? `<p class="mut s">${t.liveNote}</p>` : ""}
     <div class="linkrow">${tot>0 ? rowsBtn(t.allRecords, {rows:"expenses", who:name, from:r.from, to:r.to}) : ""}${f ? rowsBtn(t.howK, {rows:"reports", party:name}) : ""}</div>
+    ${peT>0 ? `<div><h4>${t.corp} · ${fmt(peT)}</h4><div class="lst">${Object.entries(peK).sort((a,b) => b[1]-a[1]).map(([k,v]) => barRow(`data-rows="personal" data-who="${esc(name)}" data-cat="${k}" data-from="${r.from}" data-to="${r.to}"`, KINDCOL[k], t.kindT[k]||k, fmt(v), "", v/peT*100, KINDCOL[k])).join("")}</div></div>` : ""}
     ${f && f.history.length>1 ? `<div><h4>${t.hist}</h4><div class="chart" id="dHist"></div></div>` : ""}
     <div><h4>${t.dyn} · ${monthLabel(S.month)}</h4><div class="chart" id="dDaily"></div></div>
     <div><h4>${t.byObj}</h4><div class="lst">${ol.length ? ol.map(([n,v]) => barRow(`data-rows="expenses" data-who="${esc(name)}" data-project="${esc(n)}" data-from="${r.from}" data-to="${r.to}"`, "", n, fmt(v.t), `${v.n} ${t.recs}`, v.t/omax*100, colorOf(name))).join("") : `<div class="empty">${t.noSpend}</div>`}</div></div>
