@@ -375,6 +375,8 @@ button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
 @keyframes spDrift{from{transform:translate(0,0) scale(1)}to{transform:translate(6vw,5vh) scale(1.12)}}
 @keyframes spOut{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion:reduce){#splash .sp-badge,#splash .sp-bar,#splash .sp-cap,#splash .sp-glow,#splash .sp-ring,#splash .sp-shine,#splash .sp-bar i::after{animation:none}#splash .sp-ring,#splash .sp-shine{display:none}#splash .sp-bar i{animation:none;transform:scaleX(.7)}}
+
+#sec-hand,#sec-corp{scroll-margin-top:84px}
 </style>
 </head>
 <body>
@@ -420,7 +422,7 @@ const I18N = {
     brand:"Boshqaruv tizimi", upd:"Yangilandi", nav:["Boshqaruv paneli","Moliya","Prorablar","Obyektlar","Xarajatlar"], navS:["Panel","Moliya","Prorablar","Obyektlar","Xarajat"],
     sub:["{d} holatiga ko'ra","Qarzlar va hisob-kitob bir joyda","Har bir prorabning kassasi va xarajati","Barcha obyektlar kassasi","Kim nima yozgan: oy bo'yicha"],
     lang:"RU", refresh:"Yangilash", so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd", others:"Boshqalar", search:"Obyekt qidirish",
-    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", feeObj:"Prorab tushumi · obyektlar bo'yicha", feeRows:"Prorab tushumi yozuvlari", feeNone:"Bu oyda prorab tushumi hali yozilmagan. Elyor aka obyekt guruhiga «Prorab … summa» deb yozganda shu yerda ko'rinadi.", hand:"Prixod (Elyor aka)", handSub:"Elyor aka prorablarga bergan pul", handTot:"Jami berilgan", corp:"Korxona xarajatlari", corpSub:"prorablarning gaz, obed, oylik va boshqa xarajatlari", fee:"Prorab xizmati", corpT:"Korxona xarajati", net:"Sof daromad", netD:"prorab xizmati − korxona xarajatlari (oy bo'yicha)", corpRows:"Korxona xarajatlari yozuvlari", liveNote:"Jonli kassa: oxirgi tasdiqdan keyingi hamma yozuvlar hisobga olingan", noCorp:"Bu oyda korxona xarajati yo'q", aiTag:"AI o'qidi", kindT:{salary:"Avans",lunch:"Pitaniye",fuel:"Yoqilg'i",car:"Mashina ta'miri",unexpected:"Kutilmagan",elyor:"Elyor aka (qaytarilgan)",other:"Boshqa xarajatlar"}, byWho:"Kim bo'yicha", handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
+    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", jumpT:"Tez o'tish", jHand:"Prixod", jCorp:"Korxona xarajatlari", jFee:"Prorab tushumi", feeObj:"Prorab tushumi · obyektlar bo'yicha", feeRows:"Prorab tushumi yozuvlari", feeNone:"Bu oyda prorab tushumi hali yozilmagan. Elyor aka obyekt guruhiga «Prorab … summa» deb yozganda shu yerda ko'rinadi.", hand:"Prixod (Elyor aka)", handSub:"Elyor aka prorablarga bergan pul", handTot:"Jami berilgan", corp:"Korxona xarajatlari", corpSub:"prorablarning gaz, obed, oylik va boshqa xarajatlari", fee:"Prorab xizmati", corpT:"Korxona xarajati", net:"Sof daromad", netD:"prorab xizmati − korxona xarajatlari (oy bo'yicha)", corpRows:"Korxona xarajatlari yozuvlari", liveNote:"Jonli kassa: oxirgi tasdiqdan keyingi hamma yozuvlar hisobga olingan", noCorp:"Bu oyda korxona xarajati yo'q", aiTag:"AI o'qidi", kindT:{salary:"Avans",lunch:"Pitaniye",fuel:"Yoqilg'i",car:"Mashina ta'miri",unexpected:"Kutilmagan",elyor:"Elyor aka (qaytarilgan)",other:"Boshqa xarajatlar"}, byWho:"Kim bo'yicha", handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
     statR:"Sizga qarzdorlar", statRc:"kassasi minusdagi obyektlar (R)", statD:"Mijozlar puli sizda", statDc:"kassasi plyusdagi obyektlar (D)",
     statP:"Prorablarning ko'chadagi qarzi", statPc:"prorablar kassasi minusda, bu sizning qarzingiz (P)",
     trend:"Saldo dinamikasi", trendSub:"Har kuni 23:30 dagi hisobot", dyn:"Kunlik xarajat", dynSub:"Kunni bosing: o'sha kundagi yozuvlar ochiladi",
@@ -455,7 +457,7 @@ const I18N = {
     brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"], navS:["Панель","Финансы","Прорабы","Объекты","Расходы"],
     sub:["По состоянию на {d}","Долги и взаиморасчёты в одном месте","Касса и расходы каждого прораба","Касса всех объектов","Кто что записал: по месяцам"],
     lang:"UZ", refresh:"Обновить", so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд", others:"Прочие", search:"Поиск объекта",
-    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", feeObj:"Услуга прораба · по объектам", feeRows:"Записи услуги прораба", feeNone:"В этом месяце услуга прораба ещё не записана. Появится здесь, когда Элёр ака напишет в группе объекта «Prorab … сумма».", hand:"Приход (Элёр ака)", handSub:"деньги, которые Элёр ака дал прорабам", handTot:"Всего выдано", corp:"Расходы компании", corpSub:"газ, обед, зарплата и другие расходы прорабов", fee:"Услуга прораба", corpT:"Расходы компании", net:"Чистая прибыль", netD:"услуга прораба − расходы компании (по месяцу)", corpRows:"Записи расходов компании", liveNote:"Живая касса: учтено всё, записанное после последнего подтверждения", noCorp:"В этом месяце расходов компании нет", aiTag:"прочитал ИИ", kindT:{salary:"Аванс",lunch:"Питание",fuel:"Топливо",car:"Ремонт машины",unexpected:"Непредвиденное",elyor:"Элёр ака (возвращено)",other:"Другие расходы"}, byWho:"По людям", handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
+    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", jumpT:"Быстрый переход", jHand:"Приход", jCorp:"Расходы компании", jFee:"Услуга прораба", feeObj:"Услуга прораба · по объектам", feeRows:"Записи услуги прораба", feeNone:"В этом месяце услуга прораба ещё не записана. Появится здесь, когда Элёр ака напишет в группе объекта «Prorab … сумма».", hand:"Приход (Элёр ака)", handSub:"деньги, которые Элёр ака дал прорабам", handTot:"Всего выдано", corp:"Расходы компании", corpSub:"газ, обед, зарплата и другие расходы прорабов", fee:"Услуга прораба", corpT:"Расходы компании", net:"Чистая прибыль", netD:"услуга прораба − расходы компании (по месяцу)", corpRows:"Записи расходов компании", liveNote:"Живая касса: учтено всё, записанное после последнего подтверждения", noCorp:"В этом месяце расходов компании нет", aiTag:"прочитал ИИ", kindT:{salary:"Аванс",lunch:"Питание",fuel:"Топливо",car:"Ремонт машины",unexpected:"Непредвиденное",elyor:"Элёр ака (возвращено)",other:"Другие расходы"}, byWho:"По людям", handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
     statR:"Должны вам", statRc:"объекты с кассой в минусе (R)", statD:"Деньги клиентов у вас", statDc:"объекты с кассой в плюсе (D)",
     statP:"Долги прорабов на стороне", statPc:"кассы прорабов в минусе, это ваш долг (P)",
     trend:"Динамика сальдо", trendSub:"Итог ежедневного отчёта в 23:30", dyn:"Расходы по дням", dynSub:"Нажмите на день: откроются записи за этот день",
@@ -643,7 +645,7 @@ function handHTML() {
   const t = T(), r = mrange(), hs = monthHand(S.month), tot = sum(hs, x => x.t);
   const byF = {}; hs.forEach(x => { byF[x.f] = (byF[x.f]||0) + x.t; });
   const fl = Object.entries(byF).sort((a,b) => b[1]-a[1]), fmax = fl[0] ? fl[0][1] : 1;
-  return `<section class="card in gr" style="--i:6"><div class="ch"><div><h3>${t.hand}</h3><p class="sub">${t.handSub} · ${monthLabel(S.month)}</p></div></div>
+  return `<section id="sec-hand" class="card in gr" style="--i:6"><div class="ch"><div><h3>${t.hand}</h3><p class="sub">${t.handSub} · ${monthLabel(S.month)}</p></div></div>
     <div class="kv">${kv(t.handTot, fmt(tot)+" "+t.so, tot>0 ? "green" : "")}</div><div class="linkrow">${tot>0 ? rowsBtn(t.handRows, {rows:"handouts", from:r.from, to:r.to}) : ""}</div>
     <div class="lst">${fl.map(([n,v]) => barRow(`data-rows="handouts" data-who="${esc(n)}" data-from="${r.from}" data-to="${r.to}"`, "", lab(n), fmt(v), "", v/fmax*100, colorOf(n))).join("")}</div></section>`;
 }
@@ -656,7 +658,7 @@ function corpHTML() {
   const el = sum(pe.filter(x => x.k==="elyor"), x => x.t);
   const feeBy = {}; monthFee(S.month).forEach(x => { const o = feeBy[x.p] || (feeBy[x.p] = { t:0, f:((S.data.objects||[]).find(ob => ob.name===x.p) || {}).foreman || "" }); o.t += x.t; });
   const feeL = Object.entries(feeBy).sort((a,b) => b[1].t-a[1].t), feeMax = feeL[0] ? feeL[0][1].t : 1;
-  return `<section class="card in gr" style="--i:7"><div class="ch"><div><h3>${t.corp}</h3><p class="sub">${t.corpSub} · ${monthLabel(S.month)}</p></div></div>
+  return `<section id="sec-corp" class="card in gr" style="--i:7"><div class="ch"><div><h3>${t.corp}</h3><p class="sub">${t.corpSub} · ${monthLabel(S.month)}</p></div></div>
     <div class="kv">${kv(t.fee, fmtS(feeM))}${kv(t.corpT, fmtS(corp), corp>0?"red":"")}${kv(t.net, (net>0?"+":"")+fmtS(net), tone(net))}</div>
     <p class="mut s">${t.netD}</p>
     ${feeL.length ? `<div><h4>${t.feeObj}</h4><div class="lst">${feeL.map(([n,v]) => barRow(`data-rows="fee" data-project="${esc(n)}" data-from="${r.from}" data-to="${r.to}"`, "", n, fmt(v.t), v.f ? lab(v.f) : "", v.t/feeMax*100, "var(--navy)")).join("")}</div></div>` : `<p class="mut s">${t.feeNone}</p>`}
@@ -676,6 +678,7 @@ function pageDash() {
   const fl = paid - spent;
   return `<div class="pg">${pageHead(0, monthBar())}
     ${wc ? `<div class="banner"><span style="display:flex;color:#a15c07">${ic("alert")}</span><span><b>${wc}</b> ${t.attnB}</span><span class="sp"></span><button class="btn ghost" id="attn">${t.view}</button></div>` : ""}
+    <div class="legend tapleg" style="margin:0 0 14px"><span class="lbl s mut" style="align-self:center">${t.jumpT}:</span><button class="lg" data-jump="sec-hand" style="--c:#16a34a">${t.jHand} ↓</button><button class="lg" data-jump="sec-corp" style="--c:#2563eb">${t.jFee} ↓</button><button class="lg" data-jump="sec-corp" style="--c:#f59e0b">${t.jCorp} ↓</button></div>
     <div class="lbl s mut" style="margin:0 0 8px">${t.cur2}</div>
     <button class="card tap sumc in" style="--i:0;margin-bottom:14px" data-rows="handouts" data-from="${r.from}" data-to="${r.to}"><div class="lbl s mut">${t.myK}</div><div class="kpi">${fmt(-tot.saldo)} ${t.so}</div><div class="cap s mut">${t.myKd}. ${t.handCap}</div><span class="chev" aria-hidden="true">›</span></button>
     <div class="grid4">
@@ -937,6 +940,7 @@ document.addEventListener("click", e => {
   if (c(".mpl")) { const i = $("#mpick"); try { if (i && i.showPicker && e.target !== i) i.showPicker(); } catch {} return; }
   if (c("[data-tab]")) { buzz(); return go(+c("[data-tab]").dataset.tab); }
   if (c("[data-go]")) return go(+c("[data-go]").dataset.go);
+  if (c("[data-jump]")) { const el = document.getElementById(c("[data-jump]").dataset.jump); if (el) el.scrollIntoView({ behavior:"smooth", block:"start" }); return; }
   if (c("[data-list]")) return drawerList(c("[data-list]").dataset.list);
   if (c("[data-side]")) { S.side = c("[data-side]").dataset.side; return render(); }
   if (c("[data-sort]")) { const k = c("[data-sort]").dataset.sort; S.sortDir = S.sortKey===k ? -S.sortDir : 1; S.sortKey = k; return render(); }
