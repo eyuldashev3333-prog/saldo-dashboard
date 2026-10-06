@@ -380,6 +380,19 @@ button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
 
 .logo.logo-img{width:40px;height:40px;border-radius:50%;background:#fdfdfd;box-shadow:0 5px 14px rgba(37,99,235,.30),0 0 0 2px #fff;overflow:hidden;padding:0;display:block}
 .logo.logo-img img{width:100%;height:100%;display:block}
+
+/* net profit card */
+.netcard{margin-bottom:16px;border:1px solid rgba(22,163,74,.22);background:linear-gradient(180deg,#fff,#f4fbf7)}
+.netbig{font-size:34px;font-weight:800;letter-spacing:-.02em;margin:4px 0 12px;line-height:1.1}
+.netbig small{font-size:15px;font-weight:600;color:var(--muted)}
+.netrow{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:12px 0;border:0;border-top:1px solid var(--line);background:none;font:inherit;color:inherit;text-align:left}
+button.netrow{cursor:pointer}
+.netrow .nl{display:flex;flex-direction:column;gap:3px;min-width:0}
+.netrow .nl b{font-size:15px}
+.netrow .nl small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.netrow .nv{font-size:17px;font-weight:700;white-space:nowrap}
+.netrow.total{border-top:2px solid var(--line2,#cbd5e1)}
+.netrow.total .nv{font-size:19px}
 </style>
 </head>
 <body>
@@ -425,7 +438,7 @@ const I18N = {
     brand:"Boshqaruv tizimi", upd:"Yangilandi", nav:["Boshqaruv paneli","Moliya","Prorablar","Obyektlar","Xarajatlar"], navS:["Panel","Moliya","Prorablar","Obyektlar","Xarajat"],
     sub:["{d} holatiga ko'ra","Qarzlar va hisob-kitob bir joyda","Har bir prorabning kassasi va xarajati","Barcha obyektlar kassasi","Kim nima yozgan: oy bo'yicha"],
     lang:"RU", refresh:"Yangilash", so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd", others:"Boshqalar", search:"Obyekt qidirish",
-    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", jumpT:"Tez o'tish", jHand:"Prixod", jCorp:"Korxona xarajatlari", jFee:"Prorab tushumi", feeObj:"Prorab tushumi · obyektlar bo'yicha", feeRows:"Prorab tushumi yozuvlari", feeNone:"Bu oyda prorab tushumi hali yozilmagan. Elyor aka obyekt guruhiga «Prorab … summa» deb yozganda shu yerda ko'rinadi.", hand:"Prixod (Elyor aka)", handSub:"Elyor aka prorablarga bergan pul", handTot:"Jami berilgan", corp:"Korxona xarajatlari", corpSub:"prorablarning gaz, obed, oylik va boshqa xarajatlari", fee:"Prorab xizmati", corpT:"Korxona xarajati", net:"Sof daromad", netD:"prorab xizmati − korxona xarajatlari (oy bo'yicha)", corpRows:"Korxona xarajatlari yozuvlari", liveNote:"Jonli kassa: oxirgi tasdiqdan keyingi hamma yozuvlar hisobga olingan", noCorp:"Bu oyda korxona xarajati yo'q", aiTag:"AI o'qidi", kindT:{salary:"Avans",lunch:"Pitaniye",fuel:"Yoqilg'i",car:"Mashina ta'miri",unexpected:"Kutilmagan",elyor:"Elyor aka (qaytarilgan)",other:"Boshqa xarajatlar"}, byWho:"Kim bo'yicha", handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
+    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", netFeeL:"Prorab tushumi", netFeeW:"Elyor aka obyekt guruhlariga «Prorab…» deb yozgan summalar", netCorpL:"Korxona xarajatlari", netCorpW:"prorablar o'z guruhida yozgan: pitaniye, avans, yoqilg'i, boshqa xarajatlar", netHow:"Sof daromad = prorab tushumi − korxona xarajatlari. Har oy alohida hisoblanadi, oyma-oy yig'ilmaydi.", netNoFee:"Bu oyda prorab tushumi hali yozilmagan, shuning uchun natija minus. Elyor aka «Prorab … summa» deb yozganda hisob o'zgaradi.", jumpT:"Tez o'tish", jHand:"Prixod", jCorp:"Korxona xarajatlari", jFee:"Prorab tushumi", feeObj:"Prorab tushumi · obyektlar bo'yicha", feeRows:"Prorab tushumi yozuvlari", feeNone:"Bu oyda prorab tushumi hali yozilmagan. Elyor aka obyekt guruhiga «Prorab … summa» deb yozganda shu yerda ko'rinadi.", hand:"Prixod (Elyor aka)", handSub:"Elyor aka prorablarga bergan pul", handTot:"Jami berilgan", corp:"Korxona xarajatlari", corpSub:"prorablarning gaz, obed, oylik va boshqa xarajatlari", fee:"Prorab xizmati", corpT:"Korxona xarajati", net:"Sof daromad", netD:"prorab xizmati − korxona xarajatlari (oy bo'yicha)", corpRows:"Korxona xarajatlari yozuvlari", liveNote:"Jonli kassa: oxirgi tasdiqdan keyingi hamma yozuvlar hisobga olingan", noCorp:"Bu oyda korxona xarajati yo'q", aiTag:"AI o'qidi", kindT:{salary:"Avans",lunch:"Pitaniye",fuel:"Yoqilg'i",car:"Mashina ta'miri",unexpected:"Kutilmagan",elyor:"Elyor aka (qaytarilgan)",other:"Boshqa xarajatlar"}, byWho:"Kim bo'yicha", handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
     statR:"Sizga qarzdorlar", statRc:"kassasi minusdagi obyektlar (R)", statD:"Mijozlar puli sizda", statDc:"kassasi plyusdagi obyektlar (D)",
     statP:"Prorablarning ko'chadagi qarzi", statPc:"prorablar kassasi minusda, bu sizning qarzingiz (P)",
     trend:"Saldo dinamikasi", trendSub:"Har kuni 23:30 dagi hisobot", dyn:"Kunlik xarajat", dynSub:"Kunni bosing: o'sha kundagi yozuvlar ochiladi",
@@ -460,7 +473,7 @@ const I18N = {
     brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"], navS:["Панель","Финансы","Прорабы","Объекты","Расходы"],
     sub:["По состоянию на {d}","Долги и взаиморасчёты в одном месте","Касса и расходы каждого прораба","Касса всех объектов","Кто что записал: по месяцам"],
     lang:"UZ", refresh:"Обновить", so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд", others:"Прочие", search:"Поиск объекта",
-    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", jumpT:"Быстрый переход", jHand:"Приход", jCorp:"Расходы компании", jFee:"Услуга прораба", feeObj:"Услуга прораба · по объектам", feeRows:"Записи услуги прораба", feeNone:"В этом месяце услуга прораба ещё не записана. Появится здесь, когда Элёр ака напишет в группе объекта «Prorab … сумма».", hand:"Приход (Элёр ака)", handSub:"деньги, которые Элёр ака дал прорабам", handTot:"Всего выдано", corp:"Расходы компании", corpSub:"газ, обед, зарплата и другие расходы прорабов", fee:"Услуга прораба", corpT:"Расходы компании", net:"Чистая прибыль", netD:"услуга прораба − расходы компании (по месяцу)", corpRows:"Записи расходов компании", liveNote:"Живая касса: учтено всё, записанное после последнего подтверждения", noCorp:"В этом месяце расходов компании нет", aiTag:"прочитал ИИ", kindT:{salary:"Аванс",lunch:"Питание",fuel:"Топливо",car:"Ремонт машины",unexpected:"Непредвиденное",elyor:"Элёр ака (возвращено)",other:"Другие расходы"}, byWho:"По людям", handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
+    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", netFeeL:"Услуга прораба", netFeeW:"суммы, которые Элёр ака записал в группы объектов как «Prorab…»", netCorpL:"Расходы компании", netCorpW:"записано прорабами в своих группах: питание, аванс, топливо, другое", netHow:"Чистая прибыль = услуга прораба − расходы компании. Считается по каждому месяцу отдельно, без накопления.", netNoFee:"В этом месяце услуга прораба ещё не записана, поэтому итог в минусе. Изменится, когда Элёр ака напишет «Prorab … сумма».", jumpT:"Быстрый переход", jHand:"Приход", jCorp:"Расходы компании", jFee:"Услуга прораба", feeObj:"Услуга прораба · по объектам", feeRows:"Записи услуги прораба", feeNone:"В этом месяце услуга прораба ещё не записана. Появится здесь, когда Элёр ака напишет в группе объекта «Prorab … сумма».", hand:"Приход (Элёр ака)", handSub:"деньги, которые Элёр ака дал прорабам", handTot:"Всего выдано", corp:"Расходы компании", corpSub:"газ, обед, зарплата и другие расходы прорабов", fee:"Услуга прораба", corpT:"Расходы компании", net:"Чистая прибыль", netD:"услуга прораба − расходы компании (по месяцу)", corpRows:"Записи расходов компании", liveNote:"Живая касса: учтено всё, записанное после последнего подтверждения", noCorp:"В этом месяце расходов компании нет", aiTag:"прочитал ИИ", kindT:{salary:"Аванс",lunch:"Питание",fuel:"Топливо",car:"Ремонт машины",unexpected:"Непредвиденное",elyor:"Элёр ака (возвращено)",other:"Другие расходы"}, byWho:"По людям", handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
     statR:"Должны вам", statRc:"объекты с кассой в минусе (R)", statD:"Деньги клиентов у вас", statDc:"объекты с кассой в плюсе (D)",
     statP:"Долги прорабов на стороне", statPc:"кассы прорабов в минусе, это ваш долг (P)",
     trend:"Динамика сальдо", trendSub:"Итог ежедневного отчёта в 23:30", dyn:"Расходы по дням", dynSub:"Нажмите на день: откроются записи за этот день",
@@ -646,6 +659,18 @@ function personStats(m) { // per person for a month: {name, total, n, objs:Set}
 const barRow = (attrs, dot, name, amount, sub, pct, color) => `<button class="li" ${attrs}><span class="n">${dot ? `<i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${dot};margin-right:8px"></i>` : ""}${esc(name)}</span><span class="a">${amount}</span>${sub ? `<span class="m">${sub}</span><span></span>` : ""}<span class="bar"><i style="width:${pct.toFixed(1)}%;background:${color}"></i></span></button>`;
 
 /* ------------------------------------------------ pages */
+// The answer to "how much did I actually earn": big number + the three parts of the sum, each explained and tappable.
+function netHTML() {
+  const t = T(), r = mrange(), pe = monthPers(S.month);
+  const corp = sum(pe.filter(x => x.k!=="elyor"), x => x.t), feeM = sum(monthFee(S.month), x => x.t), net = feeM - corp;
+  const row = (attrs, label, what, val, cls, sign) => `<${attrs ? "button" : "div"} class="netrow${attrs ? " tap" : ""}" ${attrs}><span class="nl"><b>${label}</b><small>${what}</small></span><span class="nv ${cls}">${sign}${fmt(val)}</span></${attrs ? "button" : "div"}>`;
+  return `<section id="sec-net" class="card in netcard" style="--i:0"><div class="lbl s mut">${t.net} · ${monthLabel(S.month)}</div>
+    <div class="netbig ${tone(net)}">${net>0?"+":""}${fmt(net)} <small>${t.so}</small></div>
+    ${row(feeM>0 ? `data-rows="fee" data-from="${r.from}" data-to="${r.to}"` : "", t.netFeeL, t.netFeeW, feeM, "green", "+")}
+    ${row(corp>0 ? `data-rows="personal" data-cat="lunch,salary,fuel,car,unexpected,other" data-from="${r.from}" data-to="${r.to}"` : "", t.netCorpL, t.netCorpW, corp, "red", "−")}
+    <div class="netrow total"><span class="nl"><b>= ${t.net}</b></span><span class="nv ${tone(net)}">${net>0?"+":""}${fmt(net)}</span></div>
+    <p class="mut s" style="margin:12px 0 0">${feeM===0 ? t.netNoFee : t.netHow}</p></section>`;
+}
 function handHTML() {
   const t = T(), r = mrange(), hs = monthHand(S.month), tot = sum(hs, x => x.t);
   const byF = {}; hs.forEach(x => { byF[x.f] = (byF[x.f]||0) + x.t; });
@@ -684,6 +709,7 @@ function pageDash() {
   return `<div class="pg">${pageHead(0, monthBar())}
     ${wc ? `<div class="banner"><span style="display:flex;color:#a15c07">${ic("alert")}</span><span><b>${wc}</b> ${t.attnB}</span><span class="sp"></span><button class="btn ghost" id="attn">${t.view}</button></div>` : ""}
     <div class="legend tapleg" style="margin:0 0 14px"><span class="lbl s mut" style="align-self:center">${t.jumpT}:</span><button class="lg" data-jump="sec-hand" style="--c:#16a34a">${t.jHand} ↓</button><button class="lg" data-jump="sec-corp" style="--c:#2563eb">${t.jFee} ↓</button><button class="lg" data-jump="sec-corp" style="--c:#f59e0b">${t.jCorp} ↓</button></div>
+    ${netHTML()}
     <div class="lbl s mut" style="margin:0 0 8px">${t.cur2}</div>
     <button class="card tap sumc in" style="--i:0;margin-bottom:14px" data-rows="handouts" data-from="${r.from}" data-to="${r.to}"><div class="lbl s mut">${t.myK}</div><div class="kpi">${fmt(-tot.saldo)} ${t.so}</div><div class="cap s mut">${t.myKd}. ${t.handCap}</div><span class="chev" aria-hidden="true">›</span></button>
     <div class="grid4">
