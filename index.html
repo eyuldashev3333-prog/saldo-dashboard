@@ -377,6 +377,9 @@ button.card{text-align:left;font:inherit;color:inherit;display:block;width:100%}
 @media (prefers-reduced-motion:reduce){#splash .sp-badge,#splash .sp-bar,#splash .sp-cap,#splash .sp-glow,#splash .sp-ring,#splash .sp-shine,#splash .sp-bar i::after{animation:none}#splash .sp-ring,#splash .sp-shine{display:none}#splash .sp-bar i{animation:none;transform:scaleX(.7)}}
 
 #sec-hand,#sec-corp{scroll-margin-top:84px}
+
+.logo.logo-img{width:40px;height:40px;border-radius:50%;background:#fdfdfd;box-shadow:0 5px 14px rgba(37,99,235,.30),0 0 0 2px #fff;overflow:hidden;padding:0;display:block}
+.logo.logo-img img{width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
@@ -504,6 +507,8 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">"
 const fmt = n => { const r = Math.round(n); return (r<0?"−":"") + Math.abs(r).toString().replace(/\B(?=(\d{3})+(?!\d))/g," "); };
 const fmtS = n => { const a = Math.abs(n), t = T(), sg = n<0?"−":""; const f = (v,u) => sg + (Math.round(v*10)/10).toString().replace(".",",") + " " + u;
   return a>=1e9 ? f(a/1e9,t.mlrd) : a>=1e6 ? f(a/1e6,t.mln) : a>=1e3 ? f(a/1e3,t.ming) : sg + Math.round(a); };
+// the company logo instead of the generic star next to "SALDO"
+const LOGO = `<span class="logo logo-img"><picture><source srcset="logo.webp" type="image/webp"><img src="logo.png" width="40" height="40" alt="Art House" decoding="async"></picture></span>`;
 const tone = n => n<0 ? "red" : n>0 ? "green" : "";
 const addDays = (d,n) => { const x = new Date(d+"T00:00:00Z"); x.setUTCDate(x.getUTCDate()+n); return x.toISOString().slice(0,10); };
 const dl = d => d.slice(8)+"."+d.slice(5,7);
@@ -908,9 +913,9 @@ const NAVI = ["dash","fin","fore","obj","exp"];
 function shell() {
   const t = T(), d = S.data;
   $("#app").innerHTML = `<div class="app">
-   <div class="mtop"><div class="sb-brand"><span class="logo">${STAR}</span><div><b>SALDO</b></div></div><div class="acts"><button class="ib" data-act="lang" aria-label="${t.lang}">${ic("globe")}</button><button class="ib" data-act="refresh" aria-label="${t.refresh}">${ic("refresh")}</button></div></div>
+   <div class="mtop"><div class="sb-brand">${LOGO}<div><b>SALDO</b></div></div><div class="acts"><button class="ib" data-act="lang" aria-label="${t.lang}">${ic("globe")}</button><button class="ib" data-act="refresh" aria-label="${t.refresh}">${ic("refresh")}</button></div></div>
    <aside class="side">
-    <div class="sb-brand"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${t.brand}</small></div></div>
+    <div class="sb-brand">${LOGO}<div><b>SALDO</b><small>${t.brand}</small></div></div>
     <div class="sb-info"><div><small>${t.upd}</small><b>${new Date(d.generatedAt).toLocaleTimeString(S.lang==="ru"?"ru-RU":"uz-UZ",{hour:"2-digit",minute:"2-digit"})}</b></div><button class="ib" id="refresh" data-act="refresh" title="${t.refresh}" aria-label="${t.refresh}">${ic("refresh")}</button></div>
     <nav class="nav" id="nav">${NAVI.map((k,i) => `${i===2?'<div class="sep"></div>':""}<button class="ni" data-tab="${i}" ${i===S.tab?'aria-current="page"':""}>${ic(k)}<span class="lg">${t.nav[i]}</span><span class="sh">${t.navS[i]}</span></button>`).join("")}</nav>
     <div class="sb-foot"><button class="ni" id="lang" data-act="lang">${ic("globe")}<span>${t.lang}</span></button></div>
@@ -961,7 +966,7 @@ function apiFetch(query) {
 }
 function gate2(msg, sub, extra) {
   S.gated = true;
-  $("#app").innerHTML = `<div class="gate"><div class="box"><div class="bl"><span class="logo">${STAR}</span><div><b>SALDO</b><small>${T().brand}</small></div></div><div class="cardx"><h1>${msg}</h1><p class="mut" style="margin:0">${sub}</p>${extra||""}</div></div></div>`;
+  $("#app").innerHTML = `<div class="gate"><div class="box"><div class="bl">${LOGO}<div><b>SALDO</b><small>${T().brand}</small></div></div><div class="cardx"><h1>${msg}</h1><p class="mut" style="margin:0">${sub}</p>${extra||""}</div></div></div>`;
 }
 function diagBox(extra) {
   const u = TG && TG.initDataUnsafe && TG.initDataUnsafe.user;
