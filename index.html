@@ -393,6 +393,26 @@ button.netrow{cursor:pointer}
 .netrow .nv{font-size:17px;font-weight:700;white-space:nowrap}
 .netrow.total{border-top:2px solid var(--line2,#cbd5e1)}
 .netrow.total .nv{font-size:19px}
+
+/* ustas: showcase card for showing a worker what he earned */
+#show{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;background:radial-gradient(120% 75% at 50% 30%,#ffffff 0%,#eef5ff 45%,#d6e6ff 100%)}
+#show .sx{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(37,99,235,.10);color:#1d4ed8;font-size:18px;cursor:pointer}
+#show .sh-card{width:min(100%,420px);text-align:center;animation:spPop .8s cubic-bezier(.2,.9,.25,1) both}
+#show .sh-top{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px;letter-spacing:.2em;color:#1e3a8a}
+#show .sh-hi{font-size:34px;font-weight:800;letter-spacing:-.02em;color:#0b1b4d}
+#show .sh-trade{margin-top:4px;color:#4f73b8;font-weight:600;text-transform:capitalize}
+#show .sh-sub{margin:18px 0 6px;color:#44557a;font-size:15px}
+#show .sh-big{font-size:44px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,#1d4ed8,#38bdf8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;line-height:1.1}
+#show .sh-big small{font-size:18px;font-weight:600}
+#show .sh-usd{margin-top:6px;font-size:22px;font-weight:700;color:#16a34a}
+#show .sh-meta{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:22px 0 18px;color:#44557a;font-size:14px}
+#show .sh-meta b{color:#0b1b4d}
+#show .sh-bars{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:96px}
+#show .sh-bars div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;width:34px}
+#show .sh-bars i{display:block;width:100%;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#3b82f6,#1d4ed8)}
+#show .sh-bars small{margin-top:4px;color:#6b7fa8;font-size:11px}
+#show .sh-per{margin-top:16px;color:#6b7fa8;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+#show .sh-foot{margin-top:18px;color:#1e3a8a;font-weight:600}
 </style>
 </head>
 <body>
@@ -438,7 +458,7 @@ const I18N = {
     brand:"Boshqaruv tizimi", upd:"Yangilandi", nav:["Boshqaruv paneli","Moliya","Prorablar","Obyektlar","Xarajatlar"], navS:["Panel","Moliya","Prorablar","Obyektlar","Xarajat"],
     sub:["{d} holatiga ko'ra","Qarzlar va hisob-kitob bir joyda","Har bir prorabning kassasi va xarajati","Barcha obyektlar kassasi","Kim nima yozgan: oy bo'yicha"],
     lang:"RU", refresh:"Yangilash", so:"so'm", mln:"mln", ming:"ming", mlrd:"mlrd", others:"Boshqalar", search:"Obyekt qidirish",
-    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", netFeeL:"Prorab tushumi", netFeeW:"Elyor aka obyekt guruhlariga «Prorab…» deb yozgan summalar", netCorpL:"Korxona xarajatlari", netCorpW:"prorablar o'z guruhida yozgan: pitaniye, avans, yoqilg'i, boshqa xarajatlar", netHow:"Sof daromad = prorab tushumi − korxona xarajatlari. Har oy alohida hisoblanadi, oyma-oy yig'ilmaydi.", netNoFee:"Bu oyda prorab tushumi hali yozilmagan, shuning uchun natija minus. Elyor aka «Prorab … summa» deb yozganda hisob o'zgaradi.", jumpT:"Tez o'tish", jHand:"Prixod", jCorp:"Korxona xarajatlari", jFee:"Prorab tushumi", feeObj:"Prorab tushumi · obyektlar bo'yicha", feeRows:"Prorab tushumi yozuvlari", feeNone:"Bu oyda prorab tushumi hali yozilmagan. Elyor aka obyekt guruhiga «Prorab … summa» deb yozganda shu yerda ko'rinadi.", hand:"Prixod (Elyor aka)", handSub:"Elyor aka prorablarga bergan pul", handTot:"Jami berilgan", corp:"Korxona xarajatlari", corpSub:"prorablarning gaz, obed, oylik va boshqa xarajatlari", fee:"Prorab xizmati", corpT:"Korxona xarajati", net:"Sof daromad", netD:"prorab xizmati − korxona xarajatlari (oy bo'yicha)", corpRows:"Korxona xarajatlari yozuvlari", liveNote:"Jonli kassa: oxirgi tasdiqdan keyingi hamma yozuvlar hisobga olingan", noCorp:"Bu oyda korxona xarajati yo'q", aiTag:"AI o'qidi", kindT:{salary:"Avans",lunch:"Pitaniye",fuel:"Yoqilg'i",car:"Mashina ta'miri",unexpected:"Kutilmagan",elyor:"Elyor aka (qaytarilgan)",other:"Boshqa xarajatlar"}, byWho:"Kim bo'yicha", handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
+    cur:"Hozirgi holat", curSub:"R − D − P", myK:"Mening kassam", myKd:"hisob-kitob uchun kassada bo'lishi kerak bo'lgan pul", handRows:"Prorablarga berilgan pul", netFeeL:"Prorab tushumi", netFeeW:"Elyor aka obyekt guruhlariga «Prorab…» deb yozgan summalar", netCorpL:"Korxona xarajatlari", netCorpW:"prorablar o'z guruhida yozgan: pitaniye, avans, yoqilg'i, boshqa xarajatlar", netHow:"Sof daromad = prorab tushumi − korxona xarajatlari. Har oy alohida hisoblanadi, oyma-oy yig'ilmaydi.", netNoFee:"Bu oyda prorab tushumi hali yozilmagan, shuning uchun natija minus. Elyor aka «Prorab … summa» deb yozganda hisob o'zgaradi.", jumpT:"Tez o'tish", jHand:"Prixod", jCorp:"Korxona xarajatlari", jFee:"Prorab tushumi", feeObj:"Prorab tushumi · obyektlar bo'yicha", feeRows:"Prorab tushumi yozuvlari", feeNone:"Bu oyda prorab tushumi hali yozilmagan. Elyor aka obyekt guruhiga «Prorab … summa» deb yozganda shu yerda ko'rinadi.", ovActive:"Faol", ovClosed:"Yopilgan", noClosed:"Hali yopilgan loyiha yo'q. Bot guruhdan chiqarilganda loyiha shu yerda paydo bo'ladi.", closedOn:"Yopilgan", daysN:"kun", closedTitle:"Loyiha yopilgan", feeK:"Prorab tushumi", ustaK:"Ustalarga to'langan", pv:{who:"Yozganlar", ustas:"Ustalar"}, uper:{all:"Barchasi", year:"12 oy", month:"Oy"}, uperL:{all:"Barcha vaqt", year:"Oxirgi 12 oy"}, ustaHead:"Ustalar ishlab topgan", ustaNote:"Faqat ismi yozilgan ustalar. Ismi yozilmaganlar pastda alohida.", unnamedT:"Ismi yozilmagan (faqat kasbi)", unnamedNote:"Xabarda ism yo'q, faqat kasb. Ustaning ismi yozilsa, shu ustaga bog'lanadi.", companyT:"Kompaniya va xizmatlar (usta emas)", pays:"to'lov", firstP:"Birinchi", lastP:"Oxirgi", showU:"Ustaga ko'rsatish", ustaRows:"Usta to'lovlari", byMonth:"Oylar bo'yicha", showSub:"Art House bilan hamkorlikda ishlab topdingiz", showFoot:"Siz bilan ishlashdan mamnunmiz. Rahmat!", noUsta:"Usta ma'lumoti hali yo'q", jClosed:"Yopilgan loyihalar", jUstas:"Ustalar", hand:"Prixod (Elyor aka)", handSub:"Elyor aka prorablarga bergan pul", handTot:"Jami berilgan", corp:"Korxona xarajatlari", corpSub:"prorablarning gaz, obed, oylik va boshqa xarajatlari", fee:"Prorab xizmati", corpT:"Korxona xarajati", net:"Sof daromad", netD:"prorab xizmati − korxona xarajatlari (oy bo'yicha)", corpRows:"Korxona xarajatlari yozuvlari", liveNote:"Jonli kassa: oxirgi tasdiqdan keyingi hamma yozuvlar hisobga olingan", noCorp:"Bu oyda korxona xarajati yo'q", aiTag:"AI o'qidi", kindT:{salary:"Avans",lunch:"Pitaniye",fuel:"Yoqilg'i",car:"Mashina ta'miri",unexpected:"Kutilmagan",elyor:"Elyor aka (qaytarilgan)",other:"Boshqa xarajatlar"}, byWho:"Kim bo'yicha", handCap:"Prorab «Prixod Elyor aka» yozsa, bu summa kamayadi", saldo:"Saldo", saldoCap:"Hisob-kitob uchun sizda quyidagi summa bo'lishi kerak",
     statR:"Sizga qarzdorlar", statRc:"kassasi minusdagi obyektlar (R)", statD:"Mijozlar puli sizda", statDc:"kassasi plyusdagi obyektlar (D)",
     statP:"Prorablarning ko'chadagi qarzi", statPc:"prorablar kassasi minusda, bu sizning qarzingiz (P)",
     trend:"Saldo dinamikasi", trendSub:"Har kuni 23:30 dagi hisobot", dyn:"Kunlik xarajat", dynSub:"Kunni bosing: o'sha kundagi yozuvlar ochiladi",
@@ -473,7 +493,7 @@ const I18N = {
     brand:"Система управления", upd:"Обновлено", nav:["Панель управления","Финансы","Прорабы","Объекты","Расходы"], navS:["Панель","Финансы","Прорабы","Объекты","Расходы"],
     sub:["По состоянию на {d}","Долги и взаиморасчёты в одном месте","Касса и расходы каждого прораба","Касса всех объектов","Кто что записал: по месяцам"],
     lang:"UZ", refresh:"Обновить", so:"сум", mln:"млн", ming:"тыс", mlrd:"млрд", others:"Прочие", search:"Поиск объекта",
-    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", netFeeL:"Услуга прораба", netFeeW:"суммы, которые Элёр ака записал в группы объектов как «Prorab…»", netCorpL:"Расходы компании", netCorpW:"записано прорабами в своих группах: питание, аванс, топливо, другое", netHow:"Чистая прибыль = услуга прораба − расходы компании. Считается по каждому месяцу отдельно, без накопления.", netNoFee:"В этом месяце услуга прораба ещё не записана, поэтому итог в минусе. Изменится, когда Элёр ака напишет «Prorab … сумма».", jumpT:"Быстрый переход", jHand:"Приход", jCorp:"Расходы компании", jFee:"Услуга прораба", feeObj:"Услуга прораба · по объектам", feeRows:"Записи услуги прораба", feeNone:"В этом месяце услуга прораба ещё не записана. Появится здесь, когда Элёр ака напишет в группе объекта «Prorab … сумма».", hand:"Приход (Элёр ака)", handSub:"деньги, которые Элёр ака дал прорабам", handTot:"Всего выдано", corp:"Расходы компании", corpSub:"газ, обед, зарплата и другие расходы прорабов", fee:"Услуга прораба", corpT:"Расходы компании", net:"Чистая прибыль", netD:"услуга прораба − расходы компании (по месяцу)", corpRows:"Записи расходов компании", liveNote:"Живая касса: учтено всё, записанное после последнего подтверждения", noCorp:"В этом месяце расходов компании нет", aiTag:"прочитал ИИ", kindT:{salary:"Аванс",lunch:"Питание",fuel:"Топливо",car:"Ремонт машины",unexpected:"Непредвиденное",elyor:"Элёр ака (возвращено)",other:"Другие расходы"}, byWho:"По людям", handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
+    cur:"Текущее состояние", curSub:"R − D − P", myK:"Моя касса", myKd:"сколько денег должно быть в кассе, чтобы всё сошлось", handRows:"Деньги, выданные прорабам", netFeeL:"Услуга прораба", netFeeW:"суммы, которые Элёр ака записал в группы объектов как «Prorab…»", netCorpL:"Расходы компании", netCorpW:"записано прорабами в своих группах: питание, аванс, топливо, другое", netHow:"Чистая прибыль = услуга прораба − расходы компании. Считается по каждому месяцу отдельно, без накопления.", netNoFee:"В этом месяце услуга прораба ещё не записана, поэтому итог в минусе. Изменится, когда Элёр ака напишет «Prorab … сумма».", jumpT:"Быстрый переход", jHand:"Приход", jCorp:"Расходы компании", jFee:"Услуга прораба", feeObj:"Услуга прораба · по объектам", feeRows:"Записи услуги прораба", feeNone:"В этом месяце услуга прораба ещё не записана. Появится здесь, когда Элёр ака напишет в группе объекта «Prorab … сумма».", ovActive:"Активные", ovClosed:"Закрытые", noClosed:"Закрытых проектов пока нет. Когда бота уберут из группы, проект появится здесь.", closedOn:"Закрыт", daysN:"дн.", closedTitle:"Проект закрыт", feeK:"Услуга прораба", ustaK:"Выплачено устам", pv:{who:"Кто писал", ustas:"Усты"}, uper:{all:"Всё время", year:"12 мес.", month:"Месяц"}, uperL:{all:"Всё время", year:"Последние 12 месяцев"}, ustaHead:"Заработали усты", ustaNote:"Только усты, чьё имя записано. Без имени, только по специальности, ниже отдельно.", unnamedT:"Без имени (только специальность)", unnamedNote:"В сообщении нет имени, только специальность. Когда имя будет записано, платежи привяжутся к усте.", companyT:"Компании и услуги (не усты)", pays:"плат.", firstP:"Первый", lastP:"Последний", showU:"Показать усте", ustaRows:"Платежи усты", byMonth:"По месяцам", showSub:"Вы заработали в сотрудничестве с Art House", showFoot:"Нам приятно с вами работать. Спасибо!", noUsta:"Данных по устам пока нет", jClosed:"Закрытые проекты", jUstas:"Усты", hand:"Приход (Элёр ака)", handSub:"деньги, которые Элёр ака дал прорабам", handTot:"Всего выдано", corp:"Расходы компании", corpSub:"газ, обед, зарплата и другие расходы прорабов", fee:"Услуга прораба", corpT:"Расходы компании", net:"Чистая прибыль", netD:"услуга прораба − расходы компании (по месяцу)", corpRows:"Записи расходов компании", liveNote:"Живая касса: учтено всё, записанное после последнего подтверждения", noCorp:"В этом месяце расходов компании нет", aiTag:"прочитал ИИ", kindT:{salary:"Аванс",lunch:"Питание",fuel:"Топливо",car:"Ремонт машины",unexpected:"Непредвиденное",elyor:"Элёр ака (возвращено)",other:"Другие расходы"}, byWho:"По людям", handCap:"Когда прораб пишет «Prixod Elyor aka», эта сумма уменьшается", saldo:"Сальдо", saldoCap:"Чтобы всё сошлось, у вас должно быть",
     statR:"Должны вам", statRc:"объекты с кассой в минусе (R)", statD:"Деньги клиентов у вас", statDc:"объекты с кассой в плюсе (D)",
     statP:"Долги прорабов на стороне", statPc:"кассы прорабов в минусе, это ваш долг (P)",
     trend:"Динамика сальдо", trendSub:"Итог ежедневного отчёта в 23:30", dyn:"Расходы по дням", dynSub:"Нажмите на день: откроются записи за этот день",
@@ -509,7 +529,7 @@ const TG = window.Telegram && window.Telegram.WebApp;
 const TG_DATA = TG && TG.initData ? TG.initData : "";
 if (TG_DATA) { try { TG.ready(); TG.expand(); TG.setHeaderColor("#f3f7ff"); TG.setBackgroundColor("#f3f7ff"); if (TG.setBottomBarColor) TG.setBottomBarColor("#ffffff"); if (TG.disableVerticalSwipes) TG.disableVerticalSwipes(); } catch {} }
 const buzz = () => { try { TG.HapticFeedback.selectionChanged(); } catch {} };
-const S = { data:null, tab:0, month:null, q:"", lang:"uz", side:"all", sortKey:"kassa", sortDir:1, key:null, shown:false, gated:false };
+const S = { data:null, tab:0, month:null, q:"", lang:"uz", side:"all", sortKey:"kassa", sortDir:1, key:null, shown:false, gated:false, objView:"active", pplView:"who", ustaPer:"all", ustaData:null, ustaKey:null, ustaBusy:null, ustaErr:null };
 try { const l = localStorage.getItem("saldo.lang"); if (l==="ru"||l==="uz") S.lang = l; } catch {}
 const T = () => I18N[S.lang];
 const lab = n => n===OTHER ? T().others : n===HISOB ? "Hisobchi" : n;
@@ -708,7 +728,7 @@ function pageDash() {
   const fl = paid - spent;
   return `<div class="pg">${pageHead(0, monthBar())}
     ${wc ? `<div class="banner"><span style="display:flex;color:#a15c07">${ic("alert")}</span><span><b>${wc}</b> ${t.attnB}</span><span class="sp"></span><button class="btn ghost" id="attn">${t.view}</button></div>` : ""}
-    <div class="legend tapleg" style="margin:0 0 14px"><span class="lbl s mut" style="align-self:center">${t.jumpT}:</span><button class="lg" data-jump="sec-hand" style="--c:#16a34a">${t.jHand} ↓</button><button class="lg" data-jump="sec-corp" style="--c:#2563eb">${t.jFee} ↓</button><button class="lg" data-jump="sec-corp" style="--c:#f59e0b">${t.jCorp} ↓</button></div>
+    <div class="legend tapleg" style="margin:0 0 14px"><span class="lbl s mut" style="align-self:center">${t.jumpT}:</span><button class="lg" data-jump="sec-hand" style="--c:#16a34a">${t.jHand} ↓</button><button class="lg" data-jump="sec-corp" style="--c:#2563eb">${t.jFee} ↓</button><button class="lg" data-jump="sec-corp" style="--c:#f59e0b">${t.jCorp} ↓</button><button class="lg" data-nav="obj:closed" style="--c:#64748b">${t.jClosed} ›</button><button class="lg" data-nav="exp:ustas" style="--c:#8b5cf6">${t.jUstas} ›</button></div>
     ${netHTML()}
     <div class="lbl s mut" style="margin:0 0 8px">${t.cur2}</div>
     <button class="card tap sumc in" style="--i:0;margin-bottom:14px" data-rows="handouts" data-from="${r.from}" data-to="${r.to}"><div class="lbl s mut">${t.myK}</div><div class="kpi">${fmt(-tot.saldo)} ${t.so}</div><div class="cap s mut">${t.myKd}. ${t.handCap}</div><span class="chev" aria-hidden="true">›</span></button>
@@ -783,11 +803,14 @@ function pageFore() {
 function pageObj() {
   const t = T(), d = S.data, q = S.q.trim().toLowerCase();
   const spentBy = {}; monthExp(S.month).forEach(e => spentBy[e.p] = (spentBy[e.p]||0) + e.t);
-  let rows = d.objects.filter(o => (!q || o.name.toLowerCase().includes(q)) && (S.side==="minus" ? o.kassa<0 : S.side==="plus" ? o.kassa>0 : true)).map(o => ({...o, spent:spentBy[o.name]||0}));
+  let rows = d.objects.filter(o => !o.closed && (!q || o.name.toLowerCase().includes(q)) && (S.side==="minus" ? o.kassa<0 : S.side==="plus" ? o.kassa>0 : true)).map(o => ({...o, spent:spentBy[o.name]||0}));
   const k = S.sortKey; rows.sort((a,b) => (typeof a[k]==="string" ? (a[k]||"").localeCompare(b[k]||"") : a[k]-b[k]) * S.sortDir);
   const maxAbs = Math.max(...rows.map(r => Math.abs(r.kassa)), 1);
   const th = (key,label,r) => `<th class="sort ${r?"r":""}" data-sort="${key}">${label}${S.sortKey===key ? (S.sortDir>0?" ↑":" ↓") : ""}</th>`;
-  const acts = `${monthBar()}<div class="seg">${["all","minus","plus"].map(x => `<button data-side="${x}" aria-pressed="${S.side===x}">${x==="all"?t.all:x==="minus"?t.minus:t.plus}</button>`).join("")}</div><input class="field" id="q" type="search" placeholder="${t.search}" value="${esc(S.q)}">`;
+  const nCl = d.objects.filter(o => o.closed).length;
+  const oseg = `<div class="seg">${["active","closed"].map(x => `<button data-oview="${x}" aria-pressed="${S.objView===x}">${x==="active" ? t.ovActive : t.ovClosed + (nCl ? " · " + nCl : "")}</button>`).join("")}</div>`;
+  if (S.objView === "closed") return `<div class="pg">${pageHead(3, oseg)}${closedCards()}</div>`;
+  const acts = `${oseg}${monthBar()}<div class="seg">${["all","minus","plus"].map(x => `<button data-side="${x}" aria-pressed="${S.side===x}">${x==="all"?t.all:x==="minus"?t.minus:t.plus}</button>`).join("")}</div><input class="field" id="q" type="search" placeholder="${t.search}" value="${esc(S.q)}">`;
   return `<div class="pg">${pageHead(3, acts)}<section class="card in" style="padding:6px 10px"><div class="scroll"><table class="tbl"><thead><tr>${th("name",t.obj)}${th("foreman",t.foreman)}${th("kassa",t.kassa,1)}<th style="width:150px"></th>${th("income",t.income,1)}${th("expense",t.expense,1)}${th("spent",monthLabel(S.month),1)}</tr></thead>
    <tbody>${rows.map(o => `<tr class="click" data-object="${esc(o.name)}"><td class="nm2">${esc(o.name)}${o.status!=="active" ? ` <span class="badge b-warn">${esc(o.status)}</span>` : ""}</td><td class="mut">${o.foreman ? esc(o.foreman) : "—"}</td><td class="r ${tone(o.kassa)}"><b>${fmt(o.kassa)}</b></td>
      <td><div class="mbar"><i style="${o.kassa<0?"right":"left"}:50%;width:${(Math.abs(o.kassa)/maxAbs*50).toFixed(1)}%;background:${o.kassa<0?"var(--red)":"var(--green)"}"></i><i style="left:50%;width:1px;background:var(--line2)"></i></div></td>
@@ -795,8 +818,9 @@ function pageObj() {
 }
 
 function pagePeople() {
+  if (S.pplView === "ustas") return pageUstas();
   const t = T(), r = mrange(), people = personStats(S.month), total = sum(people, p => p.total), cnt = sum(people, p => p.n), pmax = people[0] ? people[0].total : 1;
-  return `<div class="pg">${pageHead(4, monthBar())}
+  return `<div class="pg">${pageHead(4, pplSeg() + monthBar())}
     <div class="card in" style="margin-bottom:16px"><div class="lbl s mut">${monthLabel(S.month)}</div><div class="kpi">${fmt(total)} <span class="mut" style="font-size:15px;font-weight:600;letter-spacing:0">${t.so}</span></div>
       <div class="cap s mut">${cnt} ${t.recs}</div>${total>0 ? rowsBtn(t.allRecords, {rows:"expenses", from:r.from, to:r.to}) : ""}</div>
     <div class="fgrid">${people.length ? people.map((p,i) => `<div class="card fc in" style="--i:${i}" role="button" tabindex="0" data-person="${esc(p.name)}">
@@ -868,12 +892,12 @@ async function drawerRows(kind, title, sub, params) {
 function openRows(d) {
   const t = T(), q = new URLSearchParams();
   if (d.from) { q.set("from", d.from); q.set("to", d.to); }
-  for (const k of ["project","who","party","cat"]) if (d[k]) q.set(k, d[k]);
+  for (const k of ["project","who","party","cat","key","trade"]) if (d[k]) q.set(k, d[k]);
   const who = d.who ? lab(d.who) : "";
   if (d.rows === "reports") return drawerRows("reports", t.howK, d.party || "", q.toString());
   const rng = d.from === d.to ? dlf(d.from) : (d.from && d.from.slice(0,7) === (d.to||"").slice(0,7) && d.from.slice(8) === "01" ? monthLabel(d.from.slice(0,7)) : `${dl(d.from)} – ${dl(d.to)}`);
   const what = [who, d.project, d.cat ? (d.rows === "personal" ? t.kindT[gOf(d.cat.split(",")[0])] : t.cat[d.cat]) : ""].filter(Boolean).join(" · ");
-  drawerRows(d.rows, d.rows === "fee" ? t.feeRows : d.rows === "personal" ? t.corpRows : d.rows === "handouts" ? t.handRows : d.rows === "income" ? t.incRows : t.expRows, [what, rng].filter(Boolean).join(" · "), q.toString());
+  drawerRows(d.rows, d.rows === "usta" ? t.ustaRows : d.rows === "fee" ? t.feeRows : d.rows === "personal" ? t.corpRows : d.rows === "handouts" ? t.handRows : d.rows === "income" ? t.incRows : t.expRows, [what, rng].filter(Boolean).join(" · "), q.toString());
 }
 
 /* ---- person (foreman, Elyor, accountant): everything they wrote in the chosen month, layer by layer */
@@ -910,6 +934,7 @@ function drawerObject(name) {
   const incM = sum(monthInc(S.month).filter(i => i.p===name), i => i.t);
   const days = dayList(r.from, r.to);
   openDrawer(dhead(name, o.foreman ? `${t.foreman}: ${esc(o.foreman)}` : "") + `<div class="db">
+    ${o.closed ? closedBlock(o) : ""}
     <div class="kv">${kv(t.kassa, fmt(o.kassa), tone(o.kassa))}${kv(t.income+" · "+t.total, fmtS(o.income))}${kv(t.expense+" · "+t.total, fmtS(o.expense))}</div>
     <div class="kv">${kv(monthLabel(S.month)+" · "+t.expense, fmtS(tot))}${kv(monthLabel(S.month)+" · "+t.income, fmtS(incM))}${kv(t.rowsT, cnt)}</div>
     <div class="linkrow">${tot>0 ? rowsBtn(t.expRows, {rows:"expenses", project:name, from:r.from, to:r.to}) : ""}${rowsBtn(t.incRows, {rows:"income", project:name, from:r.from, to:r.to})}${rowsBtn(t.paidAll, {rows:"income", project:name, from:"2020-01-01", to:d.today})}</div>
@@ -934,6 +959,80 @@ function drawerChecks() {
 }
 
 /* ------------------------------------------------ shell */
+/* ================= closed projects + ustas ================= */
+const usd = n => "≈ $" + fmt(n / ((S.ustaData && S.ustaData.rate) || 12500));
+function ustaRange() {
+  const today = S.data.today;
+  if (S.ustaPer === "month") { const r = mrange(); return { from:r.from, to:r.to }; }
+  if (S.ustaPer === "year") return { from:addDays(today, -364), to:today };
+  return { from:"2020-01-01", to:today };
+}
+function ustaLoad() {
+  const r = ustaRange(), key = r.from + "|" + r.to;
+  if (S.ustaKey === key || S.ustaBusy === key) return;
+  S.ustaBusy = key;
+  apiFetch(`view=ustas&from=${r.from}&to=${r.to}`).then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
+    .then(j => { if (S.ustaBusy !== key) return; S.ustaData = j; S.ustaKey = key; S.ustaErr = null; })
+    .catch(err => { if (S.ustaBusy === key) { S.ustaErr = String(err && err.message || err); S.ustaKey = key; } })
+    .finally(() => { if (S.ustaBusy === key) S.ustaBusy = null; if (S.tab === 4 && S.pplView === "ustas") render(); });
+}
+const ustaPeriodLabel = () => S.ustaPer === "month" ? monthLabel(S.month) : T().uperL[S.ustaPer];
+const pplSeg = () => `<div class="seg">${["who","ustas"].map(x => `<button data-pview="${x}" aria-pressed="${S.pplView===x}">${T().pv[x]}</button>`).join("")}</div>`;
+function pageUstas() {
+  const t = T(), r = ustaRange(), key = r.from + "|" + r.to; ustaLoad();
+  const acts = `${pplSeg()}<div class="seg">${["all","year","month"].map(x => `<button data-uper="${x}" aria-pressed="${S.ustaPer===x}">${t.uper[x]}</button>`).join("")}</div>${S.ustaPer==="month" ? monthBar() : ""}`;
+  const head = pageHead(4, acts);
+  if (S.ustaKey !== key || !S.ustaData) return `<div class="pg">${head}<section class="card"><div class="empty">${S.ustaErr && S.ustaKey === key ? t.loadErr : t.loading}</div></section></div>`;
+  const d = S.ustaData, max = d.people[0] ? d.people[0].total : 1, nmax = d.noName[0] ? d.noName[0].total : 1;
+  return `<div class="pg">${head}
+    <section class="card in netcard"><div class="lbl s mut">${t.ustaHead} · ${ustaPeriodLabel()}</div>
+      <div class="netbig">${fmt(d.named)} <small>${t.so}</small></div><div class="mut" style="font-weight:600">${usd(d.named)}</div>
+      <p class="mut s" style="margin:10px 0 0">${t.ustaNote}</p></section>
+    <section class="card in gr"><div class="lst">${d.people.length ? d.people.map(p => barRow(`data-usta="${esc(p.key)}"`, "", p.name, fmt(p.total), `${esc(p.trades.join(" · ") || "—")} · ${p.objects.length} ${t.objsN} · ${usd(p.total)}`, p.total/max*100, colorOf(p.name))).join("") : `<div class="empty">${t.noUsta}</div>`}</div></section>
+    <section class="card in gr"><div class="ch"><div><h3>${t.unnamedT}</h3><p class="sub">${t.unnamedNote}</p></div></div><div class="kv">${kv(t.total, fmtS(d.unnamed))}${kv("USD", usd(d.unnamed))}</div>
+      <div class="lst">${d.noName.map(x => barRow(`data-rows="usta" data-trade="${esc(x.trade || "-")}" data-from="${r.from}" data-to="${r.to}"`, "", x.trade || "—", fmt(x.total), `${x.n} ${t.pays}`, x.total/nmax*100, "var(--navy)")).join("")}</div></section>
+    ${d.company.total > 0 ? `<p class="mut s" style="margin:6px 4px 0">${t.companyT}: <b>${fmt(d.company.total)}</b> ${t.so}</p>` : ""}</div>`;
+}
+function drawerUsta(key) {
+  const t = T(), d = S.ustaData; if (!d) return; const p = d.people.find(x => x.key === key); if (!p) return;
+  const r = ustaRange(), months = Object.entries(p.months), mmax = Math.max(...months.map(m => m[1]), 1), omax = p.objects[0] ? p.objects[0].t : 1;
+  openDrawer(dhead(p.name, [p.trades.join(" · "), ustaPeriodLabel()].filter(Boolean).join(" · ")) + `<div class="db">
+    <div class="kv">${kv(t.total, fmtS(p.total))}${kv("USD", usd(p.total))}${kv(t.objsN, p.objects.length)}</div>
+    <div class="kv">${kv(t.pays, p.n)}${kv(t.firstP, dlf(p.first))}${kv(t.lastP, dlf(p.last))}</div>
+    <div class="linkrow"><button class="btn" data-show="${esc(key)}">${t.showU}</button>${rowsBtn(t.ustaRows, {rows:"usta", key, from:r.from, to:r.to})}</div>
+    <div><h4>${t.byObj}</h4><div class="lst">${p.objects.map(o => barRow(`data-object="${esc(o.p)}"`, "", o.p, fmt(o.t), "", o.t/omax*100, "var(--navy)")).join("")}</div></div>
+    <div><h4>${t.byMonth}</h4><div class="lst">${months.map(([m,v]) => barRow("", "", monthLabel(m), fmt(v), "", v/mmax*100, "#2563eb")).join("")}</div></div></div>`);
+}
+// A clean full-screen card for showing an usta what he earned with the company (made for a phone screenshot).
+function showUsta(key) {
+  const t = T(), d = S.ustaData; if (!d) return; const p = d.people.find(x => x.key === key); if (!p) return;
+  const months = Object.entries(p.months), mmax = Math.max(...months.map(m => m[1]), 1);
+  const el = document.createElement("div"); el.id = "show";
+  el.innerHTML = `<button class="sx" data-showclose aria-label="Close">✕</button><div class="sh-card">
+    <div class="sh-top">${LOGO}<b>ART HOUSE</b></div>
+    <div class="sh-hi">${esc(p.name)}</div><div class="sh-trade">${esc(p.trades.join(" · "))}</div>
+    <div class="sh-sub">${t.showSub}</div>
+    <div class="sh-big">${fmt(p.total)} <small>${t.so}</small></div><div class="sh-usd">${usd(p.total)}</div>
+    <div class="sh-meta"><span><b>${p.objects.length}</b> ${t.objsN}</span><span><b>${p.n}</b> ${t.pays}</span><span><b>${dl(p.first)} – ${dl(p.last)}</b></span></div>
+    <div class="sh-bars">${months.map(([m,v]) => `<div><i style="height:${Math.max(8, v/mmax*100)}%"></i><small>${m.slice(5)}</small></div>`).join("")}</div>
+    <div class="sh-per">${ustaPeriodLabel()}</div><div class="sh-foot">${t.showFoot}</div></div>`;
+  document.body.appendChild(el);
+}
+// A closed project: the expense bot was removed from its group (found by saldo-closed-job).
+function closedBlock(o) {
+  const t = T();
+  return `<div class="banner" style="margin-bottom:12px"><span aria-hidden="true">🔒</span><span><b>${t.closedTitle}</b> · ${dlf(o.closedAt)} (${o.days} ${t.daysN})</span></div>
+    <div class="kv">${kv(t.feeK, fmtS(o.fee||0))}${kv(t.ustaK, fmtS(o.ustas||0))}</div>`;
+}
+function closedCards() {
+  const t = T(), cl = S.data.objects.filter(o => o.closed).sort((a,b) => (b.closedAt||"").localeCompare(a.closedAt||""));
+  if (!cl.length) return `<section class="card"><div class="empty">${t.noClosed}</div></section>`;
+  return `<div class="fgrid">${cl.map((o,i) => `<div class="card fc in" style="--i:${i}" role="button" tabindex="0" data-object="${esc(o.name)}">
+    <div class="nm">${esc(o.name)}</div><div class="mut s" style="min-height:36px">🔒 ${t.closedOn}: ${dlf(o.closedAt)} · ${o.days} ${t.daysN}${o.foreman ? " · " + esc(o.foreman) : ""}</div>
+    <div class="val">${fmt(o.income)}<small>${t.income}</small></div>
+    <div class="foot"><span>${t.expense}: ${fmtS(o.expense)}</span><b class="${tone(o.kassa)}">${t.kassa}: ${fmtS(o.kassa)}</b></div></div>`).join("")}</div>`;
+}
+
 const PAGES = [pageDash, pageFin, pageFore, pageObj, pagePeople];
 const NAVI = ["dash","fin","fore","obj","exp"];
 function shell() {
@@ -965,7 +1064,7 @@ function go(i) { S.tab = i; document.querySelectorAll(".ni[data-tab]").forEach(b
 
 document.addEventListener("click", e => {
   const c = sel => e.target.closest(sel);
-  if (c("[data-rows]")) { const b = c("[data-rows]"), g = k => b.dataset[k]; return openRows({ rows:g("rows"), project:g("project"), who:g("who"), party:g("party"), cat:g("cat"), from:g("from"), to:g("to") }); }
+  if (c("[data-rows]")) { const b = c("[data-rows]"), g = k => b.dataset[k]; return openRows({ rows:g("rows"), project:g("project"), who:g("who"), party:g("party"), cat:g("cat"), key:g("key"), trade:g("trade"), from:g("from"), to:g("to") }); }
   if (c(".rw[data-raw]")) { const r = c(".rw[data-raw]").querySelector(".rw-raw"); if (r) r.hidden = !r.hidden; return; }
   if (c("[data-mm]")) { const b = bounds(), m = monthShift(S.month, +c("[data-mm]").dataset.mm); if (m>=b.min && m<=b.max) { S.month = m; render(); } return; }
   if (c(".mpl")) { const i = $("#mpick"); try { if (i && i.showPicker && e.target !== i) i.showPicker(); } catch {} return; }
@@ -973,6 +1072,13 @@ document.addEventListener("click", e => {
   if (c("[data-go]")) return go(+c("[data-go]").dataset.go);
   if (c("[data-jump]")) { const el = document.getElementById(c("[data-jump]").dataset.jump); if (el) el.scrollIntoView({ behavior:"smooth", block:"start" }); return; }
   if (c("[data-list]")) return drawerList(c("[data-list]").dataset.list);
+  if (c("[data-oview]")) { S.objView = c("[data-oview]").dataset.oview; return render(); }
+  if (c("[data-pview]")) { S.pplView = c("[data-pview]").dataset.pview; return render(); }
+  if (c("[data-uper]")) { S.ustaPer = c("[data-uper]").dataset.uper; return render(); }
+  if (c("[data-nav]")) { const [pg, v] = c("[data-nav]").dataset.nav.split(":"); if (pg === "obj") S.objView = v; else S.pplView = v; return go(pg === "obj" ? 3 : 4); }
+  if (c("[data-showclose]") || (c("#show") && !c(".sh-card"))) { const s = $("#show"); if (s) s.remove(); return; }
+  if (c("[data-show]")) return showUsta(c("[data-show]").dataset.show);
+  if (c("[data-usta]")) return drawerUsta(c("[data-usta]").dataset.usta);
   if (c("[data-side]")) { S.side = c("[data-side]").dataset.side; return render(); }
   if (c("[data-sort]")) { const k = c("[data-sort]").dataset.sort; S.sortDir = S.sortKey===k ? -S.sortDir : 1; S.sortKey = k; return render(); }
   if (c("[data-person]")) return drawerPerson(c("[data-person]").dataset.person);
